@@ -71,21 +71,21 @@ export function useNavData() {
       // ----------------------------------------------------------------------
       {
         subheader: t('management'),
-        items: [
-          // USER
-          {
-            title: t('user'),
-            path: paths.dashboard.user.root,
-            icon: ICONS.user,
-            children: [
-              { title: t('profile'), path: paths.dashboard.user.root },
-              // { title: t('cards'), path: paths.dashboard.user.cards },
-              { title: t('list'), path: paths.dashboard.user.list },
-              { title: t('create'), path: paths.dashboard.user.new },
-              // { title: t('edit'), path: paths.dashboard.user.demo.edit },
-              // { title: t('account'), path: paths.dashboard.user.account },
-            ],
-          },
+         items: [
+        //   // USER
+        //   {
+        //     title: t('user'),
+        //     path: paths.dashboard.user.root,
+        //     icon: ICONS.user,
+        //     children: [
+        //       { title: t('profile'), path: paths.dashboard.user.root },
+        //       // { title: t('cards'), path: paths.dashboard.user.cards },
+        //       { title: t('list'), path: paths.dashboard.user.list },
+        //       { title: t('create'), path: paths.dashboard.user.new },
+        //       // { title: t('edit'), path: paths.dashboard.user.demo.edit },
+        //       // { title: t('account'), path: paths.dashboard.user.account },
+        //     ],
+        //   },
 
           // COMPANY
           {
@@ -109,6 +109,18 @@ export function useNavData() {
               // { title: t('create'), path: paths.dashboard.job.new },
               // { title: t('edit'), path: paths.dashboard.job.demo.edit },
             ],
+          },
+              // WORKFLOW
+           {
+            title: t('reactflow'),
+            path: paths.dashboard.reactflow.root,
+            icon: ICONS.job,
+            children: [
+               { title: t('list'), path: paths.dashboard.reactflow.list },
+              // { title: t('details'), path: paths.dashboard.job.demo.details },
+              // { title: t('create'), path: paths.dashboard.job.new },
+              // { title: t('edit'), path: paths.dashboard.job.demo.edit },
+             ],
           },
 
           // PRODUCT

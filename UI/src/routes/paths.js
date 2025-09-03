@@ -165,6 +165,17 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/job/${MOCK_ID}/edit`,
       },
     },
+    reactflow: {
+      root: `${ROOTS.DASHBOARD}/reactflow`,
+      new: `${ROOTS.DASHBOARD}/reactflow/new`,
+      list: `${ROOTS.DASHBOARD}/reactflow/list`,
+      details: (id) => `${ROOTS.DASHBOARD}/workflow/${id}`,
+      edit: (id) => `${ROOTS.DASHBOARD}/workflow/${id}/edit`,
+      demo: {
+        details: `${ROOTS.DASHBOARD}/workflow/${MOCK_ID}`,
+        edit: `${ROOTS.DASHBOARD}/workflow/${MOCK_ID}/edit`,
+      },
+    },
   //   tour: {
   //     root: `${ROOTS.DASHBOARD}/tour`,
   //     new: `${ROOTS.DASHBOARD}/tour/new`,
