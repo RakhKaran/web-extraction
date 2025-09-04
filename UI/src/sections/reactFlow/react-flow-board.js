@@ -27,7 +27,7 @@ const nodeTypes = {
   custom: ReactFlowCustomNodeStructure,
   customAddNode: ReactFlowCustomAddNodeStructure,
   initialize: ReactFlowIngestion,
-  jobList: ReactFlowClassify,
+  locate: ReactFlowClassify,
   search: ReactFlowExtract,
   validate: ReactFlowValidate,
   deliver: ReactFlowDeliver,

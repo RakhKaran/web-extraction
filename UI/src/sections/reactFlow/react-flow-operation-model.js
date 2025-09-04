@@ -17,17 +17,17 @@ import PropTypes from 'prop-types';
 const operations = [
   {
     id: 1,
-    title: 'Job Detials',
+    title: 'image processing',
     description: 'Optimize images for analysis.',
     icon: '/assets/icons/document-process/process.svg',
-    type: 'jobDetial'
+    type: 'imageProcessing'
   },
   {
     id: 3,
-    title: 'job List',
+    title: 'Locate',
     description: 'Sort documents by type.',
     icon: '/assets/icons/document-process/classify.svg',
-    type: 'jobList',
+    type: 'locate',
     color: '#0AAFFF'
   },
   {
