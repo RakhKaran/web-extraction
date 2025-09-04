@@ -8,11 +8,11 @@
     "unused-imports",
     "prettier"
   ],
-  "extends": [
-    "airbnb",
-    "airbnb/hooks",
-    "prettier"
-  ],
+"extends": [
+  "react-app",
+  "react-app/jest",
+  "prettier"
+],
   "parser": "@babel/eslint-parser",
   "parserOptions": {
     "ecmaVersion": "latest",

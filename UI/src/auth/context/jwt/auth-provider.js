@@ -1,10 +1,11 @@
 import PropTypes from 'prop-types';
 import { useEffect, useReducer, useCallback, useMemo } from 'react';
 // utils
-import axios, { endpoints } from 'src/utils/axios';
 //
+import axios, { endpoints } from 'src/utils/axios';
 import { AuthContext } from './auth-context';
 import { isValidToken, setSession } from './utils';
+
 
 // ----------------------------------------------------------------------
 
@@ -57,6 +58,7 @@ export function AuthProvider({ children }) {
   const initialize = useCallback(async () => {
     try {
       const accessToken = sessionStorage.getItem(STORAGE_KEY);
+      // localStorage.setItem(STORAGE_KEY, accessToken);
 
       if (accessToken && isValidToken(accessToken)) {
         setSession(accessToken);
@@ -105,7 +107,7 @@ export function AuthProvider({ children }) {
 
     const { accessToken, user } = response.data;
 
-   if (user?.permissions?.includes('admin')) {
+    if (user?.permissions?.includes('admin')) {
       setSession(accessToken);
       dispatch({
         type: 'LOGIN',
@@ -115,12 +117,13 @@ export function AuthProvider({ children }) {
       });
     }else throw new Error("User Doesn't have permission");
   }, []);
+
   // REGISTER
-  const register = useCallback(async (email, password, firstName, lastName) => {
+  const register = useCallback(async (email, password, fullName, lastName) => {
     const data = {
       email,
       password,
-      firstName,
+      fullName,
       lastName,
     };
 
