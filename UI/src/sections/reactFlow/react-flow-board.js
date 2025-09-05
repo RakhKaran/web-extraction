@@ -247,7 +247,7 @@ export default function ReactFlowBoard({ isUnlock }) {
         id: newAddNodeId,
         label: '➕ New Node',
         icon: '/assets/icons/document-process/add.svg',
-        style: borderDirection === 'down' ? { // reverse opration added
+        style: borderDirection === 'down' ? { 
           border: '5px solid #2DCA73',
           borderBottom: '5px solid white',
           borderRight: '5px solid white',

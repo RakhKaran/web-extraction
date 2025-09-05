@@ -16,12 +16,13 @@ import ReactFlowCustomNodeStructure from "../react-flow-custom-node";
 import CustomProcessDialogue from "./components-dialogue";
 import LogsProcessDialogue from "./logs-dialogue";
 import JobDetailsFields from "../locate-components/jobDetailsComponents";
+import JobListFields from "../locate-components/jobListComponents";
 
 // Import our separated field groups
 
 const modelOptions = [
-  { label: "Job List", value: "jobList", isDisabled: false },
-  { label: "Job Details", value: "jobDetails", isDisabled: false },
+  { label: "List", value: "list", isDisabled: false },
+  { label: "Details", value: "detail", isDisabled: false },
 ];
 
 export default function ReactFlowClassify({ data }) {
@@ -74,11 +75,10 @@ export default function ReactFlowClassify({ data }) {
   // Switch case for rendering correct fields
   const renderModeFields = (mode) => {
     switch (mode) {
-      case "jobList":
-       return null
-       
-      //  <JobListFields />;
-      case "jobDetails":
+      case "list":
+        return <JobListFields />;
+
+      case "detail":
         return <JobDetailsFields />;
       default:
         return null;
@@ -117,7 +117,7 @@ export default function ReactFlowClassify({ data }) {
         <FormProvider methods={methods} onSubmit={onSubmit}>
           <Grid container spacing={2}>
             {/* Mode selector */}
-            <Grid item xs={12} md={12}>
+             <Grid item xs={12} md={12}>
               <RHFSelect name="mode" label="Select Mode">
                 {modelOptions.map((model) => (
                   <MenuItem
@@ -130,9 +130,10 @@ export default function ReactFlowClassify({ data }) {
                 ))}
               </RHFSelect>
             </Grid>
-              <Stack spacing={2} sx={{ mt: 2 }}>
-                {renderModeFields(values.mode)}
-              </Stack>
+            <Grid item xs={12} md={12} sx={{ mt: 2  }}>
+              {renderModeFields(values.mode)}
+            </Grid>
+
           </Grid>
           <Stack
             alignItems="flex-end"
