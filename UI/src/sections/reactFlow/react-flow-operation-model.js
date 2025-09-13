@@ -53,14 +53,14 @@ const operations = [
   //   type: 'validate',
   //   color: '#ED63D2'
   // },
-  // {
-  //   id: 4,
-  //   title: 'Deliver',
-  //   description: 'Send documents or data.',
-  //   icon: '/assets/icons/document-process/deliver.svg',
-  //   type: 'deliver',
-  //   color: '#7551E9'
-  // },
+  {
+    id: 4,
+    title: 'Deliver',
+    description: 'Send documents or data.',
+    icon: '/assets/icons/document-process/deliver.svg',
+    type: 'deliver',
+    color: '#7551E9'
+  },
   // {
   //   id: 7,
   //   title: 'Index Document',

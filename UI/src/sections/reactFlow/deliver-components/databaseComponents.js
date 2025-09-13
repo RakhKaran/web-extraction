@@ -1,9 +1,9 @@
 import { useEffect, useState } from "react";
-import { Grid, MenuItem, Typography, TextField } from "@mui/material";
+import { Grid, MenuItem, Typography, TextField, Stack } from "@mui/material";
 import { RHFSelect } from "src/components/hook-form";
 import axiosInstance from "src/utils/axios";
 
-// 🔹 Dummy Locate JSON (replace later with actual data from Locate node)
+//Dummy Locate JSON schema
 const locateSchema = {
   jobTitle: "Frontend Developer",
   companyName: "Tech Corp",
@@ -17,36 +17,32 @@ const locateSchema = {
 export default function DatabaseComponents() {
   const [dbFields, setDbFields] = useState([]);
 
+
   useEffect(() => {
-    axiosInstance
-      .get("/deliver/model/Deliver")
-      .then((res) => {
-        if (res.data?.fields) {
-          setDbFields(res.data.fields);
-        }
-      })
-      .catch((err) => {
-        console.error("Error fetching DB fields:", err);
-      });
+    axiosInstance.get("/deliver/model/Deliver").then((res) => {
+      if (res.data?.fields) {
+        setDbFields(res.data.fields);
+      }
+    }).catch((err) => {
+      console.error("Error fetching DB fields:", err);
+    });
   }, []);
 
-   return (
-    <Grid container spacing={2}>
+  return (
+    <Grid item xs={12}>
       {dbFields.map((field) => (
-        <Grid container spacing={2} key={field} sx={{ mb: 1 }}>
-
+        <Stack direction="row" spacing={2} key={field} sx={{ width: "100%", mt: 2 }}>
           <Grid item xs={6}>
             <TextField
               fullWidth
               value={field}
-              label="DB Field"
+              label="Field Name"
               InputProps={{ readOnly: true }}
             />
           </Grid>
 
-
           <Grid item xs={6}>
-            <RHFSelect name={`mapping.${field}`} label="Locate Field">
+            <RHFSelect name={`mapping.${field}`} label="Extracted Field">
               {Object.keys(locateSchema).map((key) => (
                 <MenuItem key={key} value={key}>
                   {key}
@@ -54,8 +50,14 @@ export default function DatabaseComponents() {
               ))}
             </RHFSelect>
           </Grid>
-        </Grid>
+        </Stack>
       ))}
     </Grid>
   );
 }
+
+
+
+
+
+

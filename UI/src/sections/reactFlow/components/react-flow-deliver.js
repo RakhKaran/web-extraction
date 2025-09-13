@@ -17,7 +17,7 @@ import CustomProcessDialogue from "./components-dialogue";
 import LogsProcessDialogue from "./logs-dialogue";
 
 import JobDetailsFields from "../locate-components/jobDetailsComponents";
-import DatabaseComponents from "../deliver-components/database";
+import DatabaseComponents from "../deliver-components/databaseComponents";
 
 // Deliver options
 const deliverOptions = [
@@ -26,7 +26,7 @@ const deliverOptions = [
 ];
 
 // Yup validation schemas
-const deliverSchemas = {
+const deliverSchemas =  Yup.object().shape({
   database: Yup.object().shape({
     model: Yup.string().required("Model is required"),
     mapping: Yup.object().required("Field mapping is required"),
@@ -36,7 +36,7 @@ const deliverSchemas = {
     headers: Yup.string().nullable(),
     payload: Yup.object().required("Payload mapping is required"),
   }),
-};
+});
 
 export default function ReactFlowDeliver({ data }) {
   const [isOpen, setIsOpen] = useState(false);
