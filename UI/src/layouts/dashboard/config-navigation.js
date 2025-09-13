@@ -112,7 +112,7 @@ export function useNavData() {
           },
               // WORKFLOW
            {
-            title: t('reactflow'),
+            title: t('extraction Flow'),
             path: paths.dashboard.reactflow.root,
             icon: ICONS.job,
             children: [
@@ -122,6 +122,31 @@ export function useNavData() {
               // { title: t('edit'), path: paths.dashboard.job.demo.edit },
              ],
           },
+
+           {
+            title: t('scheduler'),
+            path: paths.dashboard.scheduler.root,
+            icon: ICONS.job,
+            children: [
+               { title: t('list'), path: paths.dashboard.scheduler.list },
+              //  { title: t('details'), path: paths.dashboard.scheduler.details },
+               { title: t('create'), path: paths.dashboard.scheduler.new},
+              //  { title: t('edit'), path: paths.dashboard.scheduler.edit },
+             ],
+          },
+
+           {
+            title: t('designation'),
+            path: paths.dashboard.designation.root,
+            icon: ICONS.job,
+            children: [
+               { title: t('list'), path: paths.dashboard.designation.list },
+              //  { title: t('details'), path: paths.dashboard.scheduler.details },
+               { title: t('create'), path: paths.dashboard.designation.new},
+              //  { title: t('edit'), path: paths.dashboard.scheduler.edit },
+             ],
+          },
+
 
           // PRODUCT
       //     {

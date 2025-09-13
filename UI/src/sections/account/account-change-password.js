@@ -13,6 +13,7 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFTextField } from 'src/components/hook-form';
+import axiosInstance from 'src/utils/axios';
 
 // ----------------------------------------------------------------------
 
@@ -50,15 +51,22 @@ export default function AccountChangePassword() {
     handleSubmit,
     formState: { isSubmitting },
   } = methods;
-
+  
   const onSubmit = handleSubmit(async (data) => {
     try {
-      await new Promise((resolve) => setTimeout(resolve, 500));
+      const inputData = {
+        oldPassword: data.oldPassword,
+        newPassword: data.newPassword,
+      };
+      await axiosInstance.post('/setPassword', inputData);
       reset();
       enqueueSnackbar('Update success!');
       console.info('DATA', data);
     } catch (error) {
       console.error(error);
+      enqueueSnackbar(typeof error === 'string' ? error : error.error.message, {
+        variant: 'error',
+      });
     }
   });
 
