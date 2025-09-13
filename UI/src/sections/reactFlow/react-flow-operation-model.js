@@ -54,7 +54,7 @@ const operations = [
   //   color: '#ED63D2'
   // },
   // {
-  //   id: 6,
+  //   id: 4,
   //   title: 'Deliver',
   //   description: 'Send documents or data.',
   //   icon: '/assets/icons/document-process/deliver.svg',
@@ -97,10 +97,10 @@ export default function OperationSelectorModal({ onSelect, onClose, open, bluePr
   useEffect(() => {
     const newData = operations.filter((opt) => !bluePrintNode?.includes(opt.title));
     setData(newData);
-  }, [bluePrintNode])
+  }, [bluePrintNode, open])
 
   console.log('nodes already present', bluePrintNode)
-  
+
   return (
     <Dialog open={open} onClose={onClose} maxWidth="xs" fullWidth>
       <DialogTitle>Select a Node</DialogTitle>

@@ -1,252 +1,219 @@
-// src/sections/reactFlow/locate-components/JobListFields.js
-
-import { Grid, Button, MenuItem, Typography, Stack } from "@mui/material";
-import { useFieldArray, useForm, useFormContext } from "react-hook-form";
+import { useEffect } from "react";
+import { useFieldArray, useFormContext } from "react-hook-form";
+import {
+  Grid,
+  Button,
+  MenuItem,
+  Typography,
+  Stack,
+} from "@mui/material";
 import { RHFTextField, RHFSelect } from "src/components/hook-form";
-import { useEffect, useMemo } from "react";
-import * as Yup from "yup";
-import { yupResolver } from "@hookform/resolvers/yup";
-// Dropdown options for selector types
 
+const selectorTypeOptions = [
+  { label: "ID", value: "id" },
+  { label: "Class", value: "class" },
+  { label: "CSS", value: "css" },
+  { label: "XPath", value: "xpath" },
+  { label: "Placeholder", value: "placeholder" },
+  { label: "List", value: "list" },
+  { label: "Object", value: "object" },
+];
 
-export default function JobListFields() {
+const searchSelectorOptions = [
+  { label: "ID", value: "id" },
+  { label: "Class", value: "class" },
+  { label: "CSS", value: "css" },
+  { label: "XPath", value: "xpath" },
+  { label: "Placeholder", value: "placeholder" },
+  { label: "Role", value: "role" },
+];
 
-    const searchSelectorOptions = [
-        { label: "ID", value: "id" },
-        { label: "Class", value: "class" },
-        { label: "CSS", value: "css" },
-        { label: "XPath", value: "xpath" },
-        { label: "Placeholder", value: "placeholder" },
-        { label: "Role", value: "role" },
-    ];
+function generateRandomId() {
+  return Math.random().toString(36).substring(2, 12);
+}
 
-    const SelectorTypeOptions = [
-        { label: "ID", value: "id" },
-        { label: "Class", value: "class" },
-        { label: "CSS", value: "css" },
-        { label: "XPath", value: "xpath" },
-        { label: "Placeholder", value: "placeholder" },
-        { label: "List", value: "list" },
-        { label: "Object", value: "object" }
+function RenderFields({ name }) {
+  const { control, watch, setValue } = useFormContext();
+  const { fields, append, remove } = useFieldArray({ control, name});
+  const values = watch(name);
 
-    ];
+  useEffect(() => {
+    if (!values || values.length === 0) {
+      append({
+        id: generateRandomId(),
+        fieldName: "",
+        selector: "",
+        selectorType: "",
+        attribute: "",
+        children: [],
+      });
+    }
+  }, [values, append]);
 
-    const JobSchema = Yup.object().shape({
-        selector: Yup.object().shape({
-            name: Yup.string().required("Selector name is required"),
-            selectorType: Yup.string()
-                .oneOf(searchSelectorOptions, "Invalid selector type")
-                .required("Selector type is required"),
-        }),
+  const handleSelectorTypeChange = (index, value) => {
+    const current = values[index];
+    const updated = [...values];
 
-        fieldsArray: Yup.array().of(
-            Yup.object().shape({
-                fieldName: Yup.string().required("Field name is required"),
-                selector: Yup.string().required("Selector is required"),
-                selectorType: Yup.string()
-                    .oneOf(SelectorTypeOptions, "Invalid selector type")
-                    .required("Selector type is required"),
-                attribute: Yup.string().required("Attribute is required"),
-                children: Yup.lazy(() => JobSchema.fields.fieldsArray),
-            })
-        ),
-    });
-
-    const defaultValues = useMemo(
-        () => ({
-            fieldsArray: [],
-        }),
-        []
-    );
-
-    const methods = useForm({
-        resolver: yupResolver(JobSchema),
-        defaultValues,
-    })
-
-    const { control, setValue, getValues, watch, handleSubmit } = methods;
-
-    const { fields, append, remove } = useFieldArray({
-        control,
-        name: "fieldsArray",
-    });
-    const values = watch();
-
-    // Auto-append one field if empty
-    useEffect(() => {
-        const currentFields = getValues("fieldsArray");
-        if (!currentFields || currentFields.length === 0) {
-            append({ fieldName: "", selector: "", attribute: "", selectorType: "" });
-        }
-    }, [append, getValues]);
-
-    function generateRandomId() {
-        return Math.random().toString(36).substring(2, 12);
+    if (value === "list" || value === "object") {
+      updated[index] = {
+        ...current,
+        selectorType: value,
+        attribute: "",
+        children:
+          current.children.length > 0
+            ? current.children
+            : [
+                {
+                  id: generateRandomId(),
+                  fieldName: "",
+                  selector: "",
+                  selectorType: "",
+                  attribute: "",
+                  children: [],
+                },
+              ],
+      };
+    } else {
+      updated[index] = { ...current, selectorType: value };
     }
 
-    const handleAddField = (type) => {
-        console.log(type);
-        // for normal text field...
-        if (type === "list") {
-            setValue('fieldsArray', [...values.items, {
-                id: generateRandomId(),
-                fieldName: "",
-                selector: "",
-                selectorType: "",
-                attribute: "",
-                children: [],
-            }])
-        }
-
-        // for section...
-        else if (type === 'object') {
-            setValue('fieldsArray', [...values.items, {
-                id: generateRandomId(),
-                fieldName: "",
-                selector: "",
-                selectorType: "",
-                attribute: "",
-                children: [],
-            }], { shouldValidate: true })
-        }
-    }
-    const handleAddNestedField = (parentId, fieldType, condition) => {
-        const newNestedField = {
-            id: generateRandomId(),
-            fieldName: "",
-            selector: "",
-            selectorType: "",
-            attribute: "",
-            children: [],
-        };
-const updatedItems = addNestedField(parentId, values.fieldsArray, newNestedField, condition);
-    setValue('fieldsArray', updatedItems, { shouldValidate: true });
+    setValue(name, updated, { shouldValidate: true });
   };
 
-    const addNestedField = (parentId, data, newField, condition) => 
-    data.map((item) => {
-      if (item.id === parentId) {
-        return {
-          ...item,
-          options: item.options.map((opt) =>
-            opt.id === condition
-              ? { 
-                  ...opt, 
-                  nestedFields: [...(opt.nestedFields || []), newField] // Ensure nestedFields is an array
-                }
-              : opt
-          ),
-        };
-      }
-  
-      if (item.options) {
-        return {
-          ...item,
-          options: item.options.map((opt) => ({
-            ...opt,
-            nestedFields: addNestedField(parentId, opt.nestedFields || [], newField, condition),
-          })),
-        };
-      }
-  
-      return item;
-    });
+  return (
+    <Grid container direction="column" spacing={2} sx={{ mt: 2 }}>
+      {fields.map((field, index) => {
+        const fieldPath = `${name}[${index}]`;
+        const selectorType = values?.[index]?.selectorType;
+
         return (
-            <Grid spacing={2}>
-                {/* Selector Section */}
-                <Grid item xs={12}>
-                    <Typography variant="subtitle1" sx={{ mb: 1, mt: 2 }}>
-                        Parent Selector
-                    </Typography>
-                    <Stack direction="row" spacing={2} sx={{ width: "100%" }}>
-                        <RHFTextField
-                            fullWidth
-                            name="selector.name"
-                            label="Selector Name"
-                            placeholder=".srp-jobtuple-wrapper .title"
-                        />
-                        <RHFSelect fullWidth name="selector.selectorType" label="Selector Type">
-                            {searchSelectorOptions.map((option) => (
-                                <MenuItem key={option.value} value={option.value}>
-                                    {option.label}
-                                </MenuItem>
-                            ))}
-                        </RHFSelect>
-                    </Stack>
-                </Grid>
+          <Grid item xs={12} key={field.id} sx={{ p: 2, borderRadius: 1, backgroundColor: "#fafafa" }}>
+            {/* Row of fields */}
+            <Grid container spacing={2} alignItems="flex-start">
+              <Grid item xs={12} sm={6} md={3}>
+                <RHFTextField name={`${fieldPath}.fieldName`} label="Field Name" fullWidth />
+              </Grid>
 
-                {/* Fields Section */}
-                <Grid item xs={12}>
-                    <Typography variant="subtitle1" sx={{ mb: 1, mt: 2 }}>
-                        Fields
-                    </Typography>
-                </Grid>
-                {fields.map((field, index) => (
-                    <Grid
-                        container
-                        spacing={2}
-                        key={field.id}
-                        sx={{ mb: 2 }}
-                        alignItems="center"
-                    >
-                        <Grid item xs={12} md={3}>
-                            <RHFTextField
-                                fullWidth
-                                name={`fieldsArray[${index}].fieldName`}
-                                label="Field Name"
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={3}>
-                            <RHFTextField
-                                fullWidth
-                                name={`fieldsArray[${index}].selector`}
-                                label="Selector"
-                            />
-                        </Grid>
-                        <Grid item xs={12} md={2}>
-                            <RHFSelect fullWidth name={`fieldsArray[${index}].selectorType`} label="Selector Type">
-                                {SelectorTypeOptions.map((option) => (
-                                    <MenuItem key={option.value} value={option.value}>
-                                        {option.label}
-                                    </MenuItem>
-                                ))}
-                            </RHFSelect>
-                        </Grid>
-                        <Grid item xs={12} md={3}>
-                            <RHFTextField
-                                fullWidth
-                                name={`fieldsArray[${index}].attribute`}
-                                label="Attribute"
-                            />
-                        </Grid>
-                        <Grid
-                            item
-                            xs={12}
-                            md={1}
-                            sx={{ display: "flex", justifyContent: "flex-end" }}
-                        >
-                            <Button
-                                onClick={() => remove(index)}
-                                color="error"
-                                size="small"
-                                sx={{ whiteSpace: "nowrap" }}
-                            >
-                                Remove
-                            </Button>
-                        </Grid>
-                    </Grid>
-                ))}
+              <Grid item xs={12} sm={6} md={3}>
+                <RHFTextField name={`${fieldPath}.selector`} label="Selector" fullWidth />
+              </Grid>
 
-                <Grid item xs={12}>
-                    <Button
-                        variant="outlined"
-                        onClick={() =>
-                            append({ fieldName: "", selector: "", attribute: "", selectorType: "" })
-                        }
-                    >
-                        Add Field
-                    </Button>
+              {/* Selector Type */}
+              <Grid item xs={12} sm={6} md={3}>
+                <RHFSelect
+                  name={`${fieldPath}.selectorType`}
+                  label="Selector Type"
+                  onChange={(e) => handleSelectorTypeChange(index, e.target.value)}
+                  fullWidth
+                >
+                  {selectorTypeOptions.map((option) => (
+                    <MenuItem key={option.value} value={option.value}>
+                      {option.label}
+                    </MenuItem>
+                  ))}
+                </RHFSelect>
+
+                {/* Remove button */}
+                {(!selectorType || selectorType === "list" || selectorType === "object") && (
+                  <Button
+                    onClick={() => remove(index)}
+                    color="error"
+                    size="small"
+                    variant="outlined"
+                    sx={{ mt: 1, ml: "auto", display: "block" }}
+                  >
+                    Remove
+                  </Button>
+                )}
+              </Grid>
+
+              {/* Attribute + Remove */}
+              {selectorType && selectorType !== "list" && selectorType !== "object" && (
+                <Grid item xs={12} sm={6} md={3}>
+                  <RHFTextField name={`${fieldPath}.attribute`} label="Attribute" fullWidth />
+                  <Button
+                    onClick={() => remove(index)}
+                    color="error"
+                    size="small"
+                    variant="outlined"
+                    sx={{ mt: 1, ml: "auto", display: "block" }}
+                  >
+                    Remove
+                  </Button>
                 </Grid>
+              )}
             </Grid>
+
+            {/* Nested fields */}
+            {(selectorType === "list" || selectorType === "object") && (
+              <Grid item xs={12} sx={{ mt: 2 }}>
+                <Typography variant="subtitle2" sx={{ mb: 1 }}>
+                  Nested Fields
+                </Typography>
+                <RenderFields name={`${fieldPath}.children`} />
+              </Grid>
+            )}
+          </Grid>
         );
-    }
+      })}
+
+      <Grid item>
+        <Button
+          variant="outlined"
+          size="small"
+          type="button" // 👈 prevents form submit
+          onClick={() =>
+            append({
+              id: generateRandomId(),
+              fieldName: "",
+              selector: "",
+              selectorType: "",
+              attribute: "",
+              children: [],
+            })
+          }
+        >
+          + Add Field
+        </Button>
+      </Grid>
+    </Grid>
+  );
+}
+
+export default function JobListFields() {
+  return (
+    <Grid container spacing={2}>
+      {/* Parent Selector Section */}
+      <Grid item xs={12}>
+        <Typography variant="h6" sx={{ mt: 2 }}>
+          Parent Selector
+        </Typography>
+      </Grid>
+      <Grid item xs={12}>
+        <Stack direction="row" spacing={2} sx={{ width: "100%" }}>
+          <RHFTextField
+            fullWidth
+            name="selector.name"
+            label="Selector Name"
+            placeholder=".srp-jobtuple-wrapper .title"
+          />
+          <RHFSelect fullWidth name="selector.selectorType" label="Selector Type">
+            {searchSelectorOptions.map((option) => (
+              <MenuItem key={option.value} value={option.value}>
+                {option.label}
+              </MenuItem>
+            ))}
+          </RHFSelect>
+        </Stack>
+      </Grid>
+
+      {/* Fields Section */}
+      <Grid item xs={12}>
+        <Typography variant="h6" sx={{ mt: 2 }}>
+          Fields
+        </Typography>
+        <RenderFields name="fields" />
+      </Grid>
+    </Grid>
+  );
+}

@@ -34,16 +34,38 @@ export default function ReactFlowClassify({ data }) {
   const handleOpenLogsModal = () => setLogsOpen(true);
   const handleCloseLogsModal = () => setLogsOpen(false);
 
-  // Yup schema (can be extended with conditional validation later)
-  const newClassificationSchema = Yup.object().shape({
-    mode: Yup.string().required("Mode is required"),
-  });
+const fieldSchema = Yup.object().shape({
+  fieldName: Yup.string().required("Field name is required"),
+  selector: Yup.string().required("Selector is required"),
+  selectorType: Yup.string().required("Selector type is required"),
+  attribute: Yup.string().when("selectorType", {
+    is: (val) => val !== "list" && val !== "object",
+    then: (schema) => schema.required("Attribute is required"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  children: Yup.array().of(
+    Yup.lazy(() => fieldSchema)
+  ).optional(),  // children allowed but not mandatory
+});
+
+
+// Now define the full schema
+const newClassificationSchema = Yup.object().shape({
+  mode: Yup.string().required("Mode is required"),
+  selector: Yup.object().shape({
+    name: Yup.string().required("Selector name is required"),
+    selectorType: Yup.string().required("Selector type is required"),
+  }),
+  fields: Yup.array().of(fieldSchema), // top-level fields array
+});
+
+
 
   const defaultValues = useMemo(
     () => ({
       mode: data.bluePrint?.mode || "",
       selector: data.bluePrint?.selector || { name: "", selectorType: "" },
-      fields: data.bluePrint?.fields || {},
+      fields: data.bluePrint?.fields || [],
     }),
     [data]
   );
@@ -67,7 +89,7 @@ export default function ReactFlowClassify({ data }) {
   }, [defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (formData) => {
-    console.log("classify formData", formData);
+    console.log("Escalation Matrix", formData);
     data.functions.handleBluePrintComponent(data.label, formData);
     handleCloseModal();
   });
