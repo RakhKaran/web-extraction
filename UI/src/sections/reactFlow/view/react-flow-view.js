@@ -10,7 +10,7 @@ export default function ReactFlowView(){
     return(
         <Container maxWidth={settings.themeStretch ? false : 'lg'}>
             <CustomBreadcrumbs
-                heading="Intelligent Document Processing"
+                heading="Extraction Flow"
                 links={[{ name: 'Dashboard', href: '/' }]}
                 // sx={{
                 // mb: { xs: 1, md: 1 },
@@ -21,7 +21,7 @@ export default function ReactFlowView(){
                     <IconButton sx={{paddingLeft: '0px'}}>
                         <Iconify color='#292D32' icon="mdi:keyboard-backspace" width={24} />
                     </IconButton>
-                    <Typography sx={{fontWeight: 'normal'}} variant="h5">Define React Flow</Typography>
+                    <Typography sx={{fontWeight: 'normal'}} variant="h5">Define Extraction Flow</Typography>
                 </Box>
 
                 <IconButton onClick={() => setIsUnlock(!isUnlock)}>

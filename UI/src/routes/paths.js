@@ -176,6 +176,30 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/workflow/${MOCK_ID}/edit`,
       },
     },
+
+    scheduler: {
+      root: `${ROOTS.DASHBOARD}/scheduler`,
+      new: `${ROOTS.DASHBOARD}/scheduler/new`,
+      list: `${ROOTS.DASHBOARD}/scheduler/list`,
+      details: (id) => `${ROOTS.DASHBOARD}/scheduler/${id}`,
+      edit: (id) => `${ROOTS.DASHBOARD}/scheduler/${id}/edit`,
+      demo: {
+        details: `${ROOTS.DASHBOARD}/scheduler/${MOCK_ID}`,
+        edit: `${ROOTS.DASHBOARD}/scheduler/${MOCK_ID}/edit`,
+      },
+    },
+
+     designation: {
+      root: `${ROOTS.DASHBOARD}/designation`,
+      new: `${ROOTS.DASHBOARD}/designation/new`,
+      list: `${ROOTS.DASHBOARD}/designation/list`,
+      details: (id) => `${ROOTS.DASHBOARD}/designation/${id}`,
+      edit: (id) => `${ROOTS.DASHBOARD}/designation/${id}/edit`,
+      demo: {
+        details: `${ROOTS.DASHBOARD}/designation/${MOCK_ID}`,
+        edit: `${ROOTS.DASHBOARD}/designation/${MOCK_ID}/edit`,
+      },
+    },
   //   tour: {
   //     root: `${ROOTS.DASHBOARD}/tour`,
   //     new: `${ROOTS.DASHBOARD}/tour/new`,

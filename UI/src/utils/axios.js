@@ -51,4 +51,14 @@ export const endpoints = {
     details: '/api/product/details',
     search: '/api/product/search',
   },
+  scheduler: {
+    list: '/schedulers',
+    filterList: (filter) => `/schedulers?filter=${filter}`,
+    details: (id) => `/schedulers/${id}`,
+  },
+  designation: {
+    list: '/designations',
+    filterList: (filter) => `/designations?filter=${filter}`,
+    details: (id) => `/designations/${id}`,
+  }
 };

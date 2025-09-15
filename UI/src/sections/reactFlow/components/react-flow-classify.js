@@ -16,12 +16,13 @@ import ReactFlowCustomNodeStructure from "../react-flow-custom-node";
 import CustomProcessDialogue from "./components-dialogue";
 import LogsProcessDialogue from "./logs-dialogue";
 import JobDetailsFields from "../locate-components/jobDetailsComponents";
+import JobListFields from "../locate-components/jobListComponents";
 
 // Import our separated field groups
 
 const modelOptions = [
-  { label: "Job List", value: "jobList", isDisabled: false },
-  { label: "Job Details", value: "jobDetails", isDisabled: false },
+  { label: "List", value: "list", isDisabled: false },
+  { label: "Details", value: "detail", isDisabled: false },
 ];
 
 export default function ReactFlowClassify({ data }) {
@@ -33,16 +34,38 @@ export default function ReactFlowClassify({ data }) {
   const handleOpenLogsModal = () => setLogsOpen(true);
   const handleCloseLogsModal = () => setLogsOpen(false);
 
-  // Yup schema (can be extended with conditional validation later)
-  const newClassificationSchema = Yup.object().shape({
-    mode: Yup.string().required("Mode is required"),
-  });
+const fieldSchema = Yup.object().shape({
+  fieldName: Yup.string().required("Field name is required"),
+  selector: Yup.string().required("Selector is required"),
+  selectorType: Yup.string().required("Selector type is required"),
+  attribute: Yup.string().when("selectorType", {
+    is: (val) => val !== "list" && val !== "object",
+    then: (schema) => schema.required("Attribute is required"),
+    otherwise: (schema) => schema.notRequired(),
+  }),
+  children: Yup.array().of(
+    Yup.lazy(() => fieldSchema)
+  ).optional(),  // children allowed but not mandatory
+});
+
+
+// Now define the full schema
+const newClassificationSchema = Yup.object().shape({
+  mode: Yup.string().required("Mode is required"),
+  selector: Yup.object().shape({
+    name: Yup.string().required("Selector name is required"),
+    selectorType: Yup.string().required("Selector type is required"),
+  }),
+  fields: Yup.array().of(fieldSchema), // top-level fields array
+});
+
+
 
   const defaultValues = useMemo(
     () => ({
       mode: data.bluePrint?.mode || "",
       selector: data.bluePrint?.selector || { name: "", selectorType: "" },
-      fields: data.bluePrint?.fields || {},
+      fields: data.bluePrint?.fields || [],
     }),
     [data]
   );
@@ -66,7 +89,7 @@ export default function ReactFlowClassify({ data }) {
   }, [defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (formData) => {
-    console.log("classify formData", formData);
+    console.log("Escalation Matrix", formData);
     data.functions.handleBluePrintComponent(data.label, formData);
     handleCloseModal();
   });
@@ -74,11 +97,10 @@ export default function ReactFlowClassify({ data }) {
   // Switch case for rendering correct fields
   const renderModeFields = (mode) => {
     switch (mode) {
-      case "jobList":
-       return null
-       
-      //  <JobListFields />;
-      case "jobDetails":
+      case "list":
+        return <JobListFields />;
+
+      case "detail":
         return <JobDetailsFields />;
       default:
         return null;
@@ -117,7 +139,7 @@ export default function ReactFlowClassify({ data }) {
         <FormProvider methods={methods} onSubmit={onSubmit}>
           <Grid container spacing={2}>
             {/* Mode selector */}
-            <Grid item xs={12} md={12}>
+             <Grid item xs={12} md={12}>
               <RHFSelect name="mode" label="Select Mode">
                 {modelOptions.map((model) => (
                   <MenuItem
@@ -130,9 +152,10 @@ export default function ReactFlowClassify({ data }) {
                 ))}
               </RHFSelect>
             </Grid>
-              <Stack spacing={2} sx={{ mt: 2 }}>
-                {renderModeFields(values.mode)}
-              </Stack>
+            <Grid item xs={12} md={12} sx={{ mt: 2  }}>
+              {renderModeFields(values.mode)}
+            </Grid>
+
           </Grid>
           <Stack
             alignItems="flex-end"
