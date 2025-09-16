@@ -13,36 +13,28 @@ export class Deliver extends Entity {
     type: 'string',
  
   })
-  title: string; 
-  @property({
-    type: 'string',
+  modelName: string; 
+   @property({
+    type: 'date',
   })
-  company?: string;
+  createdAt?: Date;
 
   @property({
-    type: 'string',
+    type: 'date',
   })
-  location?: string; 
+  updatedAt?: Date;
 
   @property({
-    type: 'string',
+    type: 'date',
   })
-  experience?: string; 
+  deletedAt?: Date;
 
   @property({
-    type: 'string',
+    type: 'boolean',
+    default: false,
   })
-  salary?: string; 
-
-  @property({
-    type: 'string',
-  })
-  jobDescription?: string; 
-
-  @property({
-    type: 'string',
-  })
-  skills?: string;
+  isDeleted: boolean;
+ 
 
 
   constructor(data?: Partial<Deliver>) {

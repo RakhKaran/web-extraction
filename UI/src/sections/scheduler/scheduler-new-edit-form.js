@@ -49,6 +49,7 @@ const SchedulerTypes = [
 
 const SchedulerFors = [
   { value: 'job', label: 'Job' },
+  { value: 'company', label: 'Company' },
 ];
 
 export default function SchedulerNewEditForm({ currentScheduler, open, onClose }) {

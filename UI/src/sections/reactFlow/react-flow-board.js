@@ -641,17 +641,17 @@ export default function ReactFlowBoard({ isUnlock }) {
           onEdgesChange={onEdgesChange}
           onNodeClick={onNodeClick}
           onConnect={onConnect}
-          defaultViewport={{ x: 0, y: 0, zoom: 0.7 }}
+          defaultViewport={{ x: 0, y: 0, zoom: 0.2 }}
           nodesDraggable={isUnlock}
         //  attributionPosition={null as any} 
-          fitView
+          
           proOptions={{ hideAttribution: true }}
         >
           <MiniMap />
           <Controls />
           <Background />
         </ReactFlow >
-        {showModal && <OperationSelectorModal open={showModal} onSelect={addNewNode} onClose={() => setShowModal(false)} bluePrintNode = {presentNodes}/>}
+        {showModal && <OperationSelectorModal open={showModal} onSelect={addNewNode} onClose={() => setShowModal(false)} bluePrintNode = {[]}/>}
       </ReactFlowProvider>
     </div>
   );

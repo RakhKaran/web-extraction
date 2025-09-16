@@ -24,7 +24,7 @@ const ICONS = {
   chat: icon('ic_chat'),
   mail: icon('ic_mail'),
   user: icon('ic_user'),
-  company: icon('ic_label'),
+  // company: icon('ic_label'),
   file: icon('ic_file'),
   lock: icon('ic_lock'),
   tour: icon('ic_tour'),
@@ -44,6 +44,10 @@ const ICONS = {
   ecommerce: icon('ic_ecommerce'),
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
+ processInstance: icon('ic_process_instance'),
+ scheduler: icon('ic_scheduler'),
+ designation: icon('ic_designation'),
+ company: icon('ic_company'),
 };
 
 // ----------------------------------------------------------------------
@@ -114,7 +118,7 @@ export function useNavData() {
            {
             title: t('extraction Flow'),
             path: paths.dashboard.reactflow.root,
-            icon: ICONS.job,
+            icon: ICONS.processInstance,
             children: [
                { title: t('list'), path: paths.dashboard.reactflow.list },
               // { title: t('details'), path: paths.dashboard.job.demo.details },
@@ -126,7 +130,7 @@ export function useNavData() {
            {
             title: t('scheduler'),
             path: paths.dashboard.scheduler.root,
-            icon: ICONS.job,
+            icon: ICONS.scheduler,
             children: [
                { title: t('list'), path: paths.dashboard.scheduler.list },
               //  { title: t('details'), path: paths.dashboard.scheduler.details },
@@ -138,7 +142,7 @@ export function useNavData() {
            {
             title: t('designation'),
             path: paths.dashboard.designation.root,
-            icon: ICONS.job,
+            icon: ICONS.designation,
             children: [
                { title: t('list'), path: paths.dashboard.designation.list },
               //  { title: t('details'), path: paths.dashboard.scheduler.details },

@@ -20,10 +20,15 @@ export default function ReactFlowIngestion({ data }) {
     const [logsOpen, setLogsOpen] = useState(false);
 
     const NewInitializeSchema = Yup.object().shape({
-       url: Yup.string().required('Url is required'),
+        url: Yup.string()
+            .required("URL is required")
+            .matches(
+                /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/\S*)?$/,
+                "Enter a valid URL (like: www.example.com or http://example.com)"
+            ),
+    });
 
-     });
-     
+
     const defaultValues = useMemo(
         () => ({
             url: data.bluePrint?.url || '',
@@ -48,11 +53,11 @@ export default function ReactFlowIngestion({ data }) {
     const values = watch();
     console.log('values', values);
 
-   const onSubmit = handleSubmit(async (formData) => {
-    console.log("Url", formData);
-    data.functions?.handleBluePrintComponent?.(data.label, formData);
-    handleCloseModal();
-  });
+    const onSubmit = handleSubmit(async (formData) => {
+        console.log("Url", formData);
+        data.functions?.handleBluePrintComponent?.(data.label, formData);
+        handleCloseModal();
+    });
 
 
     useEffect(() => {
@@ -91,9 +96,9 @@ export default function ReactFlowIngestion({ data }) {
                 title='Add Url'
             >
                 <FormProvider methods={methods} onSubmit={onSubmit}>
-                     <Grid item xs={12} md={12}>
-                                <RHFTextField name='url' label='URL' />
-                            </Grid>
+                    <Grid item xs={12} md={12}>
+                        <RHFTextField name='url' label='URL' />
+                    </Grid>
                     {(data?.isProcessInstance !== true) && <Stack alignItems="flex-end" sx={{ mt: 3, display: 'flex', gap: '10px' }}>
                         <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
                             Add

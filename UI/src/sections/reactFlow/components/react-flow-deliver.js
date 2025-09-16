@@ -85,7 +85,7 @@ export default function ReactFlowDeliver({ data }) {
       case "database":
         return <DatabaseComponents/>;
       case "api":
-        return <JobDetailsFields />;
+        return ('Not Done');
       default:
         return null;
     }

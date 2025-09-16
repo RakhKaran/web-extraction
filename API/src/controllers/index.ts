@@ -4,3 +4,4 @@ export * from './user.controller';
 export * from './scheduler.controller';
 export * from './designation.controller';
 export * from './deliver.controller';
+export * from './naukari.controller';

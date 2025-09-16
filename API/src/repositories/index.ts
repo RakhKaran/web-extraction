@@ -4,3 +4,4 @@ export * from './user.repository';
 export * from './scheduler.repository';
 export * from './designation.repository';
 export * from './deliver.repository';
+export * from './naukari.repository';
