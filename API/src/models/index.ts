@@ -1,6 +1,9 @@
 export * from './staging-times-jobs.model';
 export * from './user.model';
-
 export * from './scheduler.model';
 export * from './designation.model';
 export * from './deliver.model';
+export * from './staging-naukri.model';
+export * from './workflow.model';
+export * from './workflow-blueprint.model';
+export * from './workflow-instances.model';

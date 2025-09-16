@@ -5,9 +5,13 @@ import { HttpErrors, post } from "@loopback/rest";
 import path from "path";
 import { chromium } from "playwright";
 import fs from 'fs';
+import { Context, inject } from "@loopback/core";
+import { DefaultCrudRepository } from "@loopback/repository";
 
 export class PrototypeController {
-  constructor() { }
+  constructor(
+    @inject.context() private ctx: Context,
+  ) { }
 
   naukriBluePrint = {
     workflowName: "Web-extraction",
@@ -26,7 +30,7 @@ export class PrototypeController {
         id: 2,
         nodeName: "Search",
         type: "search",
-        data: { searchText: "frontend developer" },
+        data: { searchText: "node developer" },
         selector: {
           name: "Enter skills / designations / companies",
           selectorType: "placeholder",
@@ -77,12 +81,39 @@ export class PrototypeController {
                 optional: true  // because <span> won’t have href
               }
             }
-          }
+          },
         },
         waitToLoadSelectors: [
           "h1.styles_jd-header-title__rZwM1",
           "div.styles_key-skill__GIPn_ a",
           ".styles_key-skill__GIPn_ span"
+        ],
+      },
+      {
+        id: 4,
+        nodeName: "Deliver",
+        type: "deliver",
+        mode: "database",
+        modelName: "StagingNaukri",
+        respositoryName: "StagingNaukriRepository",
+        fields: [
+          { modelField: 'title', type: 'string', mappedField: 'title' },
+          { modelField: 'description', type: 'string', mappedField: 'description' },
+          { modelField: 'company', type: 'string', mappedField: 'company' },
+          { modelField: 'companyLogo', type: 'string', mappedField: '' },
+          { modelField: 'location', type: 'string', mappedField: 'location' },
+          { modelField: 'experience', type: 'string', mappedField: 'experience' },
+          { modelField: 'salary', type: 'string', mappedField: 'salary' },
+          { modelField: 'posted', type: 'string', mappedField: 'posted' },
+          { modelField: 'openings', type: 'string', mappedField: 'openings' },
+          { modelField: 'applicants', type: 'string', mappedField: 'applicants' },
+          { modelField: 'aboutCompany', type: 'string', mappedField: 'aboutCompany' },
+          { modelField: 'keySkills', type: 'array', mappedField: 'keySkills' },
+          { modelField: 'redirectUrl', type: 'string', mappedField: 'link' },
+        ],
+        additionalFields: [
+          { modelField: 'scrappedAt', type: 'date', value: '' },
+          { modelField: 'isDeleted', type: 'boolean', value: 'false' },
         ]
       },
     ],
@@ -111,7 +142,7 @@ export class PrototypeController {
         id: 2,
         nodeName: "Search",
         type: "search",
-        data: { searchText: "frontend developer" },
+        data: { searchText: "backend developer" },
         selector: {
           name: "Find your perfect job",
           selectorType: "placeholder",
@@ -405,6 +436,79 @@ export class PrototypeController {
     return extractedData;
   }
 
+  // deliver node
+  private async handleDeliverNode(data: any[], node: any) {
+    if (!data || data.length === 0) {
+      console.log('⚠️ No data to deliver');
+      return [];
+    }
+
+    if (!node.respositoryName) {
+      throw new Error(`Deliver node missing "repository" config`);
+    }
+
+    // explicitly type cast
+    const repo = await this.ctx.get<DefaultCrudRepository<any, any>>(
+      `repositories.${node.respositoryName}`,
+    );
+
+    const deliveredRecords: any[] = [];
+    console.log('data', data);
+
+    for (const record of data) {
+      try {
+        const payload: any = {};
+
+        // Map fields
+        for (const field of node.fields ?? []) {
+          const { modelField, mappedField, type } = field;
+          let value = record[mappedField];
+
+          if (value === undefined || value === null || value === '') {
+            if (type === 'string') value = 'NA';
+            else if (type === 'date') value = new Date();
+            else if (type === 'boolean') value = false;
+            else value = undefined;
+          } else {
+            if (type === 'date') value = new Date(value);
+            if (type === 'boolean')
+              value = value === true || value === 'true' || value === 1;
+          }
+
+          payload[modelField] = value;
+        }
+
+        // Handle additional fields
+        for (const addField of node.additionalFields ?? []) {
+          let value = addField.value;
+
+          if (value === undefined || value === null || value === '') {
+            if (addField.type === 'string') value = 'NA';
+            else if (addField.type === 'date') value = new Date();
+            else if (addField.type === 'boolean') value = false;
+            else value = undefined;
+          } else {
+            if (addField.type === 'date') value = new Date(value);
+            if (addField.type === 'boolean')
+              value = value === true || value === 'true' || value === 1;
+          }
+
+          payload[addField.modelField] = value;
+        }
+
+        console.log('payload data', payload);
+
+        // Save using repository
+        const created = await repo.create(payload);
+        deliveredRecords.push(created);
+      } catch (err) {
+        console.error(`❌ Failed to deliver record`, err);
+      }
+    }
+
+    return deliveredRecords;
+  }
+
   // initialize the flow
   @post("/initialize")
   async initializeWorkflow(): Promise<{ success: boolean; message: string; data?: any[] }> {
@@ -415,7 +519,7 @@ export class PrototypeController {
 
     try {
       // Sort nodes by id to respect blueprint order
-      const nodes = this.glassdoorBluePrint.nodes.sort((a, b) => a.id - b.id);
+      const nodes = this.naukriBluePrint.nodes.sort((a, b) => a.id - b.id);
 
       for (const node of nodes) {
         switch (node.type) {
@@ -438,6 +542,12 @@ export class PrototypeController {
             }
             if (node.mode === "detail" && browser) {
               extractedData = await this.handleJobDetailNode(browser, jobLinks, node);
+            }
+            break;
+
+          case "deliver":
+            if (extractedData.length > 0) {
+              await this.handleDeliverNode(extractedData, node);
             }
             break;
 

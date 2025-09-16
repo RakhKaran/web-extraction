@@ -1,6 +1,9 @@
 export * from './staging-times-jobs.repository';
 export * from './user.repository';
-
 export * from './scheduler.repository';
 export * from './designation.repository';
 export * from './deliver.repository';
+export * from './staging-naukri.repository';
+export * from './workflow.repository';
+export * from './workflow-blueprint.repository';
+export * from './workflow-instances.repository';

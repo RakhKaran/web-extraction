@@ -5,3 +5,6 @@ export * from './user.controller';
 export * from './scheduler.controller';
 export * from './designation.controller';
 export * from './deliver.controller';
+export * from './workflow.controller';
+export * from './workflow-blueprint.controller';
+export * from './workflow-instances.controller';

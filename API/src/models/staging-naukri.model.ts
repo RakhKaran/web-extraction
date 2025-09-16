@@ -1,7 +1,7 @@
 import { Entity, model, property } from '@loopback/repository';
 
 @model()
-export class StagingTimesJobs extends Entity {
+export class StagingNaukri extends Entity {
   @property({
     type: 'string',
     id: true,
@@ -14,6 +14,12 @@ export class StagingTimesJobs extends Entity {
     required: true
   })
   title: string;
+
+  @property({
+    type: 'string',
+    required: true
+  })
+  description: string;
 
   @property({
     type: 'string',
@@ -61,13 +67,20 @@ export class StagingTimesJobs extends Entity {
     type: 'string',
     required: true
   })
+  applicants: string;
+
+  @property({
+    type: 'string',
+    required: true
+  })
   aboutCompany: string;
 
   @property({
     type: 'array',
+    itemType: 'string',
     required: true
   })
-  keySkills: object[];
+  keySkills: string[];
 
   @property({
     type: 'string',
@@ -101,14 +114,13 @@ export class StagingTimesJobs extends Entity {
     default: false,
   })
   isDeleted: boolean;
-
-  constructor(data?: Partial<StagingTimesJobs>) {
+  constructor(data?: Partial<StagingNaukri>) {
     super(data);
   }
 }
 
-export interface StagingTimesJobsRelations {
+export interface StagingNaukriRelations {
   // describe navigational properties here
 }
 
-export type StagingTimesJobsWithRelations = StagingTimesJobs & StagingTimesJobsRelations;
+export type StagingNaukriWithRelations = StagingNaukri & StagingNaukriRelations;
