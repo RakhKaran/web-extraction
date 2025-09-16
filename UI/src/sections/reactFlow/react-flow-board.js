@@ -22,6 +22,7 @@ import OperationSelectorModal from './react-flow-operation-model';
 import ReactFlowCustomNodeStructure from './react-flow-custom-node';
 import { ReactFlowClassify, ReactFlowDeliver, ReactFlowExtract, ReactFlowIngestion, ReactFlowValidate } from './components';
 import ReactFlowCustomAddNodeStructure from './react-flow-custom-add-node';
+import axiosInstance from 'src/utils/axios';
 
 const nodeTypes = {
   custom: ReactFlowCustomNodeStructure,
@@ -81,7 +82,7 @@ export default function ReactFlowBoard({ isUnlock }) {
   const { enqueueSnackbar } = useSnackbar();
   const { id } = params;
   const [data, setData] = useState(null);
-  // const { bluePrints, bluePrintsLoading } = useGetBluePrint(id);
+  const { bluePrints, bluePrintsLoading } = useGetBluePrint(id);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [bluePrint, setBluePrint] = useState([]);
@@ -91,90 +92,90 @@ export default function ReactFlowBoard({ isUnlock }) {
   const [lastNodeId, setLastNodeId] = useState(2);
   const [selectedNodeId, setSelectedNodeId] = useState(null);
 
-  // useEffect(() => {
-  //   if (bluePrints && !bluePrintsLoading) {
-  //     if (bluePrints?.success) {
-  //       setData(bluePrints?.data);
-  //     }
-  //   }
-  // }, [bluePrints, bluePrintsLoading]);
+  useEffect(() => {
+    if (bluePrints && !bluePrintsLoading) {
+      if (bluePrints?.success) {
+        setData(bluePrints?.data);
+      }
+    }
+  }, [bluePrints, bluePrintsLoading]);
 
-  // useEffect(() => {
-  //   if (data) {
-  //     // setting bluePrint
-  //     setBluePrint(data?.bluePrint);
+  useEffect(() => {
+    if (data) {
+      // setting bluePrint
+      setBluePrint(data?.bluePrint);
 
-  //     const newPresentNodes = data?.bluePrint.length > 0 ? data?.bluePrint.map((item) => item.nodeName) : [];
-  //     setPresentNodes(newPresentNodes);
+      const newPresentNodes = data?.bluePrint.length > 0 ? data?.bluePrint.map((item) => item.nodeName) : [];
+      setPresentNodes(newPresentNodes);
 
-  //     // setting nodes
-  //     const newNodes = data?.nodes?.length > 0 && data?.nodes.map((node) => ({
-  //         ...node,
-  //         data : {
-  //           ...node.data,
-  //           functions: {
-  //             addToLeft: addNodeToLeft,
-  //             addToRight: addNodeToRight,
-  //             deleteNode,
-  //             handleBluePrintComponent
-  //           },
-  //           bluePrint: data?.bluePrint?.find((item) => item.nodeName === node.data.label)?.component,
-  //         }
-  //       }));
+      // setting nodes
+      const newNodes = data?.nodes?.length > 0 && data?.nodes.map((node) => ({
+          ...node,
+          data : {
+            ...node.data,
+            functions: {
+              addToLeft: addNodeToLeft,
+              addToRight: addNodeToRight,
+              deleteNode,
+              handleBluePrintComponent
+            },
+            bluePrint: data?.bluePrint?.find((item) => item.nodeName === node.data.label)?.component,
+          }
+        }));
 
-  //     setNodes(newNodes || initialNodes);
+      setNodes(newNodes || initialNodes);
 
-  //     setLastNodeId(newNodes?.length || 2);
+      setLastNodeId(newNodes?.length || 2);
 
-  //     setEdges(data?.edges || []);
-  //   } else {
-  //     // setting up the nodes...
-  //     setNodes((prev) => [...prev, ...initialNodes.map((node) => (
-  //       {
-  //         ...node, data: {
-  //           ...node.data,
-  //           functions: {
-  //             addToLeft: addNodeToLeft,
-  //             addToRight: addNodeToRight,
-  //             deleteNode,
-  //             handleBluePrintComponent
-  //           },
-  //           bluePrint: bluePrint.find((item) => item.nodeName === node.data.label)?.component,
-  //         }
-  //       }))]);
+      setEdges(data?.edges || []);
+    } else {
+      // setting up the nodes...
+      setNodes((prev) => [...prev, ...initialNodes.map((node) => (
+        {
+          ...node, data: {
+            ...node.data,
+            functions: {
+              addToLeft: addNodeToLeft,
+              addToRight: addNodeToRight,
+              deleteNode,
+              handleBluePrintComponent
+            },
+            bluePrint: bluePrint.find((item) => item.nodeName === node.data.label)?.component,
+          }
+        }))]);
 
-  //     setLastNodeId(2);
+      setLastNodeId(2);
 
-  //     // setting up the edges...
-  //     setEdges([{
-  //       id: `e1-2`,
-  //       source: `1`,
-  //       target: `2`,
-  //       animated: true,
-  //       style: { stroke: 'black' },
-  //     }])
-  //   }
-  //   // eslint-disable-next-line react-hooks/exhaustive-deps
-  // }, [data])
+      // setting up the edges...
+      setEdges([{
+        id: `e1-2`,
+        source: `1`,
+        target: `2`,
+        animated: true,
+        style: { stroke: 'black' },
+      }])
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data])
 
-  // useEffect(() => {
-  //   if (nodes && nodes.length > 0) {
-  //     const filteredNodes = nodes.filter((node) => node.type !== 'customAddNode');
+  useEffect(() => {
+    if (nodes && nodes.length > 0) {
+      const filteredNodes = nodes.filter((node) => node.type !== 'customAddNode');
 
-  //     setBluePrint((prev) => {
-  //       const existingNames = new Set(prev.map(item => item.nodeName));
+      setBluePrint((prev) => {
+        const existingNames = new Set(prev.map(item => item.nodeName));
 
-  //       const newBlueprintEntries = filteredNodes
-  //         .filter((node) => !existingNames.has(node.data.label))
-  //         .map((node) => ({
-  //           nodeName: node.data.label,
-  //           component: null,
-  //         }));
+        const newBlueprintEntries = filteredNodes
+          .filter((node) => !existingNames.has(node.data.label))
+          .map((node) => ({
+            nodeName: node.data.label,
+            component: null,
+          }));
 
-  //       return [...prev, ...newBlueprintEntries];
-  //     });
-  //   }
-  // }, [nodes]);
+        return [...prev, ...newBlueprintEntries];
+      });
+    }
+  }, [nodes]);
 
   const handleBluePrintComponent = (label, updatedComponent) => {
     setBluePrint((prev) => prev.map((node) => {
@@ -195,7 +196,6 @@ export default function ReactFlowBoard({ isUnlock }) {
     }
   };
 
-  console.log('present nodes', presentNodes);
   const addNewNode = (operation) => {
     // const newOpNodeId = `${lastNodeId + 1}`;
     const newOpCompNodeId = `${lastNodeId}`;
@@ -600,32 +600,32 @@ export default function ReactFlowBoard({ isUnlock }) {
   }
 
   // submit blueprint
-  // const handleSubmitBluePrint = async () => {
-  //   try {
-  //     const emptyComponent = handleEmptyComponents();
-  //     if (emptyComponent) {
-  //       enqueueSnackbar(`Please complete ${emptyComponent.nodeName} node`, { variant: 'error' });
-  //       return;
-  //     }
-  //     const data = {
-  //       bluePrint,
-  //       nodes,
-  //       edges,
-  //       processesId: Number(id),
-  //       isActive: true
-  //     };
+  const handleSubmitBluePrint = async () => {
+    try {
+      const emptyComponent = handleEmptyComponents();
+      if (emptyComponent) {
+        enqueueSnackbar(`Please complete ${emptyComponent.nodeName} node`, { variant: 'error' });
+        return;
+      }
+      const data = {
+        bluePrint,
+        nodes,
+        edges,
+        processesId: Number(id),
+        isActive: true
+      };
 
-  //     const response = await axiosInstance.post('/blue-prints', data);
-  //     if (response?.data) {
-  //       enqueueSnackbar("Blue Print Saved", { variant: 'success' });
-  //     }
-  //   } catch (error) {
-  //     console.error(error);
-  //     enqueueSnackbar(typeof error === 'string' ? error : error.error.message, {
-  //       variant: 'error',
-  //     });
-  //   }
-  // }
+      const response = await axiosInstance.post('/blue-prints', data);
+      if (response?.data) {
+        enqueueSnackbar("Blue Print Saved", { variant: 'success' });
+      }
+    } catch (error) {
+      console.error(error);
+      enqueueSnackbar(typeof error === 'string' ? error : error.error.message, {
+        variant: 'error',
+      });
+    }
+  }
 
   return (
     <div style={{ width: '100%', height: '100vh' }}>

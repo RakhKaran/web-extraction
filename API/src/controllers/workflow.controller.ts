@@ -31,7 +31,7 @@ export class WorkflowController {
   @authenticate({
     strategy: 'jwt',
     options: {
-      required: [PermissionKeys.SUPER_ADMIN],
+      required: [PermissionKeys.ADMIN],
     },
   })
   @post('/workflows')
@@ -58,7 +58,7 @@ export class WorkflowController {
   @authenticate({
     strategy: 'jwt',
     options: {
-      required: [PermissionKeys.SUPER_ADMIN],
+      required: [PermissionKeys.ADMIN],
     },
   })
   @get('/workflows/count')
@@ -75,7 +75,7 @@ export class WorkflowController {
   @authenticate({
     strategy: 'jwt',
     options: {
-      required: [PermissionKeys.SUPER_ADMIN],
+      required: [PermissionKeys.ADMIN],
     },
   })
   @get('/workflows')
@@ -99,7 +99,7 @@ export class WorkflowController {
   @authenticate({
     strategy: 'jwt',
     options: {
-      required: [PermissionKeys.SUPER_ADMIN],
+      required: [PermissionKeys.ADMIN],
     },
   })
   @patch('/workflows')
@@ -124,7 +124,7 @@ export class WorkflowController {
   @authenticate({
     strategy: 'jwt',
     options: {
-      required: [PermissionKeys.SUPER_ADMIN],
+      required: [PermissionKeys.ADMIN],
     },
   })
   @get('/workflows/{id}')
@@ -146,7 +146,7 @@ export class WorkflowController {
   @authenticate({
     strategy: 'jwt',
     options: {
-      required: [PermissionKeys.SUPER_ADMIN],
+      required: [PermissionKeys.ADMIN],
     },
   })
   @patch('/workflows/{id}')
@@ -170,7 +170,7 @@ export class WorkflowController {
   @authenticate({
     strategy: 'jwt',
     options: {
-      required: [PermissionKeys.SUPER_ADMIN],
+      required: [PermissionKeys.ADMIN],
     },
   })
   @put('/workflows/{id}')
@@ -187,7 +187,7 @@ export class WorkflowController {
   @authenticate({
     strategy: 'jwt',
     options: {
-      required: [PermissionKeys.SUPER_ADMIN],
+      required: [PermissionKeys.ADMIN],
     },
   })
   @del('/workflows/{id}')
