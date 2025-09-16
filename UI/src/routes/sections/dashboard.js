@@ -77,6 +77,19 @@ const KanbanPage = lazy(() => import('src/pages/dashboard/kanban'));
 const PermissionDeniedPage = lazy(() => import('src/pages/dashboard/permission'));
 // BLANK PAGE
 const BlankPage = lazy(() => import('src/pages/dashboard/blank'));
+// WORKFLOWS
+const WorkflowListPage = lazy(() => import('src/pages/dashboard/workflow/list'));
+const WorkflowCreatePage = lazy(() => import('src/pages/dashboard/workflow/new'));
+const WorkflowEditPage = lazy(() => import('src/pages/dashboard/workflow/edit'));
+const WorkflowViewPage = lazy(() => import('src/pages/dashboard/workflow/view'));
+const WorkFlowBoardPage = lazy(() => import('src/pages/dashboard/workflow/board'));
+// PROCESSES-INSTANCES
+const WorkflowInstanceCreatePage = lazy(() => import('src/pages/dashboard/workflowInstance/new'));
+const WorkflowInstanceEditPage = lazy(() => import('src/pages/dashboard/workflowInstance/edit'));
+const WorkflowInstanceListPage = lazy(() => import('src/pages/dashboard/workflowInstance/list'));
+const WorkflowInstanceViewPage = lazy(() => import('src/pages/dashboard/workflowInstance/view'));
+const WorkflowInstanceExtractedDocumentsPage = lazy(() => import('src/pages/dashboard/workflowInstance/extractedDocuments'));
+const WorkflowInstanceReactFlowPage = lazy(() => import('src/pages/dashboard/workflowInstance/react-flow'));
 
 // ----------------------------------------------------------------------
 
@@ -166,6 +179,29 @@ export const dashboardRoutes = [
            { path: ':id', element: <DesignationViewPage /> },
           { path: ':id/edit', element: <DesignationEditPage /> },
            { path: 'new', element: <DesignationNewPage /> },
+        ],
+      },
+      {
+        path: 'workflow',
+        children: [
+          { element: <WorkflowListPage />, index: true },
+          { path: 'list', element: <WorkflowListPage /> },
+          { path: 'new', element: <WorkflowCreatePage /> },
+          { path: ':id/edit', element: <WorkflowEditPage /> },
+          { path: ':id/view', element: <WorkflowViewPage /> },
+          { path: ':id/blueprint', element: <WorkFlowBoardPage /> }
+        ]
+      },
+      {
+        path: 'workflowInstance',
+        children: [
+          { element: <WorkflowInstanceListPage />, index: true },
+          { path: 'list', element: <WorkflowInstanceListPage /> },
+          { path: 'new', element: <WorkflowInstanceCreatePage /> },
+          { path: ':id/edit', element: <WorkflowInstanceEditPage /> },
+          { path: ':id/view', element: <ProcessInstanceViewPage /> },
+          { path: ':id/extracted-documents', element: <ProcessInstanceExtractedDocumentsPage /> },
+          { path: ':id/blueprint', element: <ProcessInstanceReactFlowPage /> },
         ],
       },
       {
