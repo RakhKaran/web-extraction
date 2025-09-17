@@ -38,6 +38,16 @@ const operations = [
     type: 'search',
     color: '#FFC113'
   },
+
+   {
+    id: 5,
+    title: 'Transformation',
+    description: 'Pull key data from documents.',
+    icon: '/assets/icons/document-process/validate.svg',
+    type: 'transformation',
+    color: '#ED63D2'
+  },
+
   // {
   //   id: 4,
   //   title: 'External Data Sources',
