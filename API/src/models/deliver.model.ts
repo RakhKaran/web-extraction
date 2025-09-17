@@ -11,9 +11,18 @@ export class Deliver extends Entity {
 
    @property({
     type: 'string',
+    required: true,
  
   })
   modelName: string; 
+
+   @property({
+    type: 'string',
+    required: true,
+ 
+  })
+  repositoryName: string; 
+
    @property({
     type: 'date',
   })

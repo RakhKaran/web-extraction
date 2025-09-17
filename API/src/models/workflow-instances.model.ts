@@ -4,11 +4,11 @@ import {Workflow} from './workflow.model';
 @model()
 export class WorkflowInstances extends Entity {
   @property({
-    type: 'number',
+    type: 'string',
     id: true,
     generated: true,
   })
-  id?: number;
+  id?: string;
 
   @property({
     type: 'string',
@@ -72,7 +72,7 @@ export class WorkflowInstances extends Entity {
   remark?: string;
 
   @belongsTo(() => Workflow)
-  workflowId: number;
+  workflowId: string;
 
   constructor(data?: Partial<WorkflowInstances>) {
     super(data);

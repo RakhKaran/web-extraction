@@ -23,6 +23,7 @@ import ReactFlowCustomNodeStructure from './react-flow-custom-node';
 import { ReactFlowClassify, ReactFlowDeliver, ReactFlowExtract, ReactFlowIngestion, ReactFlowValidate } from './components';
 import ReactFlowCustomAddNodeStructure from './react-flow-custom-add-node';
 import axiosInstance from 'src/utils/axios';
+import { useGetWorkflowBluePrint } from 'src/api/blue-print';
 
 const nodeTypes = {
   custom: ReactFlowCustomNodeStructure,
@@ -82,7 +83,7 @@ export default function ReactFlowBoard({ isUnlock }) {
   const { enqueueSnackbar } = useSnackbar();
   const { id } = params;
   const [data, setData] = useState(null);
-  const { bluePrints, bluePrintsLoading } = useGetBluePrint(id);
+  const { bluePrints, bluePrintsLoading } = useGetWorkflowBluePrint(id);
   const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
   const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
   const [bluePrint, setBluePrint] = useState([]);
@@ -611,11 +612,11 @@ export default function ReactFlowBoard({ isUnlock }) {
         bluePrint,
         nodes,
         edges,
-        processesId: Number(id),
+        workflowId:id,
         isActive: true
       };
 
-      const response = await axiosInstance.post('/blue-prints', data);
+      const response = await axiosInstance.post('/workflow-blueprints', data);
       if (response?.data) {
         enqueueSnackbar("Blue Print Saved", { variant: 'success' });
       }
@@ -630,7 +631,7 @@ export default function ReactFlowBoard({ isUnlock }) {
   return (
     <div style={{ width: '100%', height: '100vh' }}>
       <Box sx={{ width: '100%', display: 'flex', justifyContent: 'end', alignItems: 'center' }}>
-        <Button  variant='contained'>Save</Button>
+        <Button onClick={() => handleSubmitBluePrint()}  variant='contained'>Save</Button>
       </Box>
       <ReactFlowProvider >
         <ReactFlow

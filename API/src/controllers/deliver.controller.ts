@@ -27,22 +27,24 @@ async createOrFetchDeliver(
           type: 'object',
           properties: {
             modelName: {type: 'string'},
+            repositoryName: {type: 'string'}
           },
-          required: ['modelName'],
+          required: ['modelName','repositoryName'],
+          
         },
       },
     },
   })
-  body: {modelName: string},
+  body: {modelName: string , repositoryName: string},
 ): Promise<object> {
   let deliver = await this.deliverRepository.findOne({
     where: {modelName: body.modelName},
   });
 
   if (!deliver) {
-    deliver = await this.deliverRepository.create({modelName: body.modelName});
+    deliver = await this.deliverRepository.create({modelName: body.modelName , repositoryName:body.repositoryName});
   }
-  return {id: deliver.id, modelName: deliver.modelName};
+  return {id: deliver.id, modelName: deliver.modelName, repositoryName: deliver.repositoryName};
 }
 
 

@@ -223,7 +223,7 @@ export class WorkflowInstancesController {
     },
   })
   async findById(
-    @param.path.number('id') id: number,
+    @param.path.string('id') id: string,
     @param.filter(WorkflowInstances, { exclude: 'where' }) filter?: FilterExcludingWhere<WorkflowInstances>
   ): Promise<WorkflowInstances> {
     return this.workflowInstancesRepository.findById(id, 
@@ -250,7 +250,7 @@ export class WorkflowInstancesController {
     description: 'WorkflowInstances PATCH success',
   })
   async updateById(
-    @param.path.number('id') id: number,
+    @param.path.string('id') id: string,
     @requestBody({
       content: {
         'application/json': {
@@ -272,7 +272,7 @@ export class WorkflowInstancesController {
     description: 'WorkflowInstances PUT success',
   })
   async replaceById(
-    @param.path.number('id') id: number,
+    @param.path.string('id') id: string,
     @requestBody() workflowInstances: WorkflowInstances,
   ): Promise<void> {
     await this.workflowInstancesRepository.replaceById(id, workflowInstances);
@@ -286,7 +286,7 @@ export class WorkflowInstancesController {
   @response(204, {
     description: 'WorkflowInstances DELETE success',
   })
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
+  async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.workflowInstancesRepository.deleteById(id);
   }
 }

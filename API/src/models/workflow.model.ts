@@ -4,11 +4,11 @@ import {WorkflowBlueprint} from './workflow-blueprint.model';
 @model()
 export class Workflow extends Entity {
   @property({
-    type: 'number',
+    type: 'string',
     id: true,
     generated: true,
   })
-  id?: number;
+  id?: string;
 
   @property({
     type: 'string',
@@ -54,7 +54,7 @@ export class Workflow extends Entity {
   remark?: string;
 
   @belongsTo(() => WorkflowBlueprint)
-  workflowBlueprintId: number;
+  workflowBlueprintId: string;
 
   constructor(data?: Partial<Workflow>) {
     super(data);

@@ -38,19 +38,19 @@ const UserAccountPage = lazy(() => import('src/pages/dashboard/user/account'));
 const UserCreatePage = lazy(() => import('src/pages/dashboard/user/new'));
 const UserEditPage = lazy(() => import('src/pages/dashboard/user/edit'));
 // COMPANY
-const CompanyListPage = lazy(() =>import('src/pages/dashboard/company/list'));
+const CompanyListPage = lazy(() => import('src/pages/dashboard/company/list'));
 // WORKFLOW
-const ReactFlowPage = lazy(()=> import('src/pages/dashboard/react-flow/board'))
+const ReactFlowPage = lazy(() => import('src/pages/dashboard/react-flow/board'))
 // SCHEDULER
-const SchedulerNewPage = lazy(()=> import('src/pages/dashboard/scheduler/new'));
-const SchedulerListPage = lazy(()=> import('src/pages/dashboard/scheduler/list'));
-const SchedulerEditPage = lazy(()=> import('src/pages/dashboard/scheduler/edit'));
-const SchedulerViewPage = lazy(()=> import('src/pages/dashboard/scheduler/view')); 
+const SchedulerNewPage = lazy(() => import('src/pages/dashboard/scheduler/new'));
+const SchedulerListPage = lazy(() => import('src/pages/dashboard/scheduler/list'));
+const SchedulerEditPage = lazy(() => import('src/pages/dashboard/scheduler/edit'));
+const SchedulerViewPage = lazy(() => import('src/pages/dashboard/scheduler/view'));
 // DESIGNATION
-const DesignationNewPage = lazy(()=> import('src/pages/dashboard/designation/new'));
-const DesignationListPage= lazy(()=> import('src/pages/dashboard/designation/list'));
-const DesignationEditPage= lazy(()=> import('src/pages/dashboard/designation/edit')); 
-const DesignationViewPage=lazy(()=> import('src/pages/dashboard/designation/view'));
+const DesignationNewPage = lazy(() => import('src/pages/dashboard/designation/new'));
+const DesignationListPage = lazy(() => import('src/pages/dashboard/designation/list'));
+const DesignationEditPage = lazy(() => import('src/pages/dashboard/designation/edit'));
+const DesignationViewPage = lazy(() => import('src/pages/dashboard/designation/view'));
 // BLOG
 const BlogPostsPage = lazy(() => import('src/pages/dashboard/post/list'));
 const BlogPostPage = lazy(() => import('src/pages/dashboard/post/details'));
@@ -82,14 +82,13 @@ const WorkflowListPage = lazy(() => import('src/pages/dashboard/workflow/list'))
 const WorkflowCreatePage = lazy(() => import('src/pages/dashboard/workflow/new'));
 const WorkflowEditPage = lazy(() => import('src/pages/dashboard/workflow/edit'));
 const WorkflowViewPage = lazy(() => import('src/pages/dashboard/workflow/view'));
-const WorkFlowBoardPage = lazy(() => import('src/pages/dashboard/workflow/board'));
 // PROCESSES-INSTANCES
 const WorkflowInstanceCreatePage = lazy(() => import('src/pages/dashboard/workflowInstance/new'));
 const WorkflowInstanceEditPage = lazy(() => import('src/pages/dashboard/workflowInstance/edit'));
 const WorkflowInstanceListPage = lazy(() => import('src/pages/dashboard/workflowInstance/list'));
 const WorkflowInstanceViewPage = lazy(() => import('src/pages/dashboard/workflowInstance/view'));
-const WorkflowInstanceExtractedDocumentsPage = lazy(() => import('src/pages/dashboard/workflowInstance/extractedDocuments'));
-const WorkflowInstanceReactFlowPage = lazy(() => import('src/pages/dashboard/workflowInstance/react-flow'));
+// const WorkflowInstanceExtractedDocumentsPage = lazy(() => import('src/pages/dashboard/workflowInstance/extractedDocuments'));
+// const WorkflowInstanceReactFlowPage = lazy(() => import('src/pages/dashboard/workflowInstance/react-flow'));
 
 // ----------------------------------------------------------------------
 
@@ -128,7 +127,7 @@ export const dashboardRoutes = [
         path: 'company',
         children: [
           { element: <CompanyListPage />, index: true },
-          { path: 'list', element: <CompanyListPage />},
+          { path: 'list', element: <CompanyListPage /> },
         ]
       },
       {
@@ -150,7 +149,7 @@ export const dashboardRoutes = [
         ],
       },
 
-       {
+      {
         path: 'reactflow',
         children: [
           { element: <ReactFlowPage />, index: true },
@@ -166,9 +165,9 @@ export const dashboardRoutes = [
         children: [
           { element: <SchedulerListPage />, index: true },
           { path: 'list', element: <SchedulerListPage /> },
-           { path: ':id', element: <SchedulerViewPage /> },
+          { path: ':id', element: <SchedulerViewPage /> },
           { path: ':id/edit', element: <SchedulerEditPage /> },
-           { path: 'new', element: <SchedulerNewPage /> },
+          { path: 'new', element: <SchedulerNewPage /> },
         ],
       },
       {
@@ -176,20 +175,20 @@ export const dashboardRoutes = [
         children: [
           { element: <DesignationListPage />, index: true },
           { path: 'list', element: <DesignationListPage /> },
-           { path: ':id', element: <DesignationViewPage /> },
+          { path: ':id', element: <DesignationViewPage /> },
           { path: ':id/edit', element: <DesignationEditPage /> },
-           { path: 'new', element: <DesignationNewPage /> },
+          { path: 'new', element: <DesignationNewPage /> },
         ],
       },
       {
-        path: 'workflow',
+        path: 'extraction',
         children: [
           { element: <WorkflowListPage />, index: true },
           { path: 'list', element: <WorkflowListPage /> },
           { path: 'new', element: <WorkflowCreatePage /> },
           { path: ':id/edit', element: <WorkflowEditPage /> },
           { path: ':id/view', element: <WorkflowViewPage /> },
-          { path: ':id/blueprint', element: <WorkFlowBoardPage /> }
+          { path: ':id/blueprint', element: <ReactFlowPage /> },
         ]
       },
       {
@@ -199,9 +198,8 @@ export const dashboardRoutes = [
           { path: 'list', element: <WorkflowInstanceListPage /> },
           { path: 'new', element: <WorkflowInstanceCreatePage /> },
           { path: ':id/edit', element: <WorkflowInstanceEditPage /> },
-          { path: ':id/view', element: <ProcessInstanceViewPage /> },
-          { path: ':id/extracted-documents', element: <ProcessInstanceExtractedDocumentsPage /> },
-          { path: ':id/blueprint', element: <ProcessInstanceReactFlowPage /> },
+          // { path: ':id/view', element: <ProcessInstanceViewPage /> },
+          // { path: ':id/extracted-documents', element: <ProcessInstanceExtractedDocumentsPage /> },
         ],
       },
       {

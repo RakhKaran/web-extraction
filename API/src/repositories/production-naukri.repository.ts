@@ -1,23 +1,23 @@
 import {Constructor, inject} from '@loopback/core';
 import {DefaultCrudRepository} from '@loopback/repository';
 import {WebScrapperDataSource} from '../datasources';
-import {Naukari, NaukariRelations} from '../models';
+import {ProductionNaukri, ProductionNaukriRelations} from '../models';
 import { TimeStampRepositoryMixin } from '../mixins/timestamp-repository-mixin';
 
-export class NaukariRepository extends TimeStampRepositoryMixin<
-  Naukari,
-  typeof Naukari.prototype.id,
+export class ProductionNaukriRepository extends TimeStampRepositoryMixin<
+  ProductionNaukri,
+  typeof ProductionNaukri.prototype.id,
   Constructor<
     DefaultCrudRepository<
-      Naukari,
-      typeof Naukari.prototype.id,
-      NaukariRelations
+      ProductionNaukri,
+      typeof ProductionNaukri.prototype.id,
+      ProductionNaukriRelations
     >
   >
 >(DefaultCrudRepository) {
   constructor(
     @inject('datasources.web_scrapper') dataSource: WebScrapperDataSource,
   ) {
-    super(Naukari, dataSource);
+    super(ProductionNaukri, dataSource);
   }
 }

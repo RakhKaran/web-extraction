@@ -34,8 +34,13 @@ import FormProvider, {
   RHFSelect,
 } from 'src/components/hook-form';
 import { IconButton, InputAdornment, MenuItem } from '@mui/material';
-import { COMMON_STATUS_OPTIONS } from 'src/utils/constants';
+
 import axiosInstance from 'src/utils/axios';
+
+const COMMON_STATUS_OPTIONS = [
+  { label: 'Active', value: '1', isDisabled: false },
+  { label: 'Inactive', value: '0', isDisabled: false },
+];
 
 // ----------------------------------------------------------------------
 
@@ -129,7 +134,7 @@ export default function WorkflowNewEditForm({ currentWorkflow }) {
               )}
 
               <Grid item xs={12} sm={6}>
-                <RHFTextField name="name" label="Workflow Name" />
+                <RHFTextField name="name" label="Extraction Name" />
               </Grid>
 
               <Grid item xs={12} sm={6}>

@@ -202,13 +202,13 @@ export const paths = {
     },
     // workflows
     workflow: {
-      root: `${ROOTS.DASHBOARD}/workflow`,
-      new: `${ROOTS.DASHBOARD}/workflow/new`,
-      list: `${ROOTS.DASHBOARD}/workflow/list`,
-      edit: (id) => `${ROOTS.DASHBOARD}/workflow/${id}/edit`,
-      view: (id) => `${ROOTS.DASHBOARD}/workflow/${id}/view`,
-      documentProcess: `${ROOTS.DASHBOARD}/workflow/document-process`,
-      reactFlow: (id) => `${ROOTS.DASHBOARD}/workflow/${id}/blueprint`,
+      root: `${ROOTS.DASHBOARD}/extraction`,
+      new: `${ROOTS.DASHBOARD}/extraction/new`,
+      list: `${ROOTS.DASHBOARD}/extraction/list`,
+      edit: (id) => `${ROOTS.DASHBOARD}/extraction/${id}/edit`,
+      view: (id) => `${ROOTS.DASHBOARD}/extraction/${id}/view`,
+      documentProcess: `${ROOTS.DASHBOARD}/extraction/document-process`,
+      reactFlow: (id) => `${ROOTS.DASHBOARD}/extraction/${id}/blueprint`,
     },
     workflowInstance: {
       root: `${ROOTS.DASHBOARD}/workflowInstance`,

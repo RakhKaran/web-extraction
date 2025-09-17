@@ -1,6 +1,6 @@
 import { Helmet } from 'react-helmet-async';
 // sections
-import { WorkflowEditView } from 'src/sections/workflow-section/view';
+import { WorkflowEditView } from 'src/sections/extraction/view';
 
 // ----------------------------------------------------------------------
 

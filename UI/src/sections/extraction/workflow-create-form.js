@@ -16,7 +16,7 @@ import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider, { RHFSelect, RHFTextField, RHFAutocomplete } from 'src/components/hook-form';
 import { IconButton, Typography } from '@mui/material';
-import { useGetProcessTypes } from 'src/api/processType';
+
 import axiosInstance from 'src/utils/axios';
 import { useRouter } from 'src/routes/hook';
 import { paths } from 'src/routes/paths';
@@ -101,7 +101,7 @@ export default function WorkflowCreateForm({ currentWorkflow, open, onClose }) {
             py: 1.5, // vertical padding
           }}
         >
-          Create Workflow
+          Create Extraction
           <IconButton onClick={onClose} sx={{ color: 'white' }}>
             <Iconify icon="simple-line-icons:close" width={24} height={24} />
           </IconButton>
@@ -118,7 +118,7 @@ export default function WorkflowCreateForm({ currentWorkflow, open, onClose }) {
             }}
             mt={2}
           >
-            <RHFTextField name="name" label="Workflow Name" />
+            <RHFTextField name="name" label="Extraction Name" />
             <RHFTextField name="description" label="Description" />
           </Box>
         </DialogContent>

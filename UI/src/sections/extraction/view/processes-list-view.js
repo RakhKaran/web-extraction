@@ -37,9 +37,8 @@ import {
 } from 'src/components/table';
 //
 import { useGetWorkflows } from 'src/api/workflow';
-import { COMMON_STATUS_OPTIONS } from 'src/utils/constants';
+
 import { Box, CardContent, Grid, Typography } from '@mui/material';
-import TableViewToggleSwitch from 'src/components/table/table-view-toggle-switch';
 import WorkflowTableRow from '../workflow-table-row';
 import WorkflowTableGrid from '../workflow-table-grid';
 import WorkflowCreateForm from '../workflow-create-form';
@@ -47,7 +46,7 @@ import WorkflowCreateForm from '../workflow-create-form';
 // ----------------------------------------------------------------------
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Workflow Name', width: 180 },
+  { id: 'name', label: 'Extraction Name', width: 180 },
   { id: 'description', label: 'Description' },
   { id: 'createdAt', label: 'Created At' },
   { id: 'status', label: 'Status', width: 100 },
@@ -64,7 +63,7 @@ const defaultFilters = {
 
 export default function WorkflowListView() {
   const table = useTable({ defaultOrderBy: 'createdAt', defaultOrder: 'desc' });
-  const [view, setView] = useState('grid');
+  const [view, setView] = useState('list');
 
   const createWorkflow = useBoolean();
 
@@ -175,12 +174,11 @@ export default function WorkflowListView() {
         >
           {/* Left Side: Heading */}
           <Typography variant="h6" component="div">
-            Workflow
+            Extraction
           </Typography>
 
           {/* Right Side: Icons + Create Button */}
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            <TableViewToggleSwitch view={view} setView={setView} />
             {view === 'list' ? (
               <Button
                 variant="contained"

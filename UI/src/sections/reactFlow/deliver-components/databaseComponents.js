@@ -100,12 +100,12 @@ export default function DatabaseComponents() {
               {/* Optional: Mapping dropdown */}
               <RHFTextField
                 fullWidth
-                name="mapppingField"
-                label="Field Name"
+                name={`mapping${field.name}`}
+                label="Mapping Field"
               />
-
             </Stack>
           ))}
+
       </Grid>
     </Grid>
   );

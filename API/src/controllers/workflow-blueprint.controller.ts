@@ -153,7 +153,7 @@ export class WorkflowBlueprintController {
     },
   })
   async findById(
-    @param.path.number('id') id: number,
+    @param.path.string('id') id: string,
     @param.filter(WorkflowBlueprint, { exclude: 'where' }) filter?: FilterExcludingWhere<WorkflowBlueprint>
   ): Promise<WorkflowBlueprint> {
     return this.workflowBlueprintRepository.findById(id, filter);
@@ -170,7 +170,7 @@ export class WorkflowBlueprintController {
     description: 'WorkflowBlueprint PATCH success',
   })
   async updateById(
-    @param.path.number('id') id: number,
+    @param.path.string('id') id: string,
     @requestBody({
       content: {
         'application/json': {
@@ -194,7 +194,7 @@ export class WorkflowBlueprintController {
     description: 'WorkflowBlueprint PUT success',
   })
   async replaceById(
-    @param.path.number('id') id: number,
+    @param.path.string('id') id: string,
     @requestBody() workflowBlueprint: WorkflowBlueprint,
   ): Promise<void> {
     await this.workflowBlueprintRepository.replaceById(id, workflowBlueprint);
@@ -210,7 +210,7 @@ export class WorkflowBlueprintController {
   @response(204, {
     description: 'WorkflowBlueprint DELETE success',
   })
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
+  async deleteById(@param.path.string('id') id: string): Promise<void> {
     await this.workflowBlueprintRepository.deleteById(id);
   }
 
@@ -222,7 +222,7 @@ export class WorkflowBlueprintController {
   })
   @get('/workflow-blueprints/workflow/{id}')
   async getBluePrintById(
-    @param.path.number('id') id: number,
+    @param.path.string('id') id: string,
   ): Promise<{ success: boolean; message: string; data: {} | null }> {
     try {
       const bluePrint = await this.workflowBlueprintRepository.findOne({

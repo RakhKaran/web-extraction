@@ -78,7 +78,7 @@ export default function WorkflowTableRow({
               <Iconify icon="carbon:flow-modeler" />
             </IconButton>
           </Tooltip>
-          <Tooltip title="Quick Edit" placement="top" arrow>
+          {/* <Tooltip title="Quick Edit" placement="top" arrow>
             <IconButton
               color="default"
               onClick={() => {
@@ -96,7 +96,7 @@ export default function WorkflowTableRow({
             >
               <Iconify icon="carbon:view-filled" />
             </IconButton>
-          </Tooltip>
+          </Tooltip> */}
         </TableCell>
       </TableRow>
 
