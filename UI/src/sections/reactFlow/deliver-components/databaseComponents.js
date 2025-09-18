@@ -41,7 +41,7 @@ export default function DatabaseComponents() {
     }
 
     axiosInstance
-      .get(`/deliver/${selectedId}/fields`)
+      .get(`/deliver/${selectedId}/fields/false`)
       .then((res) => {
         if (res.data?.fields) setDbFields(res.data.fields);
       })

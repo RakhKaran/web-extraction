@@ -71,8 +71,11 @@ async createOrFetchDeliver(
   }
 
 
-@get('/deliver/{id}/fields')
-async getModelFields(@param.path.string('id') id: string) {
+@get('/deliver/{id}/fields/{flag}')
+async getModelFields(
+  @param.path.string('id') id: string,
+  @param.path.boolean('flag') flag: boolean
+) {
   const deliver = await this.deliverRepository.findById(id).catch(() => null);
   if (!deliver) return { error: 'Model not found' };
 
@@ -101,7 +104,7 @@ async getModelFields(@param.path.string('id') id: string) {
     return { error: `Fields not found for model '${modelName}'` };
   }
 
-  const ignoreFields = ['createdAt', 'updatedAt', 'isDeleted', 'deletedAt'];
+  const ignoreFields = flag ? [] : ['createdAt', 'updatedAt', 'isDeleted', 'deletedAt','scrappedAt', 'id'];
 
   const fields = Object.entries(ModelClass.definition.properties)
     .filter(([key]) => !ignoreFields.includes(key))
