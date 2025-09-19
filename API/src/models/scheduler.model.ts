@@ -13,7 +13,7 @@ export class Scheduler extends Entity {
     type:'string',
 
   })
-  platformName: string
+  schedularName: string
 
   @property({
     type:'string',

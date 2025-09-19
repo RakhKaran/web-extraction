@@ -37,14 +37,14 @@ import { useBoolean } from 'src/hooks/use-boolean';
 import { DatePicker, TimePicker } from '@mui/x-date-pickers';
 // import { _fullNames } from 'src/_mock';
 
-const platformNames = [
+const schedularNames = [
   { value: 'naukari', label: 'Naukari' },
   { value: 'linkedIn', label: 'LinkedIn' },
 ];
 
 const SchedulerTypes = [
-  { value: 'recurring', label: 'Recurring' },
-  { value: 'oneTime', label: 'One Time' },
+  { value: '0', label: 'Recurring' },
+  { value: '1', label: 'One Time' },
 ];
 
 const SchedulerFors = [
@@ -60,7 +60,7 @@ export default function SchedulerNewEditForm({ currentScheduler, open, onClose }
   const password = useBoolean();
 
   const SchedulerSchema = Yup.object().shape({
-    platformName: Yup.string().required('Name is required'),
+    schedularName: Yup.string().required('Name is required'),
     schedulerType: Yup.string().required('Scheduler type is required'),
     schedulerFor: Yup.string().required('Scheduler for is required'),
     interval: Yup.string().required('Interval is required'),
@@ -70,7 +70,7 @@ export default function SchedulerNewEditForm({ currentScheduler, open, onClose }
 
   const defaultValues = useMemo(
     () => ({
-      platformName: currentScheduler?.platformName || '',
+      schedularName: currentScheduler?.schedularName || '',
       schedulerType: currentScheduler?.schedulerType || '',
       schedulerFor: currentScheduler?.schedulerFor || '',
       interval: currentScheduler?.interval || '',
@@ -107,7 +107,7 @@ export default function SchedulerNewEditForm({ currentScheduler, open, onClose }
   const onSubmit = handleSubmit(async (data) => {
     try {
       const inputData = {
-        platformName: data.platformName,
+        schedularName: data.schedularName,
         schedulerType: data.schedulerType,
         schedulerFor: data.schedulerFor,
         interval: data.interval,
@@ -156,8 +156,8 @@ useEffect(() => {
               }}
             >
 
-              <RHFSelect name="platformName" label="platform ">
-                {platformNames.map((option) => (
+              <RHFSelect name="schedularName" label="platform ">
+                {schedularNames.map((option) => (
                   <MenuItem key={option.value} value={option.value}>{option.label}</MenuItem>
                 ))}
               </RHFSelect>  

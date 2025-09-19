@@ -52,7 +52,7 @@ import SchedulerTableToolbar from '../scheduler-table-toolbar';
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }];
 
 const TABLE_HEAD = [
-  { id: 'platformName', label: 'platform Name' },
+  { id: 'schedularName', label: 'Schedular Name' },
   { id: 'schedulerType', label: 'Scheduler Type' },
   { id: 'schedulerFor', label: 'Scheduler For' },
   { id: 'interval', label: 'Interval' },
