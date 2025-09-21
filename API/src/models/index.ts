@@ -8,3 +8,4 @@ export * from './workflow.model';
 export * from './workflow-blueprint.model';
 export * from './workflow-instances.model';
 export * from './production-naukri.model';
+export * from './dags.model';

@@ -114,6 +114,12 @@ export class StagingNaukri extends Entity {
     default: false,
   })
   isDeleted: boolean;
+
+  @property({
+    type: 'boolean',
+    default: false,
+  })
+  isSync: boolean;
   constructor(data?: Partial<StagingNaukri>) {
     super(data);
   }

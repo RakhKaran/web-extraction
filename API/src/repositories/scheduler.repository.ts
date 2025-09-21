@@ -1,8 +1,9 @@
-import {Constructor, inject} from '@loopback/core';
-import {DefaultCrudRepository} from '@loopback/repository';
+import {Constructor, inject, Getter} from '@loopback/core';
+import {DefaultCrudRepository, repository, BelongsToAccessor} from '@loopback/repository';
 import {WebScrapperDataSource} from '../datasources';
-import {Scheduler, SchedulerRelations} from '../models';
+import {Scheduler, SchedulerRelations, Workflow} from '../models';
 import { TimeStampRepositoryMixin } from '../mixins/timestamp-repository-mixin';
+import {WorkflowRepository} from './workflow.repository';
 
 export class SchedulerRepository extends TimeStampRepositoryMixin<
   Scheduler,
@@ -15,9 +16,14 @@ export class SchedulerRepository extends TimeStampRepositoryMixin<
     >
   >
 >(DefaultCrudRepository) {
+
+  public readonly workflow: BelongsToAccessor<Workflow, typeof Scheduler.prototype.id>;
+
   constructor(
-    @inject('datasources.web_scrapper') dataSource: WebScrapperDataSource,
+    @inject('datasources.web_scrapper') dataSource: WebScrapperDataSource, @repository.getter('WorkflowRepository') protected workflowRepositoryGetter: Getter<WorkflowRepository>,
   ) {
     super(Scheduler, dataSource);
+    this.workflow = this.createBelongsToAccessorFor('workflow', workflowRepositoryGetter,);
+    this.registerInclusionResolver('workflow', this.workflow.inclusionResolver);
   }
 }

@@ -1,4 +1,4 @@
-import {Entity, model, property} from '@loopback/repository';
+import { Entity, model, property } from '@loopback/repository';
 
 @model()
 export class ProductionNaukri extends Entity {
@@ -58,16 +58,16 @@ export class ProductionNaukri extends Entity {
   posted: string;
 
   @property({
-    type: 'string',
+    type: 'number',
     required: true
   })
-  openings: string;
+  openings: number;
 
   @property({
-    type: 'string',
+    type: 'number',
     required: true
   })
-  applicants: string;
+  applicants: number;
 
   @property({
     type: 'string',
@@ -89,9 +89,10 @@ export class ProductionNaukri extends Entity {
   redirectUrl: string;
 
   @property({
-    type: 'date',
+    type: 'boolean',
+    required: true
   })
-  scrappedAt?: Date;
+  isActive: boolean
 
   @property({
     type: 'date',
@@ -114,7 +115,6 @@ export class ProductionNaukri extends Entity {
     default: false,
   })
   isDeleted: boolean;
-
 
   constructor(data?: Partial<ProductionNaukri>) {
     super(data);

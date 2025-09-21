@@ -8,3 +8,4 @@ export * from './workflow.repository';
 export * from './workflow-blueprint.repository';
 export * from './workflow-instances.repository';
 export * from './production-naukri.repository';
+export * from './dags.repository';

@@ -3,32 +3,39 @@ import {
   AuthenticationComponent,
   registerAuthenticationStrategy,
 } from '@loopback/authentication';
-import {BootMixin} from '@loopback/boot';
-import {ApplicationConfig} from '@loopback/core';
-import {CronComponent} from '@loopback/cron';
-import {RepositoryMixin} from '@loopback/repository';
-import {RestApplication} from '@loopback/rest';
+import { BootMixin } from '@loopback/boot';
+import { ApplicationConfig } from '@loopback/core';
+import { CronComponent } from '@loopback/cron';
+import { RepositoryMixin } from '@loopback/repository';
+import { RestApplication } from '@loopback/rest';
 import {
   RestExplorerBindings,
   RestExplorerComponent,
 } from '@loopback/rest-explorer';
-import {ServiceMixin} from '@loopback/service-proxy';
+import { ServiceMixin } from '@loopback/service-proxy';
 import multer from 'multer';
 import path from 'path';
 
-import {JWTStrategy} from './authentication-strategy/jwt-strategy';
+import { JWTStrategy } from './authentication-strategy/jwt-strategy';
 import {
   EmailManagerBindings,
   FILE_UPLOAD_SERVICE,
   STORAGE_DIRECTORY,
 } from './keys';
-import {MySequence} from './sequence';
-import {EmailService} from './services/email.service';
-import {BcryptHasher} from './services/hash.password.bcrypt';
-import {JWTService} from './services/jwt-service';
-import {MyUserService} from './services/user-service';
+import { MySequence } from './sequence';
+import { EmailService } from './services/email.service';
+import { BcryptHasher } from './services/hash.password.bcrypt';
+import { JWTService } from './services/jwt-service';
+import { MyUserService } from './services/user-service';
+import { Main } from './services/nodes/main.service';
+import { AirflowDagService } from './services/nodes/dag-creation.service';
+import { Initialize } from './services/nodes/initialize.service';
+import { Search } from './services/nodes/search.service';
+import { Locate } from './services/nodes/locate.service';
+import { Deliver } from './services/nodes/deliver.service';
+import { Transformation } from './services/nodes/transformation.service';
 
-export {ApplicationConfig};
+export { ApplicationConfig };
 
 export class WebExtractionApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
@@ -66,8 +73,15 @@ export class WebExtractionApplication extends BootMixin(
     this.bind('service.hasher').toClass(BcryptHasher);
     this.bind('service.jwt.service').toClass(JWTService);
     this.bind('service.user.service').toClass(MyUserService);
-
     this.bind(EmailManagerBindings.SEND_MAIL).toClass(EmailService);
+    // nodes service
+    this.bind('services.DagCreation').toClass(AirflowDagService);
+    this.bind('services.Main').toClass(Main);
+    this.bind('services.Initialize').toClass(Initialize);
+    this.bind('services.Search').toClass(Search);
+    this.bind('services.Locate').toClass(Locate);
+    this.bind('services.Deliver').toClass(Deliver);
+    this.bind('services.Transformation').toClass(Transformation);
   }
 
   protected configureFileUpload(destination?: string) {

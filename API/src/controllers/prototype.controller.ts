@@ -38,7 +38,7 @@ export class PrototypeController {
       },
       {
         id: 3,
-        nodeName: "JobList",
+        nodeName: "Locate",
         type: "locate",
         mode: "list",
         selector: {
@@ -51,7 +51,7 @@ export class PrototypeController {
       },
       {
         id: 4,
-        nodeName: "JobDetail",
+        nodeName: "Locate",
         type: "locate",
         mode: "detail",
         fields: {
@@ -114,8 +114,65 @@ export class PrototypeController {
         additionalFields: [
           { modelField: 'scrappedAt', type: 'date', value: '' },
           { modelField: 'isDeleted', type: 'boolean', value: 'false' },
+          { modelField: 'isSync', type: 'boolean', value: false },
         ]
       },
+      {
+        id: 5,
+        nodeName: "Transformation",
+        type: "transformation",
+        stagingMode: "database",
+        stagingModelName: "StagingNaukri",
+        stagingRespositoryName: "StagingNaukriRepository",
+        deliverMode: "database",
+        deliverModelName: "ProductionNaukri",
+        deliverRespositoryName: "ProductionNaukriRepository",
+        duplicatesAllowed: false,
+        fields: [
+          { modelField: 'title', type: 'string', mappedField: 'title', isNullAccepted: false },
+          { modelField: 'description', type: 'string', mappedField: 'description', isNullAccepted: false },
+          { modelField: 'company', type: 'string', mappedField: 'company', isNullAccepted: false },
+          { modelField: 'companyLogo', type: 'string', mappedField: 'companyLogo', isNullAccepted: true },
+          { modelField: 'location', type: 'string', mappedField: 'location', isNullAccepted: false },
+          { modelField: 'experience', type: 'string', mappedField: 'experience', isNullAccepted: false },
+          { modelField: 'salary', type: 'string', mappedField: 'salary', isNullAccepted: false },
+          {
+            modelField: 'posted',
+            type: 'date',
+            mappedField: 'posted',
+            isNullAccepted: false,
+            rules: [
+              { "Just now": "today" },
+              { "yesterday": "yesterday" },
+              { "{number} day ago": "days" },
+              { "{number} days ago": "days" },
+              { "{number}+ days ago": "days" },
+              { "{number} week ago": "weeks" },
+              { "{number} weeks ago": "weeks" },
+              { "{number}+ weeks ago": "weeks" },
+              { "{number} month ago": "months" },
+              { "{number} months ago": "months" },
+              { "{number} year ago": "years" },
+              { "{number} years ago": "years" },
+              { "posted on {date}": "date" },
+              { "{date}": "date" }
+            ]
+          },
+          { modelField: 'openings', type: 'number', mappedField: 'openings', isNullAccepted: false },
+          { modelField: 'applicants', type: 'number', mappedField: 'applicants', isNullAccepted: false },
+          { modelField: 'aboutCompany', type: 'string', mappedField: 'aboutCompany', isNullAccepted: false },
+          { modelField: 'keySkills', type: 'array', mappedField: 'keySkills', isNullAccepted: false },
+          { modelField: 'redirectUrl', type: 'string', mappedField: 'redirectUrl', isNullAccepted: false },
+          { modelField: 'isDeleted', type: 'boolean', mappedField: 'deletedAt', isNullAccepted: true },
+        ],
+        additionalFields: [
+          { modelField: 'isActive', type: 'boolean', value: true },
+        ],
+        dataAcceptanceRule: [
+          { field: 'isSync', type: 'boolean', value: false },
+          { field: 'isDeleted', type: 'boolean', value: false }
+        ],
+      }
     ],
   };
 
@@ -177,12 +234,12 @@ export class PrototypeController {
         type: "locate",
         mode: "detail",
         fields: {
-          title: "h1.heading_Heading__aomVx heading_Level1__w42c9",
-          company: "h4.heading_Heading__aomVx heading_Subhead__jiUbT",
-          location: ".styles_jhc__location__W_pVs a",
-          experience: ".styles_jhc__exp__k_giM span",
-          salary: ".styles_jhc__salary__jdfEC span",
-          description: ".styles_job-desc-container__txpYf",
+          title: "h1.heading_Heading__aomVx.heading_Level1__w42c9",
+          company: "h4.heading_Heading__aomVx.heading_Subhead__jiUbT",
+          location: "div[data-test='location']",
+          // experience: "div.JobDetails_jobDescription__uW_fK p:has-text(':')",
+          salary: "div.JobDetails_jobDescription__uW_fK p:has-text('Pay:')",
+          description: "div.JobDetails_jobDescription__uW_fK.JobDetails_showHidden__C_FOA",
           posted: "span:has(label:has-text('Posted:')) span",
           openings: "span:has(label:has-text('Openings:')) span",
           applicants: "span:has(label:has-text('Applicants:')) span",
@@ -191,23 +248,19 @@ export class PrototypeController {
             type: "html",
           },
           keySkills: {
-            selector: ".styles_key-skill__GIPn_ a, .styles_key-skill__GIPn_ span",
+            selector: "ul.QualificationModal_modalBody__SNggC li",
             type: "list",
             item: {
               name: {
+                selector: ".PendingQualification_label__vCsCk",
                 type: "text"
               },
-              link: {
-                type: "attr",
-                attr: "href",
-                optional: true  // because <span> won’t have href
-              }
             }
           }
         },
         waitToLoadSelectors: [
-          "h1.heading_Heading__aomVx heading_Level1__w42c9",
-          "h4.heading_Heading__aomVx heading_Subhead__jiUbT",
+          "h1.heading_Heading__aomVx.heading_Level1__w42c9",
+          "h4.heading_Heading__aomVx.heading_Subhead__jiUbT",
         ]
       },
     ],
@@ -453,8 +506,6 @@ export class PrototypeController {
     );
 
     const deliveredRecords: any[] = [];
-    console.log('data', data);
-
     for (const record of data) {
       try {
         const payload: any = {};
@@ -496,8 +547,6 @@ export class PrototypeController {
           payload[addField.modelField] = value;
         }
 
-        console.log('payload data', payload);
-
         // Save using repository
         const created = await repo.create(payload);
         deliveredRecords.push(created);
@@ -509,17 +558,287 @@ export class PrototypeController {
     return deliveredRecords;
   }
 
+  // transformation node
+  private async handleTransformationNode(node: any) {
+    if (!node.stagingMode || !node.stagingModelName || !node.stagingRespositoryName) {
+      throw new Error("Staging details are not properly configured");
+    }
+
+    const stagingRepo = await this.ctx.get<DefaultCrudRepository<any, any>>(
+      `repositories.${node.stagingRespositoryName}`,
+    );
+
+    if (!node.deliverMode || !node.deliverModelName || !node.deliverRespositoryName) {
+      throw new Error("Deliver details are not properly configured");
+    }
+
+    const deliverRepo = await this.ctx.get<DefaultCrudRepository<any, any>>(
+      `repositories.${node.deliverRespositoryName}`,
+    );
+
+    const deliveredRecords: any[] = [];
+    let conditions: any[] = [];
+
+    // --- Build filter based on dataAcceptanceRule
+    if (node.dataAcceptanceRule && node.dataAcceptanceRule.length > 0) {
+      node.dataAcceptanceRule.forEach((data: any) => {
+        if (['string', 'number', 'boolean'].includes(data.type)) {
+          conditions.push({ [data.field]: data.value });
+        }
+
+        if (data.type === 'date') {
+          const dateCondition: any = {};
+          if (data.startDate) dateCondition.gte = new Date(data.startDate);
+          if (data.endDate) dateCondition.lte = new Date(data.endDate);
+          conditions.push({ [data.field]: dateCondition });
+        }
+      });
+    }
+
+    const filter = {
+      where: {
+        and: conditions.length > 0 ? conditions : [{}],
+      },
+      fields: {
+        ...Object.fromEntries(node.fields.map((f: any) => [f.mappedField, true])),
+      },
+    };
+
+    // fetch data
+    const data = await stagingRepo.find(filter);
+
+    // remove system fields
+    const stagingData = data.map(item => {
+      const obj = item.toJSON ? item.toJSON() : item; // convert Entity to plain object if needed
+      const { createdAt, updatedAt, ...rest } = obj;
+      return rest;
+    });
+
+    console.log('stagingData', stagingData);
+    const successRecords: any[] = [];
+    const errorRecords: any[] = [];
+
+    for (const record of stagingData) {
+      const normalized: any = {};
+      let hasError = false;
+
+      for (const field of node.fields) {
+        let value = record[field.mappedField];
+
+        // Null check
+        if (!field.isNullAccepted && (value === null || value === undefined || value === "")) {
+          console.log('1', field.mappedField);
+          hasError = true;
+          continue;
+        }
+
+        switch (field.type) {
+          case 'string':
+            value = value ? String(value).trim() : null;
+            break;
+
+          case 'number':
+            if (typeof value === "string") {
+              // Extract first number from string
+              const match = value.match(/\d+/);
+              if (match) {
+                value = Number(match[0]); // take first numeric part
+              } else {
+                console.log('2', field.mappedField);
+
+                hasError = true; // invalid number (e.g. "N/A")
+              }
+            } else if (typeof value === "number") {
+              value = value;
+            } else {
+              console.log('3', field.mappedField);
+
+              hasError = true;
+            }
+            break;
+
+          case 'boolean':
+            value = Boolean(value);
+            break;
+
+          case 'date': {
+            const parsedDate = this.parseDate(value, field.rules); // pass rules if you support them
+            if (parsedDate && !isNaN(parsedDate.getTime())) {
+              value = parsedDate;
+            } else {
+              console.log('value', value)
+              console.log('parsedDate', parsedDate);
+              console.log('4', field)
+              hasError = true;   // mark record as errored
+              value = null;      // or keep original value if you want to store raw
+            }
+            break;
+          }
+
+          case 'array':
+            if (Array.isArray(value)) {
+              value = [...new Set(value.map((v: any) => String(v).trim()))];
+            } else {
+              value = [];
+            }
+            break;
+        }
+
+        normalized[field.modelField] = value;
+      }
+
+      // Add additional fields
+      for (const extra of node.additionalFields || []) {
+        normalized[extra.modelField] =
+          // Case 1: Date type
+          extra.type === 'date' && !extra.value
+            ? new Date() // if no value is provided, default to "now"
+
+            // Case 2: Boolean type
+            : extra.type === 'boolean'
+              ? (extra.value === true) // convert "true"/"false" string to boolean
+
+              // Case 3: All other types
+              : extra.value; // keep as-is (string, number, etc.)
+      }
+
+      // Push into success or error bucket
+      if (hasError) {
+        errorRecords.push({ original: record, normalized });
+      } else {
+        successRecords.push(normalized);
+      }
+    }
+
+    // Now you can insert only successRecords
+    for (const data of successRecords) {
+      const exists = await deliverRepo.findOne({
+        where: {
+          and: Object.keys(data).map(key => ({ [key]: data[key] })),
+        },
+      });
+      if (!exists) {
+        await deliverRepo.create(data);
+      }
+    }
+
+    console.log('success records:', successRecords.length);
+    console.log('errored records:', errorRecords.length);
+    return { successRecords, errorRecords };
+  }
+
+  // --- Helper to handle "x days ago" etc.
+  private toStartOfDay(date: Date): Date {
+    date.setHours(0, 0, 0, 0);
+    return date;
+  }
+
+  private parseDate(input: any, rules?: any[]): Date | null {
+    if (!input) return null;
+
+    if (typeof input === "string") {
+      const normalized = input.toLowerCase().trim();
+
+      // Loop through rules
+      if (rules && rules.length) {
+        for (const rule of rules) {
+          const [pattern, type] = Object.entries(rule)[0];
+
+          switch (type) {
+            case "today": {
+              if (normalized.includes("today")) return this.toStartOfDay(new Date());
+              break;
+            }
+
+            case "yesterday": {
+              if (normalized.includes("yesterday")) {
+                const d = new Date();
+                d.setDate(d.getDate() - 1);
+                return this.toStartOfDay(d);
+              }
+              break;
+            }
+
+            case "days": {
+              const match = normalized.match(/(\d+)\+?\s+day/);
+              if (match) {
+                const days = parseInt(match[1], 10);
+                const d = new Date();
+                d.setDate(d.getDate() - days);
+                return this.toStartOfDay(d);
+              }
+              break;
+            }
+
+            case "weeks": {
+              const match = normalized.match(/(\d+)\+?\s+week/);
+              if (match) {
+                const weeks = parseInt(match[1], 10);
+                const d = new Date();
+                d.setDate(d.getDate() - weeks * 7);
+                return this.toStartOfDay(d);
+              }
+              break;
+            }
+
+            case "months": {
+              const match = normalized.match(/(\d+)\+?\s+month/);
+              if (match) {
+                const months = parseInt(match[1], 10);
+                const d = new Date();
+                d.setMonth(d.getMonth() - months);
+                return this.toStartOfDay(d);
+              }
+              break;
+            }
+
+            case "years": {
+              const match = normalized.match(/(\d+)\+?\s+year/);
+              if (match) {
+                const years = parseInt(match[1], 10);
+                const d = new Date();
+                d.setFullYear(d.getFullYear() - years);
+                return this.toStartOfDay(d);
+              }
+              break;
+            }
+
+            case "date": {
+              // handles: "posted on 12 September 2025", "12/09/2025", etc.
+              const dateMatch = normalized.match(
+                /(\d{1,2}[\/\- ]\d{1,2}[\/\- ]\d{2,4}|\d{1,2}\s+[a-zA-Z]+\s+\d{4})/
+              );
+              if (dateMatch) {
+                const parsed = new Date(dateMatch[0]);
+                if (!isNaN(parsed.getTime())) return this.toStartOfDay(parsed);
+              }
+              break;
+            }
+          }
+        }
+      }
+
+      // fallback: try direct Date parse
+      const fallback = new Date(normalized);
+      if (!isNaN(fallback.getTime())) return this.toStartOfDay(fallback);
+    }
+
+    if (input instanceof Date) return this.toStartOfDay(input);
+
+    return null;
+  }
+
   // initialize the flow
   @post("/initialize")
   async initializeWorkflow(): Promise<{ success: boolean; message: string; data?: any[] }> {
     let browser: any;
     let page: any;
-    let jobLinks: string[] = [];
+    let links: string[] = [];
     let extractedData: any[] = [];
 
     try {
       // Sort nodes by id to respect blueprint order
-      const nodes = this.naukriBluePrint.nodes.sort((a, b) => a.id - b.id);
+      const nodes = this.glassdoorBluePrint.nodes.sort((a, b) => a.id - b.id);
 
       for (const node of nodes) {
         switch (node.type) {
@@ -537,11 +856,10 @@ export class PrototypeController {
 
           case "locate":
             if (node.mode === "list" && page) {
-              jobLinks = await this.handleJobListNode(page, node);
-              console.log('jobLinks', jobLinks);
+              links = await this.handleJobListNode(page, node);
             }
             if (node.mode === "detail" && browser) {
-              extractedData = await this.handleJobDetailNode(browser, jobLinks, node);
+              extractedData = await this.handleJobDetailNode(browser, links, node);
             }
             break;
 
@@ -551,12 +869,15 @@ export class PrototypeController {
             }
             break;
 
+          case "transformation":
+            await this.handleTransformationNode(node);
+
           default:
             console.warn(`⚠️ Unknown node type: ${node.type}`);
         }
       }
 
-      // await browser?.close();
+      await browser?.close();
       return { success: true, message: "Workflow executed successfully", data: extractedData };
 
     } catch (error) {

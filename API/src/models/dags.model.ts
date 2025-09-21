@@ -1,7 +1,8 @@
-import { Entity, model, property } from '@loopback/repository';
+import { Entity, model, property, belongsTo } from '@loopback/repository';
+import { Scheduler } from './scheduler.model';
 
 @model()
-export class Designation extends Entity {
+export class Dags extends Entity {
   @property({
     type: 'string',
     id: true,
@@ -11,17 +12,19 @@ export class Designation extends Entity {
 
   @property({
     type: 'string',
+    required: true,
   })
-  designation?: string;
+  dagName: string;
 
   @property({
     type: 'string',
+    required: true,
   })
-  description?: string;
+  dagFileName: string;
 
   @property({
     type: 'boolean',
-    required: true,
+    default: false,
   })
   isActive: boolean;
 
@@ -46,13 +49,16 @@ export class Designation extends Entity {
   })
   isDeleted: boolean;
 
-  constructor(data?: Partial<Designation>) {
+  @belongsTo(() => Scheduler)
+  schedulerId: string;
+
+  constructor(data?: Partial<Dags>) {
     super(data);
   }
 }
 
-export interface DesignationRelations {
+export interface DagsRelations {
   // describe navigational properties here
 }
 
-export type DesignationWithRelations = Designation & DesignationRelations;
+export type DagsWithRelations = Dags & DagsRelations;

@@ -12,14 +12,12 @@ export class Deliver extends Entity {
    @property({
     type: 'string',
     required: true,
- 
   })
   modelName: string; 
 
    @property({
     type: 'string',
     required: true,
- 
   })
   repositoryName: string; 
 
@@ -43,8 +41,6 @@ export class Deliver extends Entity {
     default: false,
   })
   isDeleted: boolean;
- 
-
 
   constructor(data?: Partial<Deliver>) {
     super(data);
