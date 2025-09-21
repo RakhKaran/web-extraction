@@ -74,16 +74,31 @@ export class DeliverController {
   @get('/deliver/{id}/fields/{flag}')
   async getModelFields(
     @param.path.string('id') id: string,
-    @param.path.boolean('flag') flag: boolean,
+    @param.path.boolean('flag') flag: boolean
   ) {
     const deliver = await this.deliverRepository.findById(id).catch(() => null);
     if (!deliver) return { error: 'Model not found' };
 
     const { modelName } = deliver;
 
-    // Dynamic import
-    const ModelModule = await import(`../models/${modelName.toLowerCase()}.model`);
-    const ModelClass = ModelModule?.[modelName];
+    let ModelModule;
+    let ModelClass;
+
+    // Helper to convert PascalCase to kebab-case
+    const toKebabCase = (str: string) =>
+      str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+
+    const fileName = toKebabCase(modelName); // ProductionNaukri → production-naukri
+
+    try {
+      // Import using kebab-case filename
+      ModelModule = await import(`../models/${fileName}.model`);
+      // Get class by exact name or fallback to first export
+      ModelClass = ModelModule?.[modelName] || Object.values(ModelModule)[0];
+    } catch (err) {
+      console.error("Error importing model:", err);
+      return { error: `Cannot import model file for '${modelName}'` };
+    }
 
     if (!ModelClass?.definition?.properties) {
       return { error: `Fields not found for model '${modelName}'` };
@@ -106,10 +121,6 @@ export class DeliverController {
       fields,
     };
   }
-
-
-
-
 
   @get('/deliver/api/{apiEndpoint}/methods')
   async getApiMethods(

@@ -52,10 +52,10 @@ export class ProductionNaukri extends Entity {
   salary: string;
 
   @property({
-    type: 'string',
+    type: 'date',
     required: true
   })
-  posted: string;
+  posted: Date;
 
   @property({
     type: 'number',
