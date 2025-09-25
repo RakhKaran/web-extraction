@@ -31,7 +31,7 @@ export default function ReactFlowIngestion({ data }) {
 
     const defaultValues = useMemo(
         () => ({
-            url: data.bluePrint?.url || '',
+            url: data.bluePrint?.data?.url || '',
         }),
         [data]
     );
@@ -55,7 +55,13 @@ export default function ReactFlowIngestion({ data }) {
 
     const onSubmit = handleSubmit(async (formData) => {
         console.log("Url", formData);
-        data.functions?.handleBluePrintComponent?.(data.label, formData);
+        const newData = {
+            id:  data.id,
+            nodeName: data.label,
+            type: data.type,
+            data: formData
+        }
+        data.functions?.handleBluePrintComponent?.(data.label, data.id, newData);
         handleCloseModal();
     });
 

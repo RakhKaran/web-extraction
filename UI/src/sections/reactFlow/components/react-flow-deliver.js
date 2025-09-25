@@ -26,10 +26,17 @@ const deliverOptions = [
 ];
 
 // Yup validation schemas
-const deliverSchemas =  Yup.object().shape({
+const deliverSchemas = Yup.object().shape({
   database: Yup.object().shape({
     model: Yup.string().required("Model is required"),
-    mapping: Yup.object().required("Field mapping is required"),
+    modelId: Yup.string().required("Model Id is required"),
+    mapping: Yup.array().of(Yup.object().shape({
+      modelField: Yup.string().required("Model field name is required"),
+      type: Yup.string().required('Field type is required'),
+      mappedField: Yup.string().required('Mapped field is required'),
+    })).min(1, "Field mapping is required"),
+    additionalFields: Yup.array(),
+    repository: Yup.string().required("Repository is required"),
   }),
   api: Yup.object().shape({
     endpoint: Yup.string().url("Invalid URL").required("Endpoint is required"),
@@ -46,8 +53,11 @@ export default function ReactFlowDeliver({ data }) {
   const defaultValues = useMemo(
     () => ({
       mode: data.bluePrint?.mode || "",
-      model: data.bluePrint?.model || "",
-      mapping: data.bluePrint?.mapping || {},
+      model: data.bluePrint?.modelName || "",
+      modelId: data.bluePrint?.modelId || "",
+      repository: data.bluePrint?.respositoryName || "",
+      mapping: data.bluePrint?.fields || [],
+      additionalFields: data?.bluePrint?.additionalFields || [],
       endpoint: data.bluePrint?.endpoint || "",
       headers: data.bluePrint?.headers || "",
       payload: data.bluePrint?.payloadMapping || {},
@@ -74,8 +84,17 @@ export default function ReactFlowDeliver({ data }) {
   }, [defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (formData) => {
-    console.log("Deliver Node FormData:", formData);
-    data.functions.handleBluePrintComponent(data.label, formData);
+    const newData = {
+      id: data.id,
+      nodeName: data.label,
+      type: data.type,
+      fields: formData.mapping,
+      mode: formData.mode,
+      modelName: formData.model,
+      respositoryName: formData.repository,
+      additionalFields: formData.additionalFields
+    }
+    data.functions.handleBluePrintComponent(data.label, data.id, newData);
     setIsOpen(false);
   });
 
@@ -83,7 +102,7 @@ export default function ReactFlowDeliver({ data }) {
   const renderModeFields = (mode) => {
     switch (mode) {
       case "database":
-        return <DatabaseComponents/>;
+        return <DatabaseComponents />;
       case "api":
         return ('Not Done');
       default:

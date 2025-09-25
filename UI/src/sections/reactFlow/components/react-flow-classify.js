@@ -25,6 +25,58 @@ const modelOptions = [
   { label: "Details", value: "detail", isDisabled: false },
 ];
 
+function setFields(fieldsObj = {}) {
+  return Object.entries(fieldsObj).map(([key, value]) => {
+    if (typeof value === "string") {
+      // simple selector string
+      return {
+        fieldName: key,
+        selector: value,
+        selectorType: "css", // default type for simple strings
+      };
+    } else if (typeof value === "object" && !Array.isArray(value)) {
+      // object with selector/type
+      return {
+        fieldName: key,
+        selector: value.selector || "",
+        selectorType: value.type || "css",
+        attribute: value.attr,
+        children: value.item
+          ? setFields(value.item) // recursively handle children
+          : [],
+      };
+    }
+    return null;
+  }).filter(Boolean);
+}
+
+function storeFields(fieldsArray = []) {
+  let fields = {};
+
+  fieldsArray.forEach((field) => {
+    if (field.selectorType === "list") {
+      fields[field.fieldName] = {
+        selector: field.selector,
+        type: field.selectorType,
+        item: field.children && field.children.length > 0
+          ? storeFields(field.children)
+          : {}
+      };
+    } else {
+      fields[field.fieldName] = {
+        selector: field.selector,
+        type: field.selectorType,
+      };
+
+      if (field.attribute) {
+        fields[field.fieldName].attr = field.attribute;
+      }
+    }
+  });
+
+  return fields;
+}
+
 export default function ReactFlowClassify({ data }) {
   const [isOpen, setIsOpen] = useState(false);
   const [logsOpen, setLogsOpen] = useState(false);
@@ -34,38 +86,50 @@ export default function ReactFlowClassify({ data }) {
   const handleOpenLogsModal = () => setLogsOpen(true);
   const handleCloseLogsModal = () => setLogsOpen(false);
 
-const fieldSchema = Yup.object().shape({
-  fieldName: Yup.string().required("Field name is required"),
-  selector: Yup.string().required("Selector is required"),
-  selectorType: Yup.string().required("Selector type is required"),
-  attribute: Yup.string().when("selectorType", {
-    is: (val) => val !== "list" && val !== "object",
-    then: (schema) => schema.required("Attribute is required"),
-    otherwise: (schema) => schema.notRequired(),
-  }),
-  children: Yup.array().of(
-    Yup.lazy(() => fieldSchema)
-  ).optional(),  // children allowed but not mandatory
-});
-
-
-// Now define the full schema
-const newClassificationSchema = Yup.object().shape({
-  mode: Yup.string().required("Mode is required"),
-  selector: Yup.object().shape({
-    name: Yup.string().required("Selector name is required"),
+  const fieldSchema = Yup.object().shape({
+    fieldName: Yup.string().required("Field name is required"),
+    selector: Yup.string().required("Selector is required"),
     selectorType: Yup.string().required("Selector type is required"),
-  }),
-  fields: Yup.array().of(fieldSchema), // top-level fields array
-});
+    attribute: Yup.string().when("selectorType", {
+      is: (val) => val !== "list" && val !== "object",
+      then: (schema) => schema.required("Attribute is required"),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+    children: Yup.array().of(
+      Yup.lazy(() => fieldSchema)
+    ).optional(),  // children allowed but not mandatory
+  });
 
 
+  // Now define the full schema
+  const newClassificationSchema = Yup.object().shape({
+    mode: Yup.string().required("Mode is required"),
+    selector: Yup.object().shape({
+      name: Yup.string().when("..mode", {
+        is: "list",
+        then: (schema) => schema.required("Selector name is required"),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+      selectorType: Yup.string().when("..mode", {
+        is: "list",
+        then: (schema) => schema.required("Selector type is required"),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+    }),
+    fields: Yup.array()
+      .of(fieldSchema)
+      .when("mode", {
+        is: "list",
+        then: (schema) => schema.min(1, "At least one field is required"),
+        otherwise: (schema) => schema.notRequired(),
+      }),
+  });
 
   const defaultValues = useMemo(
     () => ({
       mode: data.bluePrint?.mode || "",
       selector: data.bluePrint?.selector || { name: "", selectorType: "" },
-      fields: data.bluePrint?.fields || [],
+      fields: setFields(data.bluePrint?.fields) || [],
     }),
     [data]
   );
@@ -90,7 +154,22 @@ const newClassificationSchema = Yup.object().shape({
 
   const onSubmit = handleSubmit(async (formData) => {
     console.log("Escalation Matrix", formData);
-    data.functions.handleBluePrintComponent(data.label, formData);
+    const newData = {
+      id: data.id,
+      nodeName: data.label,
+      type: data.type,
+      mode: formData.mode,
+    }
+
+    if (formData.mode === 'list') {
+      newData.selector = formData.selector
+    }
+
+    if (formData.mode === 'detail') {
+      newData.fields = storeFields(formData.fields);
+    };
+    
+    data.functions?.handleBluePrintComponent?.(data.label, data.id, newData);
     handleCloseModal();
   });
 
@@ -139,7 +218,7 @@ const newClassificationSchema = Yup.object().shape({
         <FormProvider methods={methods} onSubmit={onSubmit}>
           <Grid container spacing={2}>
             {/* Mode selector */}
-             <Grid item xs={12} md={12}>
+            <Grid item xs={12} md={12}>
               <RHFSelect name="mode" label="Select Mode">
                 {modelOptions.map((model) => (
                   <MenuItem
@@ -152,7 +231,7 @@ const newClassificationSchema = Yup.object().shape({
                 ))}
               </RHFSelect>
             </Grid>
-            <Grid item xs={12} md={12} sx={{ mt: 2  }}>
+            <Grid item xs={12} md={12} sx={{ mt: 2 }}>
               {renderModeFields(values.mode)}
             </Grid>
 

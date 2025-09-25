@@ -24,6 +24,7 @@ import { ReactFlowClassify, ReactFlowDeliver, ReactFlowExtract, ReactFlowIngesti
 import ReactFlowCustomAddNodeStructure from './react-flow-custom-add-node';
 import axiosInstance from 'src/utils/axios';
 import { useGetWorkflowBluePrint } from 'src/api/blue-print';
+import LogsProcessDialogue from './components/logs-dialogue';
 
 
 const nodeTypes = {
@@ -64,7 +65,7 @@ const initialNodes = [
         borderTop: '5px solid white',
         borderLeft: '5px solid white',
       }
-    },   
+    },
     position: { x: 330, y: 0 },
   },
 ];
@@ -77,7 +78,7 @@ const initialEdges = [
     animated: true,
     style: { stroke: 'black' },
   },
-  
+
 ];
 
 export default function ReactFlowBoard({ isUnlock }) {
@@ -94,6 +95,7 @@ export default function ReactFlowBoard({ isUnlock }) {
   const [showModal, setShowModal] = useState(false);
   const [lastNodeId, setLastNodeId] = useState(2);
   const [selectedNodeId, setSelectedNodeId] = useState(null);
+  const [viewLogs, setViewLogs] = useState(false);
 
   useEffect(() => {
     if (bluePrints && !bluePrintsLoading) {
@@ -108,23 +110,23 @@ export default function ReactFlowBoard({ isUnlock }) {
       // setting bluePrint
       setBluePrint(data?.bluePrint);
 
-      const newPresentNodes = data?.bluePrint.length > 0 ? data?.bluePrint.map((item) => item.nodeName) : [];
+      const newPresentNodes = data?.bluePrint.length > 0 ? data?.bluePrint.map((item) => item.id) : [];
       setPresentNodes(newPresentNodes);
 
       // setting nodes
       const newNodes = data?.nodes?.length > 0 && data?.nodes.map((node) => ({
-          ...node,
-          data : {
-            ...node.data,
-            functions: {
-              addToLeft: addNodeToLeft,
-              addToRight: addNodeToRight,
-              deleteNode,
-              handleBluePrintComponent
-            },
-            bluePrint: data?.bluePrint?.find((item) => item.nodeName === node.data.label)?.component,
-          }
-        }));
+        ...node,
+        data: {
+          ...node.data,
+          functions: {
+            addToLeft: addNodeToLeft,
+            addToRight: addNodeToRight,
+            deleteNode,
+            handleBluePrintComponent,
+          },
+          bluePrint: data?.bluePrint?.find((item) => item.id === node.data.id)?.component,
+        }
+      }));
 
       setNodes(newNodes || initialNodes);
 
@@ -143,7 +145,7 @@ export default function ReactFlowBoard({ isUnlock }) {
               deleteNode,
               handleBluePrintComponent
             },
-            bluePrint: bluePrint.find((item) => item.nodeName === node.data.label)?.component,
+            bluePrint: bluePrint.find((item) => item.id === node.data.id)?.component,
           }
         }))]);
 
@@ -163,14 +165,17 @@ export default function ReactFlowBoard({ isUnlock }) {
 
   useEffect(() => {
     if (nodes && nodes.length > 0) {
-      const filteredNodes = nodes.filter((node) => node.type !== 'customAddNode');
+      const filteredNodes = nodes.filter(
+        (node) => node.type !== 'customAddNode'
+      );
 
       setBluePrint((prev) => {
-        const existingNames = new Set(prev.map(item => item.nodeName));
+        const existingIds = new Set(prev.map(item => item.id));
 
         const newBlueprintEntries = filteredNodes
-          .filter((node) => !existingNames.has(node.data.label))
+          .filter((node) => !existingIds.has(node.data.id))
           .map((node) => ({
+            id: node.data.id,
             nodeName: node.data.label,
             component: null,
           }));
@@ -180,9 +185,9 @@ export default function ReactFlowBoard({ isUnlock }) {
     }
   }, [nodes]);
 
-  const handleBluePrintComponent = (label, updatedComponent) => {
+  const handleBluePrintComponent = (label, id, updatedComponent) => {
     setBluePrint((prev) => prev.map((node) => {
-      if (node.nodeName === label) {
+      if (node.id === id) {
         return {
           ...node,
           component: updatedComponent
@@ -216,6 +221,7 @@ export default function ReactFlowBoard({ isUnlock }) {
       data: {
         id: newOpCompNodeId,
         label: `${operation.title}`,
+        type: operation.type,
         icon: operation.icon,
         style: borderDirection === 'up' ? {
           border: `5px solid ${operation.color}`,
@@ -249,8 +255,9 @@ export default function ReactFlowBoard({ isUnlock }) {
       data: {
         id: newAddNodeId,
         label: '➕ New Node',
+        type: 'customAddNode',
         icon: '/assets/icons/document-process/add.svg',
-        style: borderDirection === 'down' ? { 
+        style: borderDirection === 'down' ? {
           border: '5px solid #2DCA73',
           borderBottom: '5px solid white',
           borderRight: '5px solid white',
@@ -369,6 +376,7 @@ export default function ReactFlowBoard({ isUnlock }) {
         data: {
           id: `${targetId}`,
           label: `${operation.title}`,
+          type: operation.type,
           icon: operation.icon,
           style:
             borderDirection === 'up'
@@ -469,6 +477,7 @@ export default function ReactFlowBoard({ isUnlock }) {
         data: {
           id: `${newNodeId}`,
           label: `${operation.title}`,
+          type: operation.type,
           icon: operation.icon,
           style:
             borderDirection === 'up'
@@ -521,7 +530,7 @@ export default function ReactFlowBoard({ isUnlock }) {
   console.log('nodes', nodes);
   // delete node
   const deleteNode = (id, label) => {
-    const deleteId = Number(id);    
+    const deleteId = Number(id);
     const gapX = 370;
 
     let prevNodeId = null;
@@ -614,7 +623,7 @@ export default function ReactFlowBoard({ isUnlock }) {
         bluePrint,
         nodes,
         edges,
-        workflowId:id,
+        workflowId: id,
         isActive: true
       };
 
@@ -630,10 +639,39 @@ export default function ReactFlowBoard({ isUnlock }) {
     }
   }
 
+  const handleTestBluePrint = async () => {
+    try {
+      const emptyComponent = handleEmptyComponents();
+      if (emptyComponent) {
+        enqueueSnackbar(`Please complete ${emptyComponent.nodeName} node`, { variant: 'error' });
+        return;
+      }
+      const data = {
+        bluePrint: {
+          nodes: bluePrint.map((item) => item.component),
+        },
+        extractionId: id,
+      };
+
+      const response = await axiosInstance.post('/workflow-test/initialize', data);
+      if (response?.data?.success) {
+        enqueueSnackbar(response?.data?.message, { variant: 'success' });
+      }
+    } catch (error) {
+      console.error(error);
+      enqueueSnackbar(typeof error === 'string' ? error : error.error.message, {
+        variant: 'error',
+      });
+    }
+  }
+
+  console.log('blueprint', bluePrint);
   return (
     <div style={{ width: '100%', height: '100vh' }}>
-      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'end', alignItems: 'center' }}>
-        <Button onClick={() => handleSubmitBluePrint()}  variant='contained'>Save</Button>
+      <Box sx={{ width: '100%', display: 'flex', justifyContent: 'end', alignItems: 'center', gap: '10px' }}>
+        <Button onClick={() => handleSubmitBluePrint()} variant='contained'>Save</Button>
+        <Button onClick={() => handleTestBluePrint()} variant='contained'>Test</Button>
+        <Button onClick={() => setViewLogs(true)} variant='contained'>View Logs</Button>
       </Box>
       <ReactFlowProvider >
         <ReactFlow
@@ -646,15 +684,16 @@ export default function ReactFlowBoard({ isUnlock }) {
           onConnect={onConnect}
           defaultViewport={{ x: 0, y: 0, zoom: 0.2 }}
           nodesDraggable={isUnlock}
-        //  attributionPosition={null as any} 
-          
+          //  attributionPosition={null as any} 
+
           proOptions={{ hideAttribution: true }}
         >
           <MiniMap />
           <Controls />
           <Background />
         </ReactFlow >
-        {showModal && <OperationSelectorModal open={showModal} onSelect={addNewNode} onClose={() => setShowModal(false)} bluePrintNode = {[]}/>}
+        {showModal && <OperationSelectorModal open={showModal} onSelect={addNewNode} onClose={() => setShowModal(false)} bluePrintNode={[]} />}
+        <LogsProcessDialogue isOpen={viewLogs} handleCloseModal={() => setViewLogs(false)} extractionId={id}/>
       </ReactFlowProvider>
     </div>
   );

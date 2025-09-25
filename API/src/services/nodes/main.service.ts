@@ -1,5 +1,5 @@
 import { repository } from "@loopback/repository";
-import { DagsRepository, SchedulerRepository } from "../../repositories";
+import { DagsRepository, DesignationRepository, SchedulerRepository } from "../../repositories";
 import { AirflowDagService } from "./dag-creation.service";
 import { inject } from "@loopback/core";
 import { Initialize } from "./initialize.service";
@@ -14,6 +14,8 @@ export class Main {
         public schedulerRepository: SchedulerRepository,
         @repository(DagsRepository)
         public dagsRepository: DagsRepository,
+        @repository(DesignationRepository)
+        public designationRepository: DesignationRepository,
         @inject('services.DagCreation')
         public dagsCreationService: AirflowDagService,
         @inject('services.Initialize')
@@ -40,35 +42,89 @@ export class Main {
     // main service where schedulers are fetching...
     async main() {
         try {
-            const schedulers = await this.schedulerRepository.find({
+            const schedulers : any = await this.schedulerRepository.find({
                 where: {
                     and: [
                         { isScheduled: false },
                         { isDeleted: false },
                         { isActive: true }
                     ]
-                }
+                },
+                include: [
+                    {
+                        relation: 'workflow',
+                        scope: {
+                            include: [
+                                { relation: 'workflowBlueprint' }
+                            ]
+                        }
+                    }
+                ]
             });
 
             if (schedulers && schedulers.length > 0) {
-                schedulers.map(async (scheduler) => {
-                    // we will create airflow dags here...
-                    const dagFileName = await this.dagsCreationService.createDagFile(scheduler);
-
-                    if (dagFileName) {
-                        // creating entries in db..
-                        await this.dagsRepository.create({
-                            dagName: `dag-${scheduler.schedularName}`,
-                            dagFileName: dagFileName,
-                            schedulerId: scheduler.id,
-                            isActive: true,
-                            isDeleted: false,
+                console.log('schedulers found');
+                for (const scheduler of schedulers) {
+                    if (scheduler.schedulerFor === 0) {
+                        console.log('entered');
+                        const designations = await this.designationRepository.find({
+                            where: {
+                                and: [
+                                    { isActive: true },
+                                    { isDeleted: false }
+                                ]
+                            }
                         });
+                        console.log('designation found', designations);
+
+                        for (let designation of designations) {
+                            console.log('designation found');
+                            const searchNodes = scheduler?.workflow?.workflowBlueprint?.bluePrint?.filter((node: any) => node.component.type === 'search');
+
+                            const finalSearchArray = searchNodes?.map((node: any) => ({
+                                selectorName: node?.component?.selector?.name,
+                                searchType: node?.component?.searchType,
+                                value: node?.component?.searchType === 'jobs' ? designation?.designation : ''
+                            }));
+
+                            const dagFileName = await this.dagsCreationService.createDagFile(scheduler, (designation?.designation || ''));
+
+                            if (dagFileName) {
+                                // creating entries in db..
+                                await this.dagsRepository.create({
+                                    dagName: `dag-${scheduler.schedularName}-${designation?.designation}`,
+                                    dagFileName: dagFileName,
+                                    schedulerId: scheduler.id,
+                                    searchArray: finalSearchArray,
+                                    isActive: true,
+                                    isDeleted: false,
+                                });
+                            }
+                        }
 
                         await this.schedulerRepository.updateById(scheduler.id, { isScheduled: true });
+                    } else {
+                        console.log('designation not found');
+                        // we will create airflow dags here...
+                        const dagFileName = await this.dagsCreationService.createDagFile(scheduler, '');
+
+                        if (dagFileName) {
+                            // creating entries in db..
+                            await this.dagsRepository.create({
+                                dagName: `dag-${scheduler.schedularName}`,
+                                dagFileName: dagFileName,
+                                schedulerId: scheduler.id,
+                                isActive: true,
+                                isDeleted: false,
+                            });
+
+                            await this.schedulerRepository.updateById(scheduler.id, { isScheduled: true });
+                        }
                     }
-                })
+                }
             }
+
+            console.log('schedulers not found');
         } catch (error) {
             console.error('error in main service', error);
         }

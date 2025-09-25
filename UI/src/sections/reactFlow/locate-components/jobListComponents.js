@@ -37,6 +37,8 @@ function RenderFields({ name }) {
   const { fields, append, remove } = useFieldArray({ control, name});
   const values = watch(name);
 
+  console.log('values', values);
+
   useEffect(() => {
     if (!values || values.length === 0) {
       append({
@@ -208,12 +210,12 @@ export default function JobListFields() {
       </Grid>
 
       {/* Fields Section */}
-      <Grid item xs={12}>
+      {/* <Grid item xs={12}>
         <Typography variant="h6" sx={{ mt: 2 }}>
           Fields
         </Typography>
         <RenderFields name="fields" />
-      </Grid>
+      </Grid> */}
     </Grid>
   );
 }

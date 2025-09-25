@@ -3,17 +3,27 @@ import path from "path";
 import { Scheduler } from "../../models";
 
 export class AirflowDagService {
-    async createDagFile(scheduler: Scheduler) {
+    async createDagFile(scheduler: Scheduler, designation: string) {
         const projectRoot = path.resolve(__dirname, "../../../");
         const dagsPath = path.join(projectRoot, "dags");
 
         console.log("dags path", dagsPath);
 
-        // DAG file name
-        const dagFileName = `dag-${scheduler.schedularName}.py`;
+        const safeName = scheduler.schedularName.replace(/[^a-zA-Z0-9]/g, "_");
+        const safeDesignation = designation
+            ? designation.replace(/[^a-zA-Z0-9]/g, "_")
+            : "";
 
-        // Convert scheduler into cron or interval string
-        // Example: daily at 1:00 AM
+        const dagName = safeDesignation
+            ? `dag_${safeName}_${safeDesignation}`
+            : `dag_${safeName}`;
+        const dagFileName = `${dagName}.py`;
+
+        // build task ID
+        const taskId = safeDesignation
+            ? `task_${safeName}_${safeDesignation}`
+            : `task_${safeName}`;
+
         let scheduleInterval = `"0 1 * * *"`;
         if (scheduler.schedulerType === 1) {
             if (scheduler.intervalType === 1) {
@@ -35,14 +45,14 @@ default_args = {
 }
 
 with DAG(
-    dag_id='dag-${scheduler.schedularName}',
+    dag_id='${dagName}',
     default_args=default_args,
     schedule=${scheduleInterval},
     catchup=False,
 ) as dag:
     task1 = BashOperator(
-        task_id='task_${scheduler.schedularName}',
-        bash_command='"node /opt/airflow/dist/scripts/run-extraction.js ${scheduler.id}"'
+        task_id='${taskId}',
+        bash_command='node /opt/airflow/dist/scripts/run-extraction.js ${scheduler.id}'
     )
 
     task1

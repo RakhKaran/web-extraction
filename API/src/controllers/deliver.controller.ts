@@ -79,7 +79,7 @@ export class DeliverController {
     const deliver = await this.deliverRepository.findById(id).catch(() => null);
     if (!deliver) return { error: 'Model not found' };
 
-    const { modelName } = deliver;
+    const { modelName, repositoryName } = deliver;
 
     let ModelModule;
     let ModelClass;
@@ -105,7 +105,7 @@ export class DeliverController {
     }
 
     // Fields to ignore
-    const ignoreFields = flag ? [] : ['createdAt', 'updatedAt', 'isDeleted', 'deletedAt'];
+    const ignoreFields = flag ? [] : ['createdAt', 'updatedAt', 'isActive', 'deletedAt', 'id'];
 
     // Map properties to objects with name and type
     const fields = Object.entries(ModelClass.definition.properties)
@@ -118,6 +118,7 @@ export class DeliverController {
     return {
       id: deliver.id,
       modelName,
+      repositoryName,
       fields,
     };
   }

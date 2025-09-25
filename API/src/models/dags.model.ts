@@ -23,6 +23,12 @@ export class Dags extends Entity {
   dagFileName: string;
 
   @property({
+    type: 'array',
+    itemType: 'object'
+  })
+  searchArray?: object[];
+
+  @property({
     type: 'boolean',
     default: false,
   })

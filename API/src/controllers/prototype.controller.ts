@@ -1,16 +1,20 @@
 // About the controller...
 // Demonstration of a generic blueprint for scraping.
 
-import { HttpErrors, post } from "@loopback/rest";
+import { HttpErrors, post, requestBody } from "@loopback/rest";
 import path from "path";
 import { chromium } from "playwright";
 import fs from 'fs';
 import { Context, inject } from "@loopback/core";
-import { DefaultCrudRepository } from "@loopback/repository";
+import { DefaultCrudRepository, repository } from "@loopback/repository";
+import { TestExtractionLogsRepository } from "../repositories";
+import { TestExtractionLogs } from "../models";
 
 export class PrototypeController {
   constructor(
     @inject.context() private ctx: Context,
+    @repository(TestExtractionLogsRepository)
+    public testExtractionLogsRepository: TestExtractionLogsRepository,
   ) { }
 
   naukriBluePrint = {
@@ -45,9 +49,8 @@ export class PrototypeController {
           name: ".srp-jobtuple-wrapper .title",
           selectorType: "css",
         },
-        fields: {
-          link: { selector: ".title", attribute: "href" },
-        },
+        fields: [],
+        link: { selector: ".title", attribute: "href" },
       },
       {
         id: 4,
@@ -343,7 +346,7 @@ export class PrototypeController {
   }
 
   // initialize
-  private async handleInitializeNode(node: any) {
+  private async handleInitializeNode(node: any, extractionId: string) {
     const browser = await chromium.launch({
       headless: false,
       args: ["--disable-blink-features=AutomationControlled", "--start-maximized"]
@@ -359,9 +362,21 @@ export class PrototypeController {
 
       if (session.load && fs.existsSync(storageStatePath)) {
         console.log(`🔑 Using saved session from ${storageStatePath}`);
+        await this.testExtractionLogsRepository.create({
+          extractionId: extractionId,
+          logsDescription: `🔑 Using saved session from ${storageStatePath}`,
+          logType: 0, // Info
+          isActive: true,
+        });
         browserContext = await browser.newContext({ storageState: storageStatePath });
       } else {
         console.log("⚠️ No saved session, starting fresh.");
+        await this.testExtractionLogsRepository.create({
+          extractionId: extractionId,
+          logsDescription: "⚠️ No saved session, starting fresh.",
+          logType: 0, // Info
+          isActive: true,
+        });
         browserContext = await browser.newContext({
           viewport: null,
           userAgent:
@@ -375,7 +390,19 @@ export class PrototypeController {
       // 👉 If no session yet, wait for user to log in
       if (session.save && (!fs.existsSync(storageStatePath))) {
         console.log("💡 Please log in manually in the opened browser.");
+        await this.testExtractionLogsRepository.create({
+          extractionId: extractionId,
+          logsDescription: "💡 Please log in manually in the opened browser.",
+          logType: 0, // Info
+          isActive: true,
+        });
         console.log("👉 After login, press ENTER in terminal to continue...");
+        await this.testExtractionLogsRepository.create({
+          extractionId: extractionId,
+          logsDescription: "👉 After login, press ENTER in terminal to continue...",
+          logType: 0, // Info
+          isActive: true,
+        });
 
         await new Promise<void>((resolve) => {
           process.stdin.once("data", () => resolve());
@@ -383,6 +410,12 @@ export class PrototypeController {
 
         await browserContext.storageState({ path: storageStatePath });
         console.log(`✅ Session saved to ${storageStatePath}`);
+        await this.testExtractionLogsRepository.create({
+          extractionId: extractionId,
+          logsDescription: `✅ Session saved to ${storageStatePath}`,
+          logType: 0, // Info
+          isActive: true,
+        });
       }
     } else {
       browserContext = await browser.newContext();
@@ -410,20 +443,29 @@ export class PrototypeController {
     if (!selectorName) return jobLinks;
 
     const jobCards = await page.$$(selectorName);
-    for (let card of jobCards) {
+
+    // take only the first 5 cards
+    for (let card of jobCards.slice(0, 5)) {
       const href = await card.getAttribute("href");
       if (href) jobLinks.push(href);
     }
+
     return jobLinks;
   }
 
   // detail data node
-  private async handleJobDetailNode(browser: any, jobLinks: string[], node: any) {
+  private async handleJobDetailNode(browser: any, jobLinks: string[], node: any, extractionId: string) {
     let extractedData: any[] = [];
 
     for (const [i, link] of jobLinks.entries()) {
       try {
         console.log(`(${i + 1}/${jobLinks.length}) Navigating to: ${link}`);
+        await this.testExtractionLogsRepository.create({
+          extractionId: extractionId,
+          logsDescription: `(${i + 1}/${jobLinks.length}) Navigating to: ${link}`,
+          logType: 0, // Info
+          isActive: true,
+        });
         const jobPage = await browser.newPage();
         await jobPage.goto(link, { waitUntil: "domcontentloaded" });
 
@@ -474,6 +516,12 @@ export class PrototypeController {
 
           } catch (innerErr) {
             console.warn(`⚠️ Failed to extract ${fieldName} from ${link}`, innerErr);
+            await this.testExtractionLogsRepository.create({
+              extractionId: extractionId,
+              logsDescription: `⚠️ Failed to extract ${fieldName} from ${link}, ${innerErr}`,
+              logType: 1, // Info
+              isActive: true,
+            });
             record[fieldName] = null;
           }
         }
@@ -483,6 +531,12 @@ export class PrototypeController {
 
       } catch (err) {
         console.error(`❌ Failed to scrape ${link}`, err);
+        await this.testExtractionLogsRepository.create({
+          extractionId: extractionId,
+          logsDescription: `❌ Failed to scrape ${link}, ${err}`,
+          logType: 1, // Info
+          isActive: true,
+        });
       }
     }
 
@@ -490,13 +544,25 @@ export class PrototypeController {
   }
 
   // deliver node
-  private async handleDeliverNode(data: any[], node: any) {
+  private async handleDeliverNode(data: any[], node: any, extractionId: string) {
     if (!data || data.length === 0) {
       console.log('⚠️ No data to deliver');
+      await this.testExtractionLogsRepository.create({
+        extractionId: extractionId,
+        logsDescription: '⚠️ No data to deliver',
+        logType: 1, // Info
+        isActive: true,
+      });
       return [];
     }
 
     if (!node.respositoryName) {
+      await this.testExtractionLogsRepository.create({
+        extractionId: extractionId,
+        logsDescription: `Deliver node missing "repository" config`,
+        logType: 1, // Info
+        isActive: true,
+      });
       throw new Error(`Deliver node missing "repository" config`);
     }
 
@@ -552,6 +618,12 @@ export class PrototypeController {
         deliveredRecords.push(created);
       } catch (err) {
         console.error(`❌ Failed to deliver record`, err);
+        await this.testExtractionLogsRepository.create({
+          extractionId: extractionId,
+          logsDescription: `❌ Failed to deliver record, ${err}`,
+          logType: 1, // Info
+          isActive: true,
+        });
       }
     }
 
@@ -559,8 +631,14 @@ export class PrototypeController {
   }
 
   // transformation node
-  private async handleTransformationNode(node: any) {
+  private async handleTransformationNode(node: any, extractionId: string) {
     if (!node.stagingMode || !node.stagingModelName || !node.stagingRespositoryName) {
+      await this.testExtractionLogsRepository.create({
+        extractionId: extractionId,
+        logsDescription: "Staging details are not properly configured",
+        logType: 1, // Info
+        isActive: true,
+      });
       throw new Error("Staging details are not properly configured");
     }
 
@@ -569,6 +647,12 @@ export class PrototypeController {
     );
 
     if (!node.deliverMode || !node.deliverModelName || !node.deliverRespositoryName) {
+      await this.testExtractionLogsRepository.create({
+        extractionId: extractionId,
+        logsDescription: "Deliver details are not properly configured",
+        logType: 1, // Info
+        isActive: true,
+      });
       throw new Error("Deliver details are not properly configured");
     }
 
@@ -723,7 +807,19 @@ export class PrototypeController {
     }
 
     console.log('success records:', successRecords.length);
+    await this.testExtractionLogsRepository.create({
+      extractionId: extractionId,
+      logsDescription: `success records: ${successRecords.length}`,
+      logType: 2, // Info
+      isActive: true,
+    });
     console.log('errored records:', errorRecords.length);
+    await this.testExtractionLogsRepository.create({
+      extractionId: extractionId,
+      logsDescription: `errored records: ${errorRecords.length}`,
+      logType: 1, // Info
+      isActive: true,
+    });
     return { successRecords, errorRecords };
   }
 
@@ -829,60 +925,178 @@ export class PrototypeController {
   }
 
   // initialize the flow
-  @post("/initialize")
-  async initializeWorkflow(): Promise<{ success: boolean; message: string; data?: any[] }> {
+  @post("/workflow-test/initialize")
+  async initializeWorkflow(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              bluePrint: {
+                type: 'object',
+                properties: {
+                  nodes: {
+                    type: 'array',
+                    items: { type: 'object' },
+                  },
+                },
+                required: ['nodes'],
+              },
+              extractionId: { type: 'string' },
+            },
+            required: ['bluePrint', 'extractionId'],
+            additionalProperties: false,
+          },
+        },
+      },
+    })
+    requestBody: { bluePrint: any; extractionId: string }
+  ): Promise<{ success: boolean; message: string; data?: any[] }> {
     let browser: any;
     let page: any;
     let links: string[] = [];
     let extractedData: any[] = [];
 
     try {
-      // Sort nodes by id to respect blueprint order
-      const nodes = this.glassdoorBluePrint.nodes.sort((a, b) => a.id - b.id);
+      const { bluePrint, extractionId } = requestBody;
+
+      if (!bluePrint || typeof bluePrint !== 'object' || !Array.isArray(bluePrint.nodes)) {
+        throw new HttpErrors.BadRequest('Blueprint is missing or invalid');
+      }
+
+      const nodes = bluePrint.nodes.sort((a: any, b: any) => a.id - b.id);
 
       for (const node of nodes) {
-        switch (node.type) {
-          case "start":
-            const init = await this.handleInitializeNode(node);
-            browser = init.browser;
-            page = init.page;
-            break;
+        try {
+          switch (node.type) {
+            case "start":
+              const init = await this.handleInitializeNode(node, extractionId);
+              browser = init.browser;
+              page = init.page;
+              break;
 
-          case "search":
-            if (page) {
-              await this.handleSearchNode(page, node);
-            }
-            break;
+            case "search":
+              if (page) {
+                await this.handleSearchNode(page, node);
+              }
+              break;
 
-          case "locate":
-            if (node.mode === "list" && page) {
-              links = await this.handleJobListNode(page, node);
-            }
-            if (node.mode === "detail" && browser) {
-              extractedData = await this.handleJobDetailNode(browser, links, node);
-            }
-            break;
+            case "locate":
+              if (node.mode === "list" && page) {
+                links = await this.handleJobListNode(page, node);
+              }
+              if (node.mode === "detail" && browser) {
+                extractedData = await this.handleJobDetailNode(browser, links, node, extractionId);
+              }
+              break;
 
-          case "deliver":
-            if (extractedData.length > 0) {
-              await this.handleDeliverNode(extractedData, node);
-            }
-            break;
+            case "deliver":
+              if (extractedData.length > 0) {
+                await this.handleDeliverNode(extractedData, node, extractionId);
+              }
+              break;
 
-          case "transformation":
-            await this.handleTransformationNode(node);
+            case "transformation":
+              await this.handleTransformationNode(node, extractionId);
 
-          default:
-            console.warn(`⚠️ Unknown node type: ${node.type}`);
+            default:
+              console.warn(`⚠️ Unknown node type: ${node.type}`);
+              await this.testExtractionLogsRepository.create({
+                extractionId: extractionId,
+                logsDescription: `⚠️ Unknown node type: ${node.type}`,
+                logType: 1, // Info
+                isActive: true,
+              });
+          }
+
+          // Log successful node execution
+          await this.testExtractionLogsRepository.create({
+            extractionId: extractionId,
+            logsDescription: `Node "${node.type}" executed successfully`,
+            logType: 0, // Info
+            isActive: true,
+          });
+
+        } catch (nodeError) {
+          // Log node-level error
+          await this.testExtractionLogsRepository.create({
+            extractionId: extractionId,
+            logsDescription: `Error executing node "${node.type}": ${nodeError.message}`,
+            logType: 1, // Error
+            isActive: true,
+          });
+
+          console.error(`Error in node ${node.type}:`, nodeError);
         }
       }
 
       await browser?.close();
-      return { success: true, message: "Workflow executed successfully", data: extractedData };
+      await this.testExtractionLogsRepository.create({
+        extractionId: extractionId,
+        logsDescription: "Workflow executed successfully",
+        logType: 2, // Info
+        isActive: true,
+      });
+      return { success: true, message: "Workflow executed successfully" };
 
     } catch (error) {
+      // Log workflow-level error
+      if (requestBody?.extractionId) {
+        await this.testExtractionLogsRepository.create({
+          extractionId: requestBody.extractionId,
+          logsDescription: `Workflow execution failed: ${error.message}`,
+          logType: 1, // Error
+          isActive: true,
+        });
+      }
+
       if (browser) await browser.close();
+      throw error; // still throw so frontend can handle
+    }
+  }
+
+  @post('/log-entries/logs-by-extraction')
+  async logsByNode(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              extractionId: { type: 'string' },
+              limit: { type: 'number', default: 10 },
+              skip: { type: 'number', default: 0 },
+            },
+            required: ['processInstanceId']
+          }
+        }
+      }
+    })
+    requestBody: {
+      extractionId: string;
+      limit?: number;
+      skip?: number;
+    }
+  ): Promise<TestExtractionLogs[]> {
+    try {
+      const { extractionId, limit = 10, skip = 0 } = requestBody;
+
+      const logs = await this.testExtractionLogsRepository.find({
+        where: {
+          and: [
+            { extractionId },
+          ]
+        },
+        limit,
+        skip,
+        order: ['createdAt DESC'],
+      });
+
+      return logs;
+    } catch (error) {
       throw error;
     }
   }
+
 }

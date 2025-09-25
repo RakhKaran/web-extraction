@@ -13,7 +13,7 @@ import { useEffect, useRef, useState } from "react";
 import Iconify from "src/components/iconify";
 import axiosInstance from "src/utils/axios";
 
-export default function LogsProcessDialogue({ isOpen, handleCloseModal, processInstanceId, nodeName }) {
+export default function LogsProcessDialogue({ isOpen, handleCloseModal, extractionId }) {
     const [logs, setLogs] = useState([]);
     const [loading, setLoading] = useState(false);
     const [page, setPage] = useState(0);
@@ -23,9 +23,8 @@ export default function LogsProcessDialogue({ isOpen, handleCloseModal, processI
     const fetchLogs = async (reset = false) => {
         setLoading(true);
         try {
-            const res = await axiosInstance.post('/log-entries/logs-by-node', {
-                processInstanceId,
-                nodeName,
+            const res = await axiosInstance.post('/log-entries/logs-by-extraction', {
+                extractionId,
                 skip: page * limit,
                 limit,
             });
@@ -75,7 +74,7 @@ export default function LogsProcessDialogue({ isOpen, handleCloseModal, processI
                 justifyContent: 'space-between',
                 alignItems: 'center'
             }}>
-                <Typography variant="subtitle1">Logs for {nodeName}</Typography>
+                <Typography variant="subtitle1">Logs</Typography>
                 <IconButton 
                     onClick={() => {
                         handleCloseModal();

@@ -54,10 +54,13 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'All' }];
 const TABLE_HEAD = [
   { id: 'schedularName', label: 'Schedular Name' },
   { id: 'schedulerType', label: 'Scheduler Type' },
+  { id: 'intervalType', label: 'Interval Type' },
   { id: 'schedulerFor', label: 'Scheduler For' },
   { id: 'interval', label: 'Interval' },
   { id: 'date', label: 'date' },
   { id: 'time', label: 'Time' },
+  { id: 'status', label: 'Status' },
+  { id: 'scheduleStatus', label: 'Scheduled' },
   { id: '', label: 'Actions' },
 ];
 
@@ -75,7 +78,7 @@ export default function SchedulerListView() {
   const router = useRouter();
   const confirm = useBoolean();
 
-  const {Schedulers}= useGetSchedulers();
+  const { Schedulers } = useGetSchedulers();
 
 
   const handleViewRow = useCallback(
@@ -85,7 +88,7 @@ export default function SchedulerListView() {
     [router]
   );
 
-   const handleEditRow = useCallback(
+  const handleEditRow = useCallback(
     (id) => {
       router.push(paths.dashboard.scheduler.edit(id));
     },

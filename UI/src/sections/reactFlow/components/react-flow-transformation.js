@@ -25,10 +25,11 @@ const deliverOptions = [
 ];
 
 // Yup validation schemas
-const deliverSchemas =  Yup.object().shape({
+const deliverSchemas = Yup.object().shape({
   database: Yup.object().shape({
-    model: Yup.string().required("Model is required"),
-    mapping: Yup.object().required("Field mapping is required"),
+    deliverModelName: Yup.string().required("Model is required"),
+    deliverRepositoryName: Yup.string().required("Model is required"),
+    deliverModelId: Yup.string().required("Model id is required"),
   }),
   api: Yup.object().shape({
     endpoint: Yup.string().url("Invalid URL").required("Endpoint is required"),
@@ -37,16 +38,81 @@ const deliverSchemas =  Yup.object().shape({
   }),
 });
 
+
+const stagingSchemas = Yup.object().shape({
+  database: Yup.object().shape({
+    stagingModelName: Yup.string().required("Model is required"),
+    stagingRepositoryName: Yup.string().required("Model is required"),
+    stagingModelId: Yup.string().required("Model id is required"),
+  }),
+  api: Yup.object().shape({
+    endpoint: Yup.string().url("Invalid URL").required("Endpoint is required"),
+    headers: Yup.string().nullable(),
+    payload: Yup.object().required("Payload mapping is required"),
+  }),
+});
+
+const getValidationSchema = (stagingMode, deliverMode) =>
+  Yup.object().shape({
+    stagingMode: Yup.string().required('Staging mode is required'),
+    deliverMode: Yup.string().required('Deliver mode is required'),
+    ...(deliverSchemas[deliverMode] ? deliverSchemas[deliverMode] : {}),
+    ...(stagingSchemas[stagingMode] ? stagingSchemas[stagingMode] : {}),
+    fields: Yup.array().of(Yup.object().shape({
+      modelField: Yup.string().required("Model field name is required"),
+      type: Yup.string().required('Field type is required'),
+      mappedField: Yup.string().required('Mapped field is required'),
+      isNullAccepted: Yup.boolean().required('Please check the value'),
+      rules: Yup.array(),
+    })).min(1, "Field mapping is required"),
+    duplicatesAllowed: Yup.boolean().required('Value is required'),
+    additionalFields: Yup.array(),
+    dataAcceptanceRule: Yup.array()
+  });
+
+function setFields(data = []) {
+  return data.map((item) => ({
+    ...item,
+    rules: Array.isArray(item.rules)
+      ? item.rules.map((rule) => {
+        const key = Object.keys(rule)[0];
+        const value = rule[key];
+        return { label: key, value };
+      })
+      : [],
+  }));
+}
+
+function storeFields(data = []) {
+  return data.map((item) => ({
+    ...item,
+    rules: Array.isArray(item.rules)
+      ? item.rules.map((rule) => ({
+          [rule.label]: rule.value,
+        }))
+      : [],
+  }));
+}
+
+
 export default function ReactFlowTransformation({ data }) {
   const [isOpen, setIsOpen] = useState(false);
   const [logsOpen, setLogsOpen] = useState(false);
+  const [dynamicSchema, setDynamicSchema] = useState(getValidationSchema(''));
 
   // default values
   const defaultValues = useMemo(
     () => ({
-      mode: data.bluePrint?.mode || "",
-      model: data.bluePrint?.model || "",
-      mapping: data.bluePrint?.mapping || {},
+      stagingMode: data.bluePrint?.stagingMode || "",
+      deliverMode: data.bluePrint?.deliverMode || "",
+      stagingModelName: data.bluePrint?.stagingModelName || "",
+      stagingModelId: data.bluePrint?.stagingModelId || "",
+      deliverModelId: data.bluePrint?.deliverModelId || "",
+      deliverModelName: data.bluePrint?.deliverModelName || "",
+      fields: data?.bluePrint?.fields?.length > 0 ? setFields(data?.bluePrint?.fields) : [],
+      additionalFields: data?.bluePrint?.additionalFields || [],
+      dataAcceptanceRule: data?.bluePrint?.dataAcceptanceRule || [],
+      duplicatesAllowed: data?.bluePrint?.duplicatesAllowed || false,
       endpoint: data.bluePrint?.endpoint || "",
       headers: data.bluePrint?.headers || "",
       payload: data.bluePrint?.payloadMapping || {},
@@ -55,9 +121,11 @@ export default function ReactFlowTransformation({ data }) {
   );
 
   const methods = useForm({
-    resolver: yupResolver(deliverSchemas[defaultValues.mode] || Yup.object()),
+    resolver: yupResolver(dynamicSchema),
     defaultValues,
   });
+
+  console.log('defaultValues', defaultValues);
 
   const {
     reset,
@@ -73,16 +141,34 @@ export default function ReactFlowTransformation({ data }) {
   }, [defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (formData) => {
-    console.log("Deliver Node FormData:", formData);
-    data.functions.handleBluePrintComponent(data.label, formData);
+    const newData = {
+      id: data.id,
+      nodeName: data.label,
+      type: data.type,
+      fields: storeFields(formData.fields),
+      additionalFields: formData.additionalFields,
+      dataAcceptanceRule: formData.dataAcceptanceRule,
+      stagingMode: formData.stagingMode,
+      deliverMode: formData.deliverMode,
+      stagingModelName: formData.stagingModelName,
+      deliverModelName: formData.deliverModelName,
+      stagingRepositoryName: formData.stagingRepositoryName,
+      deliverRepositoryName: formData.deliverRepositoryName,
+      stagingModelId: formData.stagingModelId,
+      deliverModelId: formData.deliverModelId
+    }
+    data.functions.handleBluePrintComponent(data.label, data.id, newData);
     setIsOpen(false);
   });
 
+  useEffect(() => {
+    setDynamicSchema(getValidationSchema(values.stagingMode, values.deliverMode));
+  }, [values.stagingMode, values.deliverMode]);
 
   const renderModeFields = (mode) => {
     switch (mode) {
       case "database":
-        return <TransformationComponents/>;
+        return <TransformationComponents />;
       case "api":
         return ('Not Done');
       default:
@@ -101,7 +187,7 @@ export default function ReactFlowTransformation({ data }) {
           onClick={() => setIsOpen(true)}
           variant="outlined"
         >
-          Transformation 
+          Transformation
         </Button>
       )}
 
@@ -125,7 +211,21 @@ export default function ReactFlowTransformation({ data }) {
           <Grid container spacing={2}>
             {/* Mode select */}
             <Grid item xs={12} md={12}>
-              <RHFSelect name="mode" label="Select Deliver">
+              <RHFSelect name="stagingMode" label="Select Staging Mode">
+                {deliverOptions.map((model) => (
+                  <MenuItem
+                    disabled={model.isDisabled}
+                    key={model.value}
+                    value={model.value}
+                  >
+                    {model.label}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
+            </Grid>
+
+            <Grid item xs={12} md={12}>
+              <RHFSelect name="deliverMode" label="Select Deliver Mode">
                 {deliverOptions.map((model) => (
                   <MenuItem
                     disabled={model.isDisabled}
@@ -140,7 +240,7 @@ export default function ReactFlowTransformation({ data }) {
 
             {/* Dynamic fields */}
             <Grid item xs={12} md={12} sx={{ mt: 2 }}>
-              {renderModeFields(values.mode)}
+              {renderModeFields(values.deliverMode)}
             </Grid>
           </Grid>
 

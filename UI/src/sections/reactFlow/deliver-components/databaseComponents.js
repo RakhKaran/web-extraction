@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import { Grid, MenuItem, TextField, Stack } from "@mui/material";
+import { Grid, MenuItem, TextField, Stack, Button, Typography } from "@mui/material";
 import { RHFSelect, RHFTextField } from "src/components/hook-form";
 import axiosInstance from "src/utils/axios";
+import { useFieldArray, useFormContext } from "react-hook-form";
 
 // Dummy Locate JSON schema
 // const locateSchema = {
@@ -19,9 +20,23 @@ export default function DatabaseComponents() {
   const [databases, setDatabases] = useState([]);
   const [selectedId, setSelectedId] = useState("");
   const [dbFields, setDbFields] = useState([]);
+  const { control, watch, setValue } = useFormContext();
 
-  // Fields to exclude
+  const { fields, append, remove } = useFieldArray({
+    control,
+    name: "additionalFields",
+  });
 
+  const fieldsType = [
+    { label: "string", value: "string" },
+    { label: "Boolean", value: "boolean" },
+    { label: "Date", value: "date" },
+  ];
+
+  const valueType = [
+    { label: "True", value: "true" },
+    { label: "False", value: "false" },
+  ];
 
   // Fetch all Deliver models for dropdown
   useEffect(() => {
@@ -31,6 +46,8 @@ export default function DatabaseComponents() {
         if (Array.isArray(res.data)) setDatabases(res.data);
       })
       .catch((err) => console.error("Error fetching Deliver models:", err));
+
+    setSelectedId(watch('modelId'));
   }, []);
 
   // Fetch fields for selected model
@@ -43,7 +60,17 @@ export default function DatabaseComponents() {
     axiosInstance
       .get(`/deliver/${selectedId}/fields/false`)
       .then((res) => {
-        if (res.data?.fields) setDbFields(res.data.fields);
+        if (res.data?.fields) {
+          const newArray = res?.data?.fields?.filter(
+            (field) =>
+              field.name !== "scrappedAt" &&
+              field.name !== "isDeleted" &&
+              field.name !== "isSync"
+          );
+          setDbFields(newArray);
+          setValue('model', res.data.modelName);
+          setValue('repository', res.data.repositoryName);
+        }
       })
       .catch((err) => {
         console.error("Error fetching model fields:", err);
@@ -58,7 +85,7 @@ export default function DatabaseComponents() {
         <RHFSelect
           fullWidth
           label="Select Model"
-          name="model"
+          name="modelId"
           value={selectedId}
           onChange={(e) => setSelectedId(e.target.value)}
         >
@@ -71,41 +98,100 @@ export default function DatabaseComponents() {
 
 
         {/* Display fields and dummy locateData dropdown */}
-        {dbFields
-          .map((field) => (
-            <Stack
-              direction="row"
-              spacing={2}
-              key={field.name}
-              sx={{ width: '100%', mt: 4 }}
+        {dbFields.map((field, index) => (
+          <Stack
+            direction="row"
+            spacing={2}
+            key={field.name}
+            sx={{ width: "100%", mt: 2 }}
+          >
+            {/* Model Field (readonly, pre-filled) */}
+            <RHFTextField
+              fullWidth
+              name={`mapping.${index}.modelField`}
+              label="Field Name"
+              value={field.name}
+              InputProps={{ readOnly: true }}
+            />
+
+            {/* Field Type (readonly, pre-filled) */}
+            <RHFTextField
+              fullWidth
+              name={`mapping.${index}.type`}
+              label="Field Type"
+              value={field.type}
+              InputProps={{ readOnly: true }}
+            />
+
+            {/* Mapping dropdown (user selects target field) */}
+            <RHFTextField
+              fullWidth
+              name={`mapping.${index}.mappedField`}
+              label="Mapped Field"
+            />
+          </Stack>
+        ))}
+
+        {/* Appended custom fields */}
+        <br />
+        <Typography variant="h6">Additional Fields:</Typography>
+        {fields.map((item, index) => (
+          <Stack direction="row" spacing={2} key={index} sx={{ width: "100%", mt: 2 }}>
+            <RHFTextField
+              fullWidth
+              name={`additionalFields[${index}].modelField`}
+              label="Field"
+            />
+
+            <RHFSelect
+              fullWidth
+              name={`additionalFields[${index}].type`}
+              label="Type"
             >
-              {/* Field Name */}
+              {fieldsType.map((f) => (
+                <MenuItem key={f.value} value={f.value}>
+                  {f.label}
+                </MenuItem>
+              ))}
+            </RHFSelect>
+
+            {watch(`dataAcceptanceRule[${index}].type`) === "boolean" ? (
+              <RHFSelect
+                fullWidth
+                name={`additionalFields.${index}.value`}
+                label="Value"
+              >
+                {valueType.map((f) => (
+                  <MenuItem key={f.value} value={f.value}>
+                    {f.label}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
+            ) : (
               <RHFTextField
                 fullWidth
-                value={field.name}
-                name="fieldName"
-                label="Field Name"
-                InputProps={{ readOnly: true }}
+                name={`additionalFields.${index}.value`}
+                label="Value"
               />
+            )}
 
-              {/* Field Type */}
-              <RHFTextField
-                fullWidth
-                value={field.type}
-                name="fieldType"
-                label="Field Type"
-                InputProps={{ readOnly: true }}
-              />
 
-              {/* Optional: Mapping dropdown */}
-              <RHFTextField
-                fullWidth
-                name={`mapping${field.name}`}
-                label="Mapping Field"
-              />
-            </Stack>
-          ))}
+          </Stack>
+        ))}
 
+        {/* Add Fields Button */}
+        <Stack direction="row" justifyContent="flex-start" sx={{ mt: 2 }}>
+          <Button
+            variant="outlined"
+            size="small"
+            type="button"
+            onClick={() =>
+              append({ field: "", type: "", value: "" })
+            }
+          >
+            + Add Field
+          </Button>
+        </Stack>
       </Grid>
     </Grid>
   );

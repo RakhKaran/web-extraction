@@ -35,17 +35,17 @@ export default function ReactFlowExtract({ data }) {
     const [logsOpen, setLogsOpen] = useState(false);
 
     const NewSearchSchema = Yup.object().shape({
-    // searchText: Yup.string().required("Search text is required"),
-    selector: Yup.object().shape({
-        name: Yup.string().required("Selector name is required"),
-        selectorType: Yup.string().required("Selector type is required"),
-    }),
-});
+        searchText: Yup.string(),
+        selector: Yup.object().shape({
+            name: Yup.string().required("Selector name is required"),
+            selectorType: Yup.string().required("Selector type is required"),
+        }),
+    });
 
     // Default values from blueprint
     const defaultValues = useMemo(
         () => ({
-            // searchText: data?.bluePrint?.searchText || "",
+            searchText: data?.bluePrint?.data?.searchText || "",
             selector: {
                 name: data?.bluePrint?.selector?.name || "",
                 selectorType: data?.bluePrint?.selector?.selectorType || "",
@@ -58,7 +58,7 @@ export default function ReactFlowExtract({ data }) {
         resolver: yupResolver(NewSearchSchema),
         defaultValues,
     });
-    
+
     const {
         reset,
         handleSubmit,
@@ -66,8 +66,16 @@ export default function ReactFlowExtract({ data }) {
     } = methods;
 
     const onSubmit = handleSubmit(async (formData) => {
-        console.log("Form Data:", formData);
-        data.functions.handleBluePrintComponent(data.label, { ...formData });
+        const newData = {
+            id: data.id,
+            nodeName: data.label,
+            type: data.type,
+            data: {
+                searchText: formData.searchText
+            },
+            selector: formData.selector
+        }
+        data.functions?.handleBluePrintComponent?.(data.label, data.id, newData);
         handleCloseModal();
     });
 
@@ -109,6 +117,13 @@ export default function ReactFlowExtract({ data }) {
             >
                 <FormProvider methods={methods} onSubmit={onSubmit}>
                     <Grid container spacing={2}>
+                        <Grid item xs={12} md={12}>
+                            <RHFTextField
+                                name="searchText"
+                                label="Search.. (skip for jobs)"
+                                fullWidth
+                            />
+                        </Grid>
                         {/* Selector Name and Selector Type side by side */}
                         <Grid item xs={12} md={6}>
                             <RHFTextField

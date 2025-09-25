@@ -183,30 +183,6 @@ function RenderFields({ name }) {
 export default function JobDetailsFields() {
   return (
     <Grid container spacing={2}>
-      {/* Parent Selector Section */}
-      <Grid item xs={12}>
-        <Typography variant="h6" sx={{ mt: 2 }}>
-          Parent Selector
-        </Typography>
-      </Grid>
-      <Grid item xs={12}>
-        <Stack direction="row" spacing={2} sx={{ width: "100%" }}>
-          <RHFTextField
-            fullWidth
-            name="selector.name"
-            label="Selector Name"
-            placeholder=".srp-jobtuple-wrapper .title"
-          />
-          <RHFSelect fullWidth name="selector.selectorType" label="Selector Type">
-            {searchSelectorOptions.map((option) => (
-              <MenuItem key={option.value} value={option.value}>
-                {option.label}
-              </MenuItem>
-            ))}
-          </RHFSelect>
-        </Stack>
-      </Grid>
-
       {/* Fields Section */}
       <Grid item xs={12}>
         <Typography variant="h6" sx={{ mt: 2 }}>

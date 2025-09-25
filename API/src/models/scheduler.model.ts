@@ -19,7 +19,13 @@ export class Scheduler extends Entity {
     type: 'number',
     required: true
   })
-  schedulerType: number;   // 0 => 
+  schedulerType: number;   // 0 => oneTime, 1 => recurring
+
+  @property({
+    type: 'number',
+    required: true
+  })
+  schedulerFor: number;   // 0 => Jobs, 1 => Company
 
   @property({
     type: 'number',
