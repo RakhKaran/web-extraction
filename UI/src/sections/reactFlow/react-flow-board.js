@@ -30,7 +30,7 @@ import LogsProcessDialogue from './components/logs-dialogue';
 const nodeTypes = {
   custom: ReactFlowCustomNodeStructure,
   customAddNode: ReactFlowCustomAddNodeStructure,
-  initialize: ReactFlowIngestion,
+  start: ReactFlowIngestion,
   locate: ReactFlowClassify,
   search: ReactFlowExtract,
   validate: ReactFlowValidate,
@@ -41,10 +41,11 @@ const nodeTypes = {
 const initialNodes = [
   {
     id: '1',
-    type: 'initialize',
+    type: 'start',
     data: {
       id: '1',
       label: 'Initialize',
+      type: 'start',
       icon: '/assets/icons/document-process/ignestion.svg',
       style: {
         border: `5px solid #2DCA73`,
@@ -87,13 +88,13 @@ export default function ReactFlowBoard({ isUnlock }) {
   const { id } = params;
   const [data, setData] = useState(null);
   const { bluePrints, bluePrintsLoading } = useGetWorkflowBluePrint(id);
-  const [nodes, setNodes, onNodesChange] = useNodesState(initialNodes);
-  const [edges, setEdges, onEdgesChange] = useEdgesState(initialEdges);
+  const [nodes, setNodes, onNodesChange] = useNodesState([]);
+  const [edges, setEdges, onEdgesChange] = useEdgesState([]);
   const [bluePrint, setBluePrint] = useState([]);
   const [presentNodes, setPresentNodes] = useState([]);
   const [borderDirection, setBorderDirection] = useState('down');
   const [showModal, setShowModal] = useState(false);
-  const [lastNodeId, setLastNodeId] = useState(2);
+  const [lastNodeId, setLastNodeId] = useState(0);
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [viewLogs, setViewLogs] = useState(false);
 
@@ -238,7 +239,7 @@ export default function ReactFlowBoard({ isUnlock }) {
           deleteNode,
           handleBluePrintComponent
         },
-        bluePrint: bluePrint.find((item) => item.nodeName === operation?.title)?.component
+        bluePrint: bluePrint.find((item) => item.id === newOpCompNodeId)?.component
       },
       position: { x: baseX - 20, y: baseY },
     };
@@ -527,7 +528,6 @@ export default function ReactFlowBoard({ isUnlock }) {
     setPresentNodes((prev) => [...prev, operation?.title]);
   };
 
-  console.log('nodes', nodes);
   // delete node
   const deleteNode = (id, label) => {
     const deleteId = Number(id);
@@ -666,6 +666,8 @@ export default function ReactFlowBoard({ isUnlock }) {
   }
 
   console.log('blueprint', bluePrint);
+  console.log('nodes', nodes);
+
   return (
     <div style={{ width: '100%', height: '100vh' }}>
       <Box sx={{ width: '100%', display: 'flex', justifyContent: 'end', alignItems: 'center', gap: '10px' }}>
@@ -693,7 +695,7 @@ export default function ReactFlowBoard({ isUnlock }) {
           <Background />
         </ReactFlow >
         {showModal && <OperationSelectorModal open={showModal} onSelect={addNewNode} onClose={() => setShowModal(false)} bluePrintNode={[]} />}
-        <LogsProcessDialogue isOpen={viewLogs} handleCloseModal={() => setViewLogs(false)} extractionId={id}/>
+        <LogsProcessDialogue isOpen={viewLogs} handleCloseModal={() => setViewLogs(false)} extractionId={id} />
       </ReactFlowProvider>
     </div>
   );

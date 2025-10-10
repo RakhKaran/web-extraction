@@ -34,6 +34,10 @@ const deliverSchemas = Yup.object().shape({
       modelField: Yup.string().required("Model field name is required"),
       type: Yup.string().required('Field type is required'),
       mappedField: Yup.string().required('Mapped field is required'),
+      conditions: Yup.array().of(Yup.object().shape({
+        condition: Yup.string().required('Please select condition'),
+        value: Yup.mixed(),
+      }))
     })).min(1, "Field mapping is required"),
     additionalFields: Yup.array(),
     repository: Yup.string().required("Repository is required"),
@@ -91,9 +95,13 @@ export default function ReactFlowDeliver({ data }) {
       fields: formData.mapping,
       mode: formData.mode,
       modelName: formData.model,
+      modelId: formData.modelId,
       respositoryName: formData.repository,
       additionalFields: formData.additionalFields
     }
+    console.log('newData, entered');
+
+    console.log('newData', newData);
     data.functions.handleBluePrintComponent(data.label, data.id, newData);
     setIsOpen(false);
   });

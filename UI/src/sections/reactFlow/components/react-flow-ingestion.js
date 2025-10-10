@@ -26,12 +26,20 @@ export default function ReactFlowIngestion({ data }) {
                 /^(https?:\/\/)?(www\.)?([a-zA-Z0-9-]+\.)+[a-zA-Z]{2,}(\/\S*)?$/,
                 "Enter a valid URL (like: www.example.com or http://example.com)"
             ),
+        loginSessionEnabled: Yup.boolean().required('Please select whether to use login session or not'),
+        storageStatePath: Yup.string().when("loginSessionEnabled", {
+            is: true,
+            then: (schema) => schema.required("Please add file name"),
+            otherwise: (schema) => schema.notRequired(),
+        }),
     });
 
 
     const defaultValues = useMemo(
         () => ({
             url: data.bluePrint?.data?.url || '',
+            loginSessionEnabled: data.bluePrint?.data?.session?.enabled || false,
+            storageStatePath: data.bluePrint?.data?.session?.storageStatePath || '',
         }),
         [data]
     );
@@ -51,15 +59,23 @@ export default function ReactFlowIngestion({ data }) {
     } = methods;
 
     const values = watch();
-    console.log('values', values);
-
     const onSubmit = handleSubmit(async (formData) => {
-        console.log("Url", formData);
         const newData = {
-            id:  data.id,
+            id: data.id,
             nodeName: data.label,
             type: data.type,
-            data: formData
+            data: {
+                url: formData.url,
+                headers: {
+                    "User-Agent": "Mozilla/5.0",
+                },
+                session: {
+                    enabled: formData.loginSessionEnabled,
+                    storageStatePath: formData.storageStatePath,
+                    load: formData.loginSessionEnabled ? true : false,
+                    save: formData.loginSessionEnabled ? true : false,
+                }
+            }
         }
         data.functions?.handleBluePrintComponent?.(data.label, data.id, newData);
         handleCloseModal();
@@ -91,7 +107,7 @@ export default function ReactFlowIngestion({ data }) {
     }
 
     return (
-        <Stack sx={{ marginTop: 3 }} spacing={1}>
+        <Stack sx={{ marginTop: 3 }} spacing={1} direction={'column'}>
             <ReactFlowCustomNodeStructure data={data} />
             <Typography variant='h5'>1. {data.label}</Typography>
             {(data?.isProcessInstance !== true) && <Button sx={{ width: '200px', color: 'royalBlue', borderColor: 'royalBlue' }} variant='outlined' onClick={() => handleOpenModal()}>Add Url</Button>}
@@ -102,14 +118,44 @@ export default function ReactFlowIngestion({ data }) {
                 title='Add Url'
             >
                 <FormProvider methods={methods} onSubmit={onSubmit}>
-                    <Grid item xs={12} md={12}>
-                        <RHFTextField name='url' label='URL' />
+                    <Grid container spacing={3}>
+                        {/* URL Field */}
+                        <Grid item xs={12}>
+                            <RHFTextField name="url" label="Website URL" fullWidth />
+                        </Grid>
+
+                        {/* Session Management */}
+                        <Grid item xs={12}>
+                            <Typography variant="h6" sx={{ mb: 1 }}>
+                                Session Management
+                            </Typography>
+                            <RHFSelect name="loginSessionEnabled" label="Login Session Enabled" fullWidth>
+                                {[{ label: "True", value: true }, { label: "False", value: false }].map((opt) => (
+                                    <MenuItem key={opt.value.toString()} value={opt.value}>
+                                        {opt.label}
+                                    </MenuItem>
+                                ))}
+                            </RHFSelect>
+                        </Grid>
+
+                        {/* Storage State Path (conditional field) */}
+                        {values.loginSessionEnabled && (
+                            <Grid item xs={12}>
+                                <RHFTextField name="storageStatePath" label="Storage State File Name" fullWidth />
+                            </Grid>
+                        )}
+
+                        {/* Submit Button */}
+                        {data?.isProcessInstance !== true && (
+                            <Grid item xs={12}>
+                                <Stack alignItems="flex-end" sx={{ mt: 2 }}>
+                                    <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
+                                        Add
+                                    </LoadingButton>
+                                </Stack>
+                            </Grid>
+                        )}
                     </Grid>
-                    {(data?.isProcessInstance !== true) && <Stack alignItems="flex-end" sx={{ mt: 3, display: 'flex', gap: '10px' }}>
-                        <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                            Add
-                        </LoadingButton>
-                    </Stack>}
                 </FormProvider>
             </CustomProcessDialogue>
 

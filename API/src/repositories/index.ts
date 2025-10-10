@@ -10,3 +10,4 @@ export * from './workflow-instances.repository';
 export * from './production-naukri.repository';
 export * from './dags.repository';
 export * from './test-extraction-logs.repository';
+export * from './staging-linkedin.repository';

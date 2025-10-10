@@ -66,6 +66,51 @@ const getValidationSchema = (stagingMode, deliverMode) =>
       rules: Yup.array(),
     })).min(1, "Field mapping is required"),
     duplicatesAllowed: Yup.boolean().required('Value is required'),
+    duplicatesMatching: Yup.string().when('duplicatesAllowed', {
+      is: false,
+      then: (schema) => schema.required('Please select matching type'),
+      otherwise: (schema) => schema.notRequired(),
+    }),
+
+    duplicatesConstraints: Yup.array()
+      .of(
+        Yup.object().shape({
+          fields: Yup.array()
+            .of(Yup.string().required('Select field required'))
+            .when(['$duplicatesAllowed', '$duplicatesMatching'], {
+              is: (duplicatesAllowed, duplicatesMatching) =>
+                duplicatesAllowed === false && duplicatesMatching === 'custom',
+              then: (schema) => schema.required('Field selection required'),
+              otherwise: (schema) => schema.notRequired(),
+            }),
+
+          type: Yup.string()
+            .when(['$duplicatesAllowed', '$duplicatesMatching'], {
+              is: (duplicatesAllowed, duplicatesMatching) =>
+                duplicatesAllowed === false && duplicatesMatching === 'custom',
+              then: (schema) => schema.required('Type is required'),
+              otherwise: (schema) => schema.notRequired(),
+            }),
+
+          algorithm: Yup.string().when('type', {
+            is: 'string',
+            then: (schema) => schema.required('Algorithm is required'),
+            otherwise: (schema) => schema.notRequired(),
+          }),
+
+          threshold: Yup.number().when('type', {
+            is: 'string',
+            then: (schema) => schema.required('Please select threshold'),
+            otherwise: (schema) => schema.notRequired(),
+          }),
+        })
+      )
+      .when(['duplicatesAllowed', 'duplicatesMatching'], {
+        is: (duplicatesAllowed, duplicatesMatching) =>
+          duplicatesAllowed === false && duplicatesMatching === 'custom',
+        then: (schema) => schema.min(1, 'At least one constraint is required'),
+        otherwise: (schema) => schema.notRequired(),
+      }),
     additionalFields: Yup.array(),
     dataAcceptanceRule: Yup.array()
   });
@@ -88,8 +133,8 @@ function storeFields(data = []) {
     ...item,
     rules: Array.isArray(item.rules)
       ? item.rules.map((rule) => ({
-          [rule.label]: rule.value,
-        }))
+        [rule.label]: rule.value,
+      }))
       : [],
   }));
 }
@@ -113,6 +158,8 @@ export default function ReactFlowTransformation({ data }) {
       additionalFields: data?.bluePrint?.additionalFields || [],
       dataAcceptanceRule: data?.bluePrint?.dataAcceptanceRule || [],
       duplicatesAllowed: data?.bluePrint?.duplicatesAllowed || false,
+      duplicatesConstraints: data?.bluePrint?.duplicatesConstraints || [],
+      duplicatesMatching: data?.bluePrint?.duplicatesMatching || 'exact',
       endpoint: data.bluePrint?.endpoint || "",
       headers: data.bluePrint?.headers || "",
       payload: data.bluePrint?.payloadMapping || {},
@@ -155,7 +202,10 @@ export default function ReactFlowTransformation({ data }) {
       stagingRepositoryName: formData.stagingRepositoryName,
       deliverRepositoryName: formData.deliverRepositoryName,
       stagingModelId: formData.stagingModelId,
-      deliverModelId: formData.deliverModelId
+      deliverModelId: formData.deliverModelId,
+      duplicatesAllowed: formData.duplicatesAllowed,
+      duplicatesMatching: formData.duplicatesMatching,
+      duplicatesConstraints: formData.duplicatesConstraints
     }
     data.functions.handleBluePrintComponent(data.label, data.id, newData);
     setIsOpen(false);

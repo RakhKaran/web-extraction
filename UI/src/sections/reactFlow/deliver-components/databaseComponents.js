@@ -3,6 +3,7 @@ import { Grid, MenuItem, TextField, Stack, Button, Typography } from "@mui/mater
 import { RHFSelect, RHFTextField } from "src/components/hook-form";
 import axiosInstance from "src/utils/axios";
 import { useFieldArray, useFormContext } from "react-hook-form";
+import Conditions from "./conditions";
 
 // Dummy Locate JSON schema
 // const locateSchema = {
@@ -26,6 +27,8 @@ export default function DatabaseComponents() {
     control,
     name: "additionalFields",
   });
+
+  const values = watch();
 
   const fieldsType = [
     { label: "string", value: "string" },
@@ -68,7 +71,16 @@ export default function DatabaseComponents() {
               field.name !== "isSync"
           );
           setDbFields(newArray);
+
+          if (newArray.length > 0) {
+            newArray.forEach((item, index) => {
+              setValue(`mapping.${index}.modelField`, item.name);
+              setValue(`mapping.${index}.type`, item.type);
+            });
+          }
+
           setValue('model', res.data.modelName);
+          setValue('modelId', res.data.id);
           setValue('repository', res.data.repositoryName);
         }
       })
@@ -77,6 +89,8 @@ export default function DatabaseComponents() {
         setDbFields([]);
       });
   }, [selectedId]);
+
+  console.log('values', values);
 
   return (
     <Grid container spacing={2}>
@@ -99,36 +113,39 @@ export default function DatabaseComponents() {
 
         {/* Display fields and dummy locateData dropdown */}
         {dbFields.map((field, index) => (
-          <Stack
-            direction="row"
-            spacing={2}
-            key={field.name}
-            sx={{ width: "100%", mt: 2 }}
-          >
-            {/* Model Field (readonly, pre-filled) */}
-            <RHFTextField
-              fullWidth
-              name={`mapping.${index}.modelField`}
-              label="Field Name"
-              value={field.name}
-              InputProps={{ readOnly: true }}
-            />
+          <Stack direction='column' spacing={1}>
+            <Stack
+              direction="row"
+              spacing={2}
+              key={field.name}
+              sx={{ width: "100%", mt: 2 }}
+            >
+              {/* Model Field (readonly, pre-filled) */}
+              <RHFTextField
+                fullWidth
+                name={`mapping.${index}.modelField`}
+                label="Field Name"
+                InputProps={{ readOnly: true }}
+              />
 
-            {/* Field Type (readonly, pre-filled) */}
-            <RHFTextField
-              fullWidth
-              name={`mapping.${index}.type`}
-              label="Field Type"
-              value={field.type}
-              InputProps={{ readOnly: true }}
-            />
+              {/* Field Type (readonly, pre-filled) */}
+              <RHFTextField
+                fullWidth
+                name={`mapping.${index}.type`}
+                label="Field Type"
+                InputProps={{ readOnly: true }}
+              />
 
-            {/* Mapping dropdown (user selects target field) */}
-            <RHFTextField
-              fullWidth
-              name={`mapping.${index}.mappedField`}
-              label="Mapped Field"
-            />
+              {/* Mapping dropdown (user selects target field) */}
+              <RHFTextField
+                fullWidth
+                name={`mapping.${index}.mappedField`}
+                label="Mapped Field"
+              />
+            </Stack>
+
+            {/* conditions for fields.. */}
+            <Conditions index={index} type={field.type} />
           </Stack>
         ))}
 

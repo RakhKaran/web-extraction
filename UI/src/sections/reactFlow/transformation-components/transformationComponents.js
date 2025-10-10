@@ -12,6 +12,7 @@ import {
 import { RHFSelect, RHFTextField } from "src/components/hook-form";
 import axiosInstance from "src/utils/axios";
 import { Controller, useFieldArray, useFormContext } from "react-hook-form";
+import DuplicatesValidationSection from "./duplicatesValidationSection";
 
 export default function TransformationComponents() {
   const [databases, setDatabases] = useState([]);
@@ -37,7 +38,7 @@ export default function TransformationComponents() {
     control,
     name: "dataAcceptanceRule",
   });
-  // const values = watch("customFields");
+  const yupValues = watch();
   const values = ["today", "yesterday", "day", "days", "days", "week", "weeks", "weeks", "month", "months", "year", "years", "date", "date"];
 
   const rulesOptions = [
@@ -174,40 +175,6 @@ export default function TransformationComponents() {
       {/* Production fields mapping */}
       {productionId && productionFields.length > 0 && (
         <Grid item xs={12}>
-          {/* One toggle for all fields */}
-          <Stack direction="row" alignItems="center" spacing={1}>
-            <Typography variant="h6">isDuplicatesAllowed?</Typography>
-            <Controller
-              name="duplicatesAllowed"
-              control={control}
-              defaultValue={false}
-              render={({ field }) => (
-                <Switch
-                  {...field}
-                  checked={field.value}
-                  onChange={(e) => field.onChange(e.target.checked)}
-                  sx={{
-                    "& .MuiSwitch-switchBase.Mui-checked": {
-                      color: "#fff",
-                      transform: "translateX(20px)",
-                      "& + .MuiSwitch-track": {
-                        backgroundColor: "green",
-                        opacity: 1,
-                      },
-                    },
-                    "& .MuiSwitch-switchBase": {
-                      color: "#fff",
-                    },
-                    "& .MuiSwitch-track": {
-                      backgroundColor: "red",
-                      opacity: 1,
-                    },
-                  }}
-                />
-              )}
-            />
-          </Stack>
-
           {/* Production model fields */}
           {productionFields.map((field, index) => {
             const isCustom = customSelected[field.name] === true;
@@ -439,6 +406,62 @@ export default function TransformationComponents() {
             >
               + Add Field
             </Button>
+          </Stack>
+
+          <br />
+          {/* One toggle for all fields */}
+          <Stack direction='column' spacing={1}>
+            <Typography variant="h6">Data Duplication Validation Rules:</Typography>
+
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <Typography variant="body1">isDuplicatesAllowed?</Typography>
+              <Controller
+                name="duplicatesAllowed"
+                control={control}
+                defaultValue={false}
+                render={({ field }) => (
+                  <Switch
+                    {...field}
+                    checked={field.value}
+                    onChange={(e) => field.onChange(e.target.checked)}
+                    sx={{
+                      "& .MuiSwitch-switchBase.Mui-checked": {
+                        color: "#fff",
+                        transform: "translateX(20px)",
+                        "& + .MuiSwitch-track": {
+                          backgroundColor: "green",
+                          opacity: 1,
+                        },
+                      },
+                      "& .MuiSwitch-switchBase": {
+                        color: "#fff",
+                      },
+                      "& .MuiSwitch-track": {
+                        backgroundColor: "red",
+                        opacity: 1,
+                      },
+                    }}
+                  />
+                )}
+              />
+            </Stack>
+
+            {yupValues.duplicatesAllowed === false && (
+              <RHFSelect name="duplicatesMatching" label="Matching Type">
+                {[
+                  { label: "Exact Matching", value: "exact" },
+                  { label: "Custom Matching", value: "custom" },
+                ].map((opt) => (
+                  <MenuItem key={opt.value} value={opt.value}>
+                    {opt.label}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
+            )}
+
+            {yupValues.duplicatesMatching === "custom" && yupValues.duplicatesAllowed === false && (
+              <DuplicatesValidationSection fieldsOpt={productionFields} />
+            )}
           </Stack>
         </Grid>
       )}

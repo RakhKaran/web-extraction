@@ -17,6 +17,7 @@ const selectorTypeOptions = [
   { label: "Placeholder", value: "placeholder" },
   { label: "List", value: "list" },
   { label: "Object", value: "object" },
+  { label: "Attribute", value: "attr"},
 ];
 
 const searchSelectorOptions = [

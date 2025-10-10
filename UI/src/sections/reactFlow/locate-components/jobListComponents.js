@@ -17,6 +17,7 @@ const selectorTypeOptions = [
   { label: "Placeholder", value: "placeholder" },
   { label: "List", value: "list" },
   { label: "Object", value: "object" },
+  { label: "Attribute", value: "attr" },
 ];
 
 const searchSelectorOptions = [
@@ -34,7 +35,7 @@ function generateRandomId() {
 
 function RenderFields({ name }) {
   const { control, watch, setValue } = useFormContext();
-  const { fields, append, remove } = useFieldArray({ control, name});
+  const { fields, append, remove } = useFieldArray({ control, name });
   const values = watch(name);
 
   console.log('values', values);
@@ -65,15 +66,15 @@ function RenderFields({ name }) {
           current.children.length > 0
             ? current.children
             : [
-                {
-                  id: generateRandomId(),
-                  fieldName: "",
-                  selector: "",
-                  selectorType: "",
-                  attribute: "",
-                  children: [],
-                },
-              ],
+              {
+                id: generateRandomId(),
+                fieldName: "",
+                selector: "",
+                selectorType: "",
+                attribute: "",
+                children: [],
+              },
+            ],
       };
     } else {
       updated[index] = { ...current, selectorType: value };
@@ -178,6 +179,7 @@ function RenderFields({ name }) {
           + Add Field
         </Button>
       </Grid>
+
     </Grid>
   );
 }
@@ -207,6 +209,21 @@ export default function JobListFields() {
             ))}
           </RHFSelect>
         </Stack>
+
+        <Grid item xs={12} md={12}>
+          <Stack direction='column' spacing={1}>
+            <Typography variant="h5">Pagination Section</Typography>
+
+            <Grid container spacing={1}>
+              <Grid item xs={12} md={6}>
+                <RHFTextField name='paginationFields.numberOfPages' label='Number of pages' />
+              </Grid>
+              <Grid item xs={12} md={6}>
+                <RHFTextField name='paginationFields.nextPageSelectorName' label='Next page selector' />
+              </Grid>
+            </Grid>
+          </Stack>
+        </Grid>
       </Grid>
 
       {/* Fields Section */}

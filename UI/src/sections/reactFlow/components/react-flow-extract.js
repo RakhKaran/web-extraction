@@ -16,6 +16,7 @@ import FormProvider, { RHFSelect, RHFTextField } from "src/components/hook-form"
 import ReactFlowCustomNodeStructure from "../react-flow-custom-node";
 import CustomProcessDialogue from "./components-dialogue";
 import LogsProcessDialogue from "./logs-dialogue";
+import ActionsComponent from "./react-flow-actions-component";
 
 // Selector type dropdown options
 const searchSelectorOptions = [
@@ -40,6 +41,10 @@ export default function ReactFlowExtract({ data }) {
             name: Yup.string().required("Selector name is required"),
             selectorType: Yup.string().required("Selector type is required"),
         }),
+        actionFlow: Yup.array().of(Yup.object().shape({
+            selector: Yup.string().required('selector is required'),
+            action: Yup.string().required('Please select action type'),
+        }))
     });
 
     // Default values from blueprint
@@ -50,6 +55,7 @@ export default function ReactFlowExtract({ data }) {
                 name: data?.bluePrint?.selector?.name || "",
                 selectorType: data?.bluePrint?.selector?.selectorType || "",
             },
+            actionFlow: data?.bluePrint?.actionFlow || [],
         }),
         [data]
     );
@@ -73,7 +79,8 @@ export default function ReactFlowExtract({ data }) {
             data: {
                 searchText: formData.searchText
             },
-            selector: formData.selector
+            selector: formData.selector,
+            actionFlow: formData.actionFlow,
         }
         data.functions?.handleBluePrintComponent?.(data.label, data.id, newData);
         handleCloseModal();
@@ -145,6 +152,10 @@ export default function ReactFlowExtract({ data }) {
                                     </MenuItem>
                                 ))}
                             </RHFSelect>
+                        </Grid>
+
+                        <Grid item xs={12} md={12}>
+                            <ActionsComponent />
                         </Grid>
                     </Grid>
 

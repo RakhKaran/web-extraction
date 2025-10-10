@@ -61,7 +61,7 @@ export const endpoints = {
     filterList: (filter) => `/designations?filter=${filter}`,
     details: (id) => `/designations/${id}`,
   },
-    workflows: {
+  workflows: {
     list: '/workflows',
     filterList: (filter) => `/workflows?filter=${filter}`,
     details: (id) => `/workflows/${id}`,

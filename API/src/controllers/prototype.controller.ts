@@ -28,6 +28,12 @@ export class PrototypeController {
         data: {
           url: "https://www.naukri.com",
           headers: { "User-Agent": "Mozilla/5.0" },
+          session: {
+            enabled: true,
+            storageStatePath: "../API/src/sessions/naukri.json",
+            load: true,
+            save: true
+          }
         },
       },
       {
@@ -39,6 +45,20 @@ export class PrototypeController {
           name: "Enter skills / designations / companies",
           selectorType: "placeholder",
         },
+        actionFlow: [
+          {
+            selector: '.container.dashboard',
+            type: 'html',
+            action: 'click',
+            data: null
+          },
+          {
+            selector: '.nI-gNb-sb__main',
+            type: 'html',
+            action: 'click',
+            data: null
+          }
+        ],
       },
       {
         id: 3,
@@ -269,6 +289,92 @@ export class PrototypeController {
     ],
   };
 
+  // apply conditions
+  private applyConditions(value: any, type: string, conditions: any[]): boolean {
+    if (!conditions || conditions.length === 0) return true; // no validation, pass
+
+    for (const cond of conditions) {
+      const { condition, value: condValue } = cond;
+
+      switch (condition) {
+        // STRING TYPE
+        case 'notValid':
+          if (value === condValue || value === undefined || value === null) return false;
+          break;
+        case 'minLength':
+          if (typeof value === 'string' && value.length < Number(condValue)) return false;
+          break;
+        case 'maxLength':
+          if (typeof value === 'string' && value.length > Number(condValue)) return false;
+          break;
+        case 'email':
+          if (typeof value === 'string' && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) return false;
+          break;
+        case 'phone':
+          if (typeof value === 'string' && !/^[0-9]{10,15}$/.test(value)) return false;
+          break;
+
+        // NUMBER TYPE
+        case 'min':
+          if (Number(value) < Number(condValue)) return false;
+          break;
+        case 'max':
+          if (Number(value) > Number(condValue)) return false;
+          break;
+        case 'positive':
+          if (Number(value) <= 0) return false;
+          break;
+        case 'negative':
+          if (Number(value) >= 0) return false;
+          break;
+        case 'integer':
+          if (!Number.isInteger(Number(value))) return false;
+          break;
+
+        // BOOLEAN TYPE
+        case 'isTrue':
+          if (value !== true) return false;
+          break;
+        case 'isFalse':
+          if (value !== false) return false;
+          break;
+
+        // ARRAY TYPE
+        case 'min':
+          if (Array.isArray(value) && value.length < Number(condValue)) return false;
+          break;
+        case 'max':
+          if (Array.isArray(value) && value.length > Number(condValue)) return false;
+          break;
+        case 'includes':
+          if (Array.isArray(value) && !value.includes(condValue)) return false;
+          break;
+        case 'unique':
+          if (Array.isArray(value) && new Set(value).size !== value.length) return false;
+          break;
+
+        // DATE TYPE
+        case 'before':
+          if (new Date(value) >= new Date(condValue)) return false;
+          break;
+        case 'after':
+          if (new Date(value) <= new Date(condValue)) return false;
+          break;
+        case 'min':
+          if (new Date(value) < new Date(condValue)) return false;
+          break;
+        case 'max':
+          if (new Date(value) > new Date(condValue)) return false;
+          break;
+
+        default:
+          console.warn(`Unknown condition: ${condition}`);
+      }
+    }
+
+    return true;
+  }
+
   private buildSelector(page: any, selector: { name: string; selectorType: string }) {
     switch (selector.selectorType) {
       case "id":
@@ -345,6 +451,35 @@ export class PrototypeController {
     return (await el.innerText())?.trim();
   }
 
+  // handleActions
+  private async handleActions(actions: any[], page: any) {
+    try {
+      for (const action of actions) {
+        const { selector } = action;
+        console.log(`Performing action for selector ${selector} - `, action.action);
+
+        switch (action.action) {
+          case 'click':
+            await page.waitForSelector(selector, { timeout: 15000 });
+            const element = await page.$(selector);
+            if (element) {
+              console.log('element found');
+              await element.click();
+              console.log('element cliked');
+            } else {
+              console.log('element not found');
+            }
+            break;
+
+          default:
+            console.warn(`Unknown action: ${selector.action}`);
+        }
+      }
+    } catch (error) {
+      console.error('Error while performing action', error);
+    }
+  }
+
   // initialize
   private async handleInitializeNode(node: any, extractionId: string) {
     const browser = await chromium.launch({
@@ -358,7 +493,7 @@ export class PrototypeController {
     const session = node?.data?.session;
 
     if (session?.enabled) {
-      const storageStatePath = path.resolve(session.storageStatePath);
+      const storageStatePath = path.resolve(`../API/src/sessions/${session.storageStatePath}.json`);
 
       if (session.load && fs.existsSync(storageStatePath)) {
         console.log(`🔑 Using saved session from ${storageStatePath}`);
@@ -430,6 +565,10 @@ export class PrototypeController {
   private async handleSearchNode(page: any, node: any) {
     if (!node?.selector) return;
 
+    if (node.actionFlow && node.actionFlow.length > 0) {
+      await this.handleActions(node.actionFlow, page);
+    }
+
     const searchInput = this.buildSelector(page, node.selector);
     await searchInput.fill(node?.data?.searchText);
     await searchInput.press("Enter");
@@ -439,17 +578,74 @@ export class PrototypeController {
   // listing node
   private async handleJobListNode(page: any, node: any): Promise<string[]> {
     const jobLinks: string[] = [];
+
+    // Run pre-defined actions first (if any)
+    if (node.actionFlow && node.actionFlow.length > 0) {
+      await this.handleActions(node.actionFlow, page);
+    }
+
     const selectorName = node?.selector?.name;
     if (!selectorName) return jobLinks;
 
-    const jobCards = await page.$$(selectorName);
+    // Extract pagination configuration (optional)
+    const pagination = node?.paginationFields;
+    const nextPageSelector = pagination?.nextPageSelectorName;
+    const totalPages = pagination?.numberOfPages || 1;
 
-    // take only the first 5 cards
-    for (let card of jobCards.slice(0, 5)) {
-      const href = await card.getAttribute("href");
-      if (href) jobLinks.push(href);
+    for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
+      console.log(`🔹 Scraping page ${pageIndex + 1}`);
+
+      try {
+        // Wait for job cards to load
+        await page.waitForSelector(selectorName, { timeout: 15000 });
+
+        const jobCards = await page.$$(selectorName);
+        console.log(`Found ${jobCards.length} job cards`);
+
+        // Extract up to 5 job links (optional)
+        for (let card of jobCards.slice(0, 5)) {
+          const href = await card.getAttribute("href");
+          if (href) jobLinks.push(href);
+        }
+
+        // Stop if pagination not configured or last page
+        if (!pagination || !nextPageSelector || pageIndex === totalPages - 1) {
+          console.log("✅ No more pagination or last page reached.");
+          break;
+        }
+
+        // Try finding next button
+        const nextBtn = await page.$(nextPageSelector);
+        if (!nextBtn) {
+          console.log("🚫 Next button not found, ending pagination.");
+          break;
+        }
+
+        // Check if next button is disabled
+        const isDisabled = await nextBtn.isDisabled?.() || await page.evaluate(
+          (btn: any) => btn.disabled || btn.getAttribute("disabled") !== null,
+          nextBtn
+        );
+
+        if (isDisabled) {
+          console.log("🚫 Next button is disabled. Ending pagination.");
+          break;
+        }
+
+        console.log("➡️ Clicking next page...");
+        await nextBtn.click();
+
+        // Wait for page content to refresh
+        await page.waitForLoadState("domcontentloaded", { timeout: 10000 });
+        await page.waitForTimeout(2000);
+
+      } catch (err: any) {
+        console.error(`⚠️ Error while scraping page ${pageIndex + 1}: ${err.message}`);
+        break;
+      }
     }
 
+    console.log("✅ Final job links:", jobLinks);
     return jobLinks;
   }
 
@@ -475,6 +671,10 @@ export class PrototypeController {
             jobPage.waitForSelector(selector, { timeout: 10000 })
           )
         );
+
+        if (node.actionFlow && node.actionFlow.length > 0) {
+          await this.handleActions(node.actionFlow, jobPage);
+        }
 
         let record: any = { link };
 
@@ -527,6 +727,7 @@ export class PrototypeController {
         }
 
         extractedData.push(record);
+        console.log('extracted Data', extractedData);
         await jobPage.close();
 
       } catch (err) {
@@ -578,7 +779,7 @@ export class PrototypeController {
 
         // Map fields
         for (const field of node.fields ?? []) {
-          const { modelField, mappedField, type } = field;
+          const { modelField, mappedField, type, conditions = [] } = field;
           let value = record[mappedField];
 
           if (value === undefined || value === null || value === '') {
@@ -590,6 +791,19 @@ export class PrototypeController {
             if (type === 'date') value = new Date(value);
             if (type === 'boolean')
               value = value === true || value === 'true' || value === 1;
+          }
+
+          if (conditions.length > 0) {
+            const isValid = this.applyConditions(value, type, conditions);
+            if (!isValid) {
+              await this.testExtractionLogsRepository.create({
+                extractionId,
+                logsDescription: `Field "${modelField}" failed condition check for record: ${JSON.stringify(record)}`,
+                logType: 1,
+                isActive: true,
+              });
+              continue;
+            }
           }
 
           payload[modelField] = value;
@@ -698,7 +912,6 @@ export class PrototypeController {
       return rest;
     });
 
-    console.log('stagingData', stagingData);
     const successRecords: any[] = [];
     const errorRecords: any[] = [];
 
@@ -711,7 +924,6 @@ export class PrototypeController {
 
         // Null check
         if (!field.isNullAccepted && (value === null || value === undefined || value === "")) {
-          console.log('1', field.mappedField);
           hasError = true;
           continue;
         }
@@ -728,15 +940,11 @@ export class PrototypeController {
               if (match) {
                 value = Number(match[0]); // take first numeric part
               } else {
-                console.log('2', field.mappedField);
-
                 hasError = true; // invalid number (e.g. "N/A")
               }
             } else if (typeof value === "number") {
               value = value;
             } else {
-              console.log('3', field.mappedField);
-
               hasError = true;
             }
             break;
@@ -750,9 +958,6 @@ export class PrototypeController {
             if (parsedDate && !isNaN(parsedDate.getTime())) {
               value = parsedDate;
             } else {
-              console.log('value', value)
-              console.log('parsedDate', parsedDate);
-              console.log('4', field)
               hasError = true;   // mark record as errored
               value = null;      // or keep original value if you want to store raw
             }
@@ -972,7 +1177,7 @@ export class PrototypeController {
           switch (node.type) {
             case "start":
               const init = await this.handleInitializeNode(node, extractionId);
-              browser = init.browser;
+              browser = init.browserContext;
               page = init.page;
               break;
 

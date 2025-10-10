@@ -1,0 +1,321 @@
+{
+  "cookies": [
+    {
+      "name": "test",
+      "value": "naukri.com",
+      "domain": ".naukri.com",
+      "path": "/",
+      "expires": 1793856449.486873,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_t_us",
+      "value": "68DCBBC0",
+      "domain": ".naukri.com",
+      "path": "/",
+      "expires": 1759298249.487016,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_t_s",
+      "value": "direct",
+      "domain": ".naukri.com",
+      "path": "/",
+      "expires": 1759382849.487056,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_t_r",
+      "value": "1030%2F%2F",
+      "domain": ".naukri.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "persona",
+      "value": "default",
+      "domain": ".naukri.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_t_ds",
+      "value": "d30638d61759296448-15d30638d6-0d30638d6",
+      "domain": ".naukri.com",
+      "path": "/",
+      "expires": 1790832449.487113,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "J",
+      "value": "0",
+      "domain": ".naukri.com",
+      "path": "/",
+      "expires": 1790832618.754711,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_ga",
+      "value": "GA1.1.1293747760.1759296450",
+      "domain": ".naukri.com",
+      "path": "/",
+      "expires": 1793856615.507861,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ak_bmsc",
+      "value": "1A220FFE99DB845D1370BB7090590F55~000000000000000000000000000000~YAAQVaXBFxD9zVaZAQAAyms9nh3NbtK74N/Mc9o5WcJVwxGzKh1RberRGj+oJUTzYzun/pvBqmaIuEKSVfDN1w3Ym4FGpujtJdapu1mrZeL1XyWKn8LQOUkXEWu6V1lkqmwuAwbV91jZQBPoG8y1tP44Gbg8vMSE418p84OT5eKqX0Uz82j6msuezjkJ1R3VkOb8VVyXVW+HKdB6mKOy/moD8i6G6fdJiwGwqbWC5T4OSiJzMe3ToqyZicYyK8TnX4F5tsWdId8nOSMh30CigKuECus8XV4TByJFO/2Qp3Zc23H8N4FWUhmO1HKnELv/fNG3nCbDit4Ho5oQcc3sCxWbvFxoaUyjPf0Km9jxrWdVt9mLMadEp7GmhlNXiCpa+O+XrirP1k5ODIWd+Gv86Y7YXADBNSvDGbnYMGF+orRWF5dgCFyMqNKevVFowC6dDtqms1P1p8mY4OheJnsLG7PwEQZYGuY0m6kp3oiQsU+sRZmXKMPesw==",
+      "domain": ".naukri.com",
+      "path": "/",
+      "expires": 1759303649.26536,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "_gcl_au",
+      "value": "1.1.858287794.1759296450",
+      "domain": ".naukri.com",
+      "path": "/",
+      "expires": 1767072450,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "receive-cookie-deprecation",
+      "value": "1",
+      "domain": ".doubleclick.net",
+      "path": "/",
+      "expires": 1774848466.964377,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None",
+      "partitionKey": "https://naukri.com",
+      "_crHasCrossSiteAncestor": true
+    },
+    {
+      "name": "IDE",
+      "value": "AHWqTUlpHYB_thMDcKTG1uE8pAitF4R6Bg8I19okDPIpGXOEZarxZCWDh6Kc94l8",
+      "domain": ".doubleclick.net",
+      "path": "/",
+      "expires": 1793856452.989077,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_t_ds",
+      "value": "293968610315731267723-1759296456.227",
+      "domain": ".logs.infoedgeindia.com",
+      "path": "/",
+      "expires": 1790832457.097597,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_ga_T749QGK6MQ",
+      "value": "GS2.1.s1759296450$o1$g1$t1759296465$j45$l0$h0",
+      "domain": ".naukri.com",
+      "path": "/",
+      "expires": 1793856465.602392,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "MYNAUKRI[UNID]",
+      "value": "a679a3dc75b4418b9549b54233754650",
+      "domain": ".naukri.com",
+      "path": "/",
+      "expires": 1790832576.826965,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "NKWAP",
+      "value": "d94c7730534d7d6cb0ea2fc0d4a0753605accf0ef21c363be289f426619e8c3e08b05ee52a8d9794~d94c7730534d7d6cb0ea2fc0d4a0753605accf0ef21c363be289f426619e8c3e08b05ee52a8d9794~1~0",
+      "domain": ".naukri.com",
+      "path": "/",
+      "expires": 1790832576.827029,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "nauk_at",
+      "value": "eyJraWQiOiIzIiwidHlwIjoiSldUIiwiYWxnIjoiUlM1MTIifQ.eyJkZXZpY2VUeXBlIjoiZDNza3QwcCIsInVkX3Jlc0lkIjozMTM5NjkwODAsInN1YiI6IjMyNTAyNDkwNCIsInVkX3VzZXJuYW1lIjoic3VubmJvc3M3OEBnbWFpbC5jb20iLCJ1ZF9pc0VtYWlsIjp0cnVlLCJpc3MiOiJJbmZvRWRnZSBJbmRpYSBQdnQuIEx0ZC4iLCJ1c2VyQWdlbnQiOiJNb3ppbGxhLzUuMCAoV2luZG93cyBOVCAxMC4wOyBXaW42NDsgeDY0KSBBcHBsZVdlYktpdC81MzcuMzYgKEtIVE1MLCBsaWtlIEdlY2tvKSBDaHJvbWUvMTIwIFNhZmFyaS81MzcuMzYiLCJpcEFkcmVzcyI6IjE3Mi4xMC4yMjMuNTIiLCJ1ZF9pc1RlY2hPcHNMb2dpbiI6ZmFsc2UsInVzZXJJZCI6MzI1MDI0OTA0LCJzdWJVc2VyVHlwZSI6ImpvYnNlZWtlciIsInVzZXJTdGF0ZSI6IkFVVEhFTlRJQ0FURUQiLCJ1ZF9pc1BhaWRDbGllbnQiOmZhbHNlLCJ1ZF9lbWFpbFZlcmlmaWVkIjpmYWxzZSwidXNlclR5cGUiOiJqb2JzZWVrZXIiLCJzZXNzaW9uU3RhdFRpbWUiOiIyMDI1LTEwLTAxVDEwOjU5OjM1IiwidWRfZW1haWwiOiJzdW5uYm9zczc4QGdtYWlsLmNvbSIsInVzZXJSb2xlIjoidXNlciIsImV4cCI6MTc1OTMwMDE3NSwidG9rZW5UeXBlIjoiYWNjZXNzVG9rZW4iLCJpYXQiOjE3NTkyOTY1NzUsImp0aSI6Ijg3MGUxOGUyOWNkMjQyYTA4YWE4Njk1YzZkNTJhZDhhIiwicG9kSWQiOiJwcm9kLTU0YjhjNmQ5OC16NDg3ZyJ9.V5rj6yAJ4mBJmlJrNlVs1CB0ics_LPtlS_8lPPaqKs_wfDDemJmHcwMSeBcQyDRflcJzGYIHL26lDV8V9pDpkN5C4zJs_qiCXCk0y98dGwuNUiPwXswzW8709STQDveatkfs8nes4XdDtwtc0yQB8KqIxN53byjCvNj52H414WV2tJ2KG9_FXeVDJt0fs68o1R_eBp6jgpFM6mFYip90guAZdfD3_tVt7NBe64cKPm-cu6NyDAdfkXrq0Kr2VRTn-tG-d1vHQJtb7Ph_TeSjq9Bz1b03cL7NzREks53Mam7Raf3YgV6B-JT7AHhRYKqsu7Ezwm_pgR38ekIUK1xKgw",
+      "domain": ".naukri.com",
+      "path": "/",
+      "expires": 1759300175.827064,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "nauk_rt",
+      "value": "870e18e29cd242a08aa8695c6d52ad8a",
+      "domain": ".naukri.com",
+      "path": "/",
+      "expires": 1790832575.827132,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "nauk_otl",
+      "value": "870e18e29cd242a08aa8695c6d52ad8a",
+      "domain": ".naukri.com",
+      "path": "/",
+      "expires": 1790832575.827153,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "nauk_sid",
+      "value": "870e18e29cd242a08aa8695c6d52ad8a",
+      "domain": ".naukri.com",
+      "path": "/",
+      "expires": 1790832575.827173,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "nauk_ps",
+      "value": "default",
+      "domain": ".naukri.com",
+      "path": "/",
+      "expires": 1790832617.009087,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "bm_sv",
+      "value": "7E3DD564AD5E17A5A618224E071C2044~YAAQVaXBFyqVzlaZAQAAnPk/nh1j9t0ny3P5G7XWcbwP28ISQeTwXXV9XfRlIi0xyNPDPrGOvgExkIah4QjT+OZBkdVELDNdN41tN51mJf/yiU43I5XnyPB1Jy0gN4ZiH3K0iwlhTG4fS3RBwKsqfhoAyr6Y4LWIrDxgj2eRjmrrw3x2ZNvLpI+Crikp8P+c4Qaylwxemtc5R1fXE2TZLjmvb16rUWQIgl6vF8llgivz/AkPmRmSdn0Nh/xk1xeTmw==~1",
+      "domain": ".naukri.com",
+      "path": "/",
+      "expires": 1759303650.804074,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "HOWTORT",
+      "value": "cl=1759296567157&r=https%3A%2F%2Fwww.naukri.com%2Fmnjuser%2Fhomepage&nu=javascript%3Avoid(0)&ul=1759296636507&hd=1759296636509",
+      "domain": ".naukri.com",
+      "path": "/",
+      "expires": 1759296756,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_ga_K2YBNZVRLL",
+      "value": "GS2.1.s1759296449$o1$g1$t1759296636$j60$l0$h0",
+      "domain": ".naukri.com",
+      "path": "/",
+      "expires": 1793856636.513623,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://www.naukri.com",
+      "localStorage": [
+        {
+          "name": "resetCodeCounter-sunnboss78@gmail.com",
+          "value": "{\"resendCount\":1,\"resendTimestamp\":1759296578088}"
+        },
+        {
+          "name": "eventName_ub",
+          "value": "\"hamburgerView\""
+        },
+        {
+          "name": "widgets-[ni-desktop-homepage-v2]-c1",
+          "value": "{\"imd\":{\"mainSection\":{\"inventory-14\":{\"idx\":7},\"inventory-2\":{\"idx\":1},\"inventory-7\":{\"idx\":0},\"branding-premium\":{\"idx\":0},\"inventory-13\":{\"idx\":1},\"inventory-3\":{\"idx\":0},\"branding-standard\":{\"idx\":0},\"homepageEventsWdgt\":{\"idx\":0},\"inventory-4\":{\"idx\":0},\"inventory-5\":{\"idx\":0},\"inventory-8\":{\"idx\":0}},\"bottom-left-section\":{\"inventory-1\":{\"idx\":0}}},\"ts\":{\"ih\":null,\"ttl\":46950,\"rts\":1759296450568},\"wmd\":{\"ni-desktop-collated-touchpoint-homepage_v0\":{\"fts\":1759296450569},\"ni-desktop-awareness-ladder_v0\":{\"fts\":1759296450569},\"ni-desktop-awareness-angle_v0\":{\"fts\":1759296450569},\"ni-desktop-awareness-grow_v0\":{\"fts\":1759296450569},\"ni-desktop-awareness-think_v0\":{\"fts\":1759296450569},\"ni-desktop-womens-day-enrolment-logout-wow25_v0\":{\"fts\":1759296450569},\"ni-desktop-womens-day-enrolment-logedout-wow25_v0\":{\"fts\":1759296450569},\"ni-desktop-mock-interview-no-tag_v0\":{\"fts\":1759296450569},\"ni-desktop-mock-interview-w-tag_v0\":{\"fts\":1759296450569},\"ni-desktop-mock-interview-cta-free_v0\":{\"fts\":1759296450569},\"ni-desktop-mock-interview-cta-practice_v0\":{\"fts\":1759296450569},\"ni-desktop-expert-resume-help_v0\":{\"fts\":1759296450569},\"ni-desktop-expert-resume-marketing-wdgt_v0\":{\"fts\":1759296450569},\"popular-jobs-wdgt_v3\":{\"fts\":1759296450569},\"trending-naukri-wdgt_v0\":{\"fts\":1759296450569},\"trending-naukri-wdgt_v5\":{\"fts\":1759296450569},\"naukri-homepage-industry-wdgt_v5\":{\"fts\":1759296450569},\"naukri-homepage-industry-wdgt_v2\":{\"fts\":1759296450569},\"ni-desktop-homepage-v2_mainSection_branding-premium_v0\":{\"fts\":1759296450569},\"ni-desktop-homepage-v2_mainSection_diversityBranding_v0\":{\"fts\":1759296450569},\"nc-desktop-yt-promo-wdgt_v0\":{\"fts\":1759296450569},\"nc-desktop-promo-on-ni-wdgt_v0\":{\"fts\":1759296450569},\"nc-desktop-promotional-banners-wdgt_v1\":{\"fts\":1759296450569},\"nc-desktop-scholarship-banner-wdgt_v0\":{\"fts\":1759296450569},\"nc-desktop-scholarship-banner-wdgt_v1\":{\"fts\":1759296450569},\"nc-desktop-aincat-promo-wdgt_v0\":{\"fts\":1759296450569},\"role-collection-wdgt_v3\":{\"fts\":1759296450569},\"ni-desktop-homepage-v2_mainSection_branding-standard_v0\":{\"fts\":1759296450569},\"ni-desktop-homepage-v2_mainSection_homepageEventsWdgt_event_v0\":{\"fts\":1759296450569},\"naukri-ab-interview-wdgt_v1\":{\"fts\":1759296450569},\"ff-services-widget_v1\":{\"fts\":1759296450569},\"naukri-learning-career-wdgt_v0\":{\"fts\":1759296450569},\"download-app-link-json-wdgt_v4\":{\"fts\":1759296450569},\"download-app-link-json-wdgt_v5\":{\"fts\":1759296450569},\"scan-qr-overlay-wdgt_v4\":{\"fts\":1759296450569},\"sticky-promotional-navbar-wdgt_v1\":{\"fts\":1759296450569}}}"
+        },
+        {
+          "name": "deviceId_ub",
+          "value": "\"466e74b8-c549-4322-c5d2-43ed1b07bbba\""
+        },
+        {
+          "name": "uniqueDid_ub",
+          "value": "\"466e74b8-c549-4322-c5d2-43ed1b07bbba-1759296451627\""
+        },
+        {
+          "name": "_gcl_ls",
+          "value": "{\"schema\":\"gcl\",\"version\":1,\"gcl_ctr\":{\"value\":{\"value\":1,\"timeouts\":0,\"creationTimeMs\":1759296450513},\"expires\":1767072450513}}"
+        },
+        {
+          "name": "globalWidgetState",
+          "value": "{\"tagStateTTL\":1759343400000,\"ws\":{\"t3246\":{\"view\":1,\"click_submit\":0},\"t3249\":{\"view\":0,\"click_submit\":0},\"t3153\":{\"view\":0,\"click_submit\":0},\"t3248\":{\"view\":0,\"click_submit\":0},\"t3247\":{\"view\":0,\"click_submit\":0},\"t513\":{\"view\":1},\"t3242\":{\"view\":1},\"t330\":{\"view\":1},\"t332\":{\"view\":1},\"t1987\":{\"view\":1},\"t331\":{\"view\":1},\"t333\":{\"view\":1},\"t334\":{\"view\":1},\"t132\":{\"view\":1}}}"
+        },
+        {
+          "name": "tdsLogEpoch1_0",
+          "value": "1759296451626"
+        },
+        {
+          "name": "version_ub",
+          "value": "4"
+        },
+        {
+          "name": "eventType_ub",
+          "value": "undefined"
+        },
+        {
+          "name": "cnid_ub",
+          "value": "\"a679a3dc75b4418b9549b54233754650\""
+        },
+        {
+          "name": "eventId_ub",
+          "value": "\"466e74b8-c549-4322-c5d2-43ed1b07bbba-1759296626802\""
+        },
+        {
+          "name": "eventslen_ub",
+          "value": "undefined"
+        },
+        {
+          "name": "chatbot_ts",
+          "value": "{\"dashboard\":{\"dashboardBot\":1759257000000}}"
+        },
+        {
+          "name": "widgets-[ni-desktop-dashboard-v2]-c1-sunnboss78@gmail.com",
+          "value": "{\"imd\":{\"top-comp-wdgt\":{\"topCompWdgt\":{\"idx\":0}},\"right-section-wdgts\":{\"whatsAppOptin\":{\"idx\":0}},\"top-banner-wdgt\":{\"inventory-2\":{\"idx\":25}},\"belly-wdgts\":{\"inventory-1\":{\"idx\":2}},\"resume360\":{\"inventory-1\":{\"idx\":2}}},\"ts\":{\"ih\":null,\"ttl\":46784,\"rts\":1759296617014},\"wmd\":{\"naukri-top-comp-dashboard-wdgt_v0\":{\"fts\":1759296617015},\"naukri-top-comp-dashboard-wdgt_v1\":{\"fts\":1759296617015},\"ni-desktop-auto-poll-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-pharma-poll-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-oilandgas-poll-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-bpo-convo-poll-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-sales-convo-poll-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-infra-construction-poll-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-js-status-poll-wdgt_v0\":{\"fts\":1759296617015},\"ni-chatbot-appraisal-cycle-poll-wdgt_v0\":{\"fts\":1759296617015},\"naukri-peer-insights-wdgt_v0\":{\"fts\":1759296617015},\"fraud-alert-wdgt_v2\":{\"fts\":1759296617015},\"whatsapp-wdgt_v1\":{\"fts\":1759296617015},\"naukri-qr-scan-dashboard-wdgt_v0\":{\"fts\":1759296617015},\"s2j-premium-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-ew25-event-live-widget_v0\":{\"fts\":1759296617015},\"ni-desktop-ew25-enrolment-widget_v0\":{\"fts\":1759296617015},\"ni-desktop-ew25-referral-widget_v0\":{\"fts\":1759296617015},\"ni-desktop-iti-editable-widget_v0\":{\"fts\":1759296617015},\"ni-desktop-ptw25-event-live-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-ptw25-invite-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-ptw25-reward-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-pro-talent-week-enrollment-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-pro-talent-week-referral-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-naukri-pro-dashboard-pre-purchase-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-naukri-pro-dashboard-pre-purchase-exp1-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-naukri-pro-dashboard-pre-purchase-variant2-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-naukri-pro-dashboard-post-purchase-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-dashboard-bfsi-cv-parser-dynamicform_v0\":{\"fts\":1759296617015},\"ni-desktop-editable-widget-diversity-womenonbreak_v0\":{\"fts\":1759296617015},\"ni-desktop-womensday-coding-contest-wow25_v0\":{\"fts\":1759296617015},\"ni-desktop-womens-day-visit-event-wow25_v0\":{\"fts\":1759296617015},\"ni-desktop-abeca-banner-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-womens-day-salary-insights-wow25_v0\":{\"fts\":1759296617015},\"ni-desktop-womens-day-ai-interview-wow25_v0\":{\"fts\":1759296617015},\"ni-desktop-womens-day-mentorship-wow25_v0\":{\"fts\":1759296617015},\"ni-desktop-womens-day-share-wow25_v0\":{\"fts\":1759296617015},\"ni-desktop-womens-day-enrolment-wow25-widget_v0\":{\"fts\":1759296617015},\"ni-desktop-womens-day-referral-wow25-widget_v0\":{\"fts\":1759296617015},\"ni-desktop-editable-widget-diversity-military_v0\":{\"fts\":1759296617015},\"ni-desktop-editable-widget-diversity-disability_v0\":{\"fts\":1759296617015},\"ni-desktop-bpo-editable-widget-segmented-profile_v0\":{\"fts\":1759296617015},\"ni-desktop-oilandgas-editable-widget-segmented-profile_v0\":{\"fts\":1759296617015},\"ni-desktop-bfsi-editable-widget-segmented-profile_v0\":{\"fts\":1759296617015},\"ni-desktop-infra-and-construction-editable-widget-segmented-profile_v0\":{\"fts\":1759296617015},\"ni-desktop-sales-editable-widget-segmented-profile_v0\":{\"fts\":1759296617015},\"ni-desktop-auto-editable-widget-segmented-profile_v0\":{\"fts\":1759296617015},\"ni-desktop-pharma-editable-widget-segmented-profile_v0\":{\"fts\":1759296617015},\"ni-desktop-parsed-profile-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-profile-update-exp-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-mock-interview-no-tag_v0\":{\"fts\":1759296617015},\"ni-desktop-power-profile-prepurchase-dashboard-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-power-profile-postpurchase-dashboard-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-mock-interview-w-tag_v0\":{\"fts\":1759296617015},\"ni-desktop-mock-interview-cta-free_v0\":{\"fts\":1759296617015},\"ni-desktop-mock-interview-cta-practice_v0\":{\"fts\":1759296617015},\"ni-desktop-expert-resume-help_v0\":{\"fts\":1759296617015},\"ni-desktop-expert-resume-marketing-wdgt_v0\":{\"fts\":1759296617015},\"desktop-ab-top-comp-announcement-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-dashboard-v2_top-banner-wdgt_inventory-4_poll_v0\":{\"fts\":1759296617194},\"ni-desktop-potd-wdgt_v0\":{\"fts\":1759296617015},\"naukri-dashboard-ff-belly-widget_v0\":{\"fts\":1759296617015},\"ni-desktop-dashboard-iti-wdgt_v0\":{\"fts\":1759296617015},\"naukri-ab-salary-dashboard-wdgt_v0\":{\"fts\":1759296617015},\"nps-wdgt_v1\":{\"fts\":1759296617015},\"ni-desktop-add-salary-breakup-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-add-locality-wdgt_v0\":{\"fts\":1759296617015},\"ab-company-review-2024-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-dashboard-v2_mnj-dashboard-diversity-ads_inventory-1_v0\":{\"fts\":1759296617015},\"naukri-dashboard-ff-widget_v0\":{\"fts\":1759296617015},\"naukri-interview-experiences-wdgt_v0\":{\"fts\":1759296617015},\"naukri-interview-questions-wdgt_v1\":{\"fts\":1759296617015},\"ni-desktop-coding-ques-code360_v0\":{\"fts\":1759296617015},\"mnj-testimonial-wdgt_v0\":{\"fts\":1759296617015},\"s2j-non-premium-user-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-dashboard-naukripro-nps-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-dpdp-wdgt_v0\":{\"fts\":1759296617015},\"revival-welcome-back-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-n360pro-post-purchase-popup-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-nps-dashboard-wdgt_v0\":{\"fts\":1759296617015},\"desktop-ff-mock-interview-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-short-courses-skill-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-short-courses-skill-wdgt_v1\":{\"fts\":1759296617015},\"ni-desktop-post-purchase-360-carousel-wdgt_v0\":{\"fts\":1759296617015},\"desktop-dash-resume-ai-draft-wdgt_v0\":{\"fts\":1759296617015},\"desktop-dash-resume-ai-high-wdgt_v0\":{\"fts\":1759296617015},\"desktop-dash-resume-ai-low-wdgt_v0\":{\"fts\":1759296617015},\"desktop-dash-resume-ai-analyze-wdgt_v0\":{\"fts\":1759296617015},\"ni-desktop-dash-interviewpro-miactivationv1_v0\":{\"fts\":1759296617015},\"ni-desktop-dash-interviewpro-cqbactivationv1_v0\":{\"fts\":1759296617015},\"ni-desk-mock-interview-dash-wdgt_v0\":{\"fts\":1759296617015}}}"
+        },
+        {
+          "name": "globalWidgetState-sunnboss78@gmail.com",
+          "value": "{\"tagStateTTL\":1759343400000,\"ws\":{\"t5189\":{\"click_enrol-for-free\":0},\"t5577\":{\"view\":0},\"t2970\":{\"click_submit-answer\":0},\"t2906\":{\"click_add_locality\":0,\"view\":0},\"t4316\":{\"click_cancel\":0,\"click_skip\":0},\"t2772\":{\"click_complete\":0},\"t4170\":{\"click_submit\":0},\"t3094\":{\"view\":0},\"t2683\":{\"view\":0,\"click_submit\":0},\"t15\":{\"view\":1,\"click_submit\":0},\"t5029\":{\"click_skip\":0,\"click_cancel\":0},\"t5605\":{\"click_submit\":0,\"view\":0},\"t6\":{\"click_skip\":0},\"t5190\":{\"view\":0,\"click_get-referral-link\":0},\"t4476\":{\"click_download-app\":0},\"t4346\":{\"click_register-now\":0},\"t5677\":{\"click_submit\":0},\"t4473\":{\"click_get-referral-link\":0},\"t5339\":{\"click_get-invite-link\":0,\"view\":0},\"t5341\":{\"click_download-app\":0},\"t912\":{\"view\":1},\"t4169\":{\"click_submit\":0,\"view\":1},\"t4617\":{\"click_submit\":0},\"t4475\":{\"click_download-app\":0},\"t4259\":{\"click_enrol-for-free\":0},\"t4020\":{\"view\":0},\"t5546\":{\"click_enrol_for_free\":0},\"t3145\":{\"view\":0,\"click_submit\":0},\"t5547\":{\"click_get-referral-link\":0},\"t3373\":{\"click_submit\":0},\"t914\":{\"view\":1},\"t4167\":{\"view\":1},\"t2357\":{\"view\":1}}}"
+        },
+        {
+          "name": "chatBotConversationDone",
+          "value": "[\"homepage_job_search\",\"profile_completionV4\",\"diversity_disability_editable_widget\"]"
+        }
+      ]
+    }
+  ]
+}

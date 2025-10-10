@@ -17,6 +17,7 @@ import CustomProcessDialogue from "./components-dialogue";
 import LogsProcessDialogue from "./logs-dialogue";
 import JobDetailsFields from "../locate-components/jobDetailsComponents";
 import JobListFields from "../locate-components/jobListComponents";
+import ActionsComponent from "./react-flow-actions-component";
 
 // Import our separated field groups
 
@@ -120,9 +121,27 @@ export default function ReactFlowClassify({ data }) {
       .of(fieldSchema)
       .when("mode", {
         is: "list",
-        then: (schema) => schema.min(1, "At least one field is required"),
+        then: (schema) => schema.notRequired(),
         otherwise: (schema) => schema.notRequired(),
       }),
+    actionFlow: Yup.array().of(Yup.object().shape({
+      selector: Yup.string().required('selector is required'),
+      action: Yup.string().required('Please select action type'),
+    })),
+    paginationFields: Yup.object().shape({
+      numberOfPages: Yup.number()
+        .when("mode", {
+          is: "list",
+          then: (schema) => schema.required("Number of pages to scrape is required"),
+          otherwise: (schema) => schema.notRequired(),
+        }),
+      nextPageSelectorName: Yup.string()
+        .when("mode", {
+          is: "list",
+          then: (schema) => schema.required("Next page selector is required"),
+          otherwise: (schema) => schema.notRequired(),
+        }),
+    }),
   });
 
   const defaultValues = useMemo(
@@ -130,6 +149,8 @@ export default function ReactFlowClassify({ data }) {
       mode: data.bluePrint?.mode || "",
       selector: data.bluePrint?.selector || { name: "", selectorType: "" },
       fields: setFields(data.bluePrint?.fields) || [],
+      actionFlow: data?.bluePrint?.actionFlow || [],
+      paginationFields: data?.bluePrint?.paginationFields || null,
     }),
     [data]
   );
@@ -143,9 +164,10 @@ export default function ReactFlowClassify({ data }) {
     reset,
     watch,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting, errors },
   } = methods;
 
+  console.log('error', errors);
   const values = watch();
 
   useEffect(() => {
@@ -159,16 +181,18 @@ export default function ReactFlowClassify({ data }) {
       nodeName: data.label,
       type: data.type,
       mode: formData.mode,
+      actionFlow: formData.actionFlow,
     }
 
     if (formData.mode === 'list') {
-      newData.selector = formData.selector
+      newData.selector = formData.selector;
+      newData.paginationFields = formData.paginationFields;
     }
 
     if (formData.mode === 'detail') {
       newData.fields = storeFields(formData.fields);
     };
-    
+
     data.functions?.handleBluePrintComponent?.(data.label, data.id, newData);
     handleCloseModal();
   });
@@ -234,7 +258,9 @@ export default function ReactFlowClassify({ data }) {
             <Grid item xs={12} md={12} sx={{ mt: 2 }}>
               {renderModeFields(values.mode)}
             </Grid>
-
+            <Grid item xs={12} md={12} sx={{ mt: 2 }}>
+              <ActionsComponent />
+            </Grid>
           </Grid>
           <Stack
             alignItems="flex-end"
