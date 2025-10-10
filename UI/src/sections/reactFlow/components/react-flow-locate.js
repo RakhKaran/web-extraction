@@ -78,7 +78,7 @@ function storeFields(fieldsArray = []) {
   return fields;
 }
 
-export default function ReactFlowClassify({ data }) {
+export default function ReactFlowLocate({ data }) {
   const [isOpen, setIsOpen] = useState(false);
   const [logsOpen, setLogsOpen] = useState(false);
 
@@ -288,6 +288,6 @@ export default function ReactFlowClassify({ data }) {
   );
 }
 
-ReactFlowClassify.propTypes = {
+ReactFlowLocate.propTypes = {
   data: PropTypes.object,
 };

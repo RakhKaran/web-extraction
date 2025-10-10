@@ -152,8 +152,10 @@ export default function ReactFlowTransformation({ data }) {
       deliverMode: data.bluePrint?.deliverMode || "",
       stagingModelName: data.bluePrint?.stagingModelName || "",
       stagingModelId: data.bluePrint?.stagingModelId || "",
+      stagingRepositoryName: data.bluePrint?.stagingRepositoryName || "",
       deliverModelId: data.bluePrint?.deliverModelId || "",
       deliverModelName: data.bluePrint?.deliverModelName || "",
+      deliverRepositoryName: data.bluePrint?.deliverRepositoryName || "",
       fields: data?.bluePrint?.fields?.length > 0 ? setFields(data?.bluePrint?.fields) : [],
       additionalFields: data?.bluePrint?.additionalFields || [],
       dataAcceptanceRule: data?.bluePrint?.dataAcceptanceRule || [],
@@ -178,10 +180,13 @@ export default function ReactFlowTransformation({ data }) {
     reset,
     watch,
     handleSubmit,
-    formState: { isSubmitting },
+    formState: { isSubmitting , errors},
   } = methods;
 
   const values = watch();
+
+
+  console.log({errors})
 
   useEffect(() => {
     reset(defaultValues);
@@ -207,6 +212,7 @@ export default function ReactFlowTransformation({ data }) {
       duplicatesMatching: formData.duplicatesMatching,
       duplicatesConstraints: formData.duplicatesConstraints
     }
+    console.log({newData})
     data.functions.handleBluePrintComponent(data.label, data.id, newData);
     setIsOpen(false);
   });

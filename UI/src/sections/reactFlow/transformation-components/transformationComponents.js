@@ -103,8 +103,10 @@ export default function TransformationComponents() {
       .then((res) => {
         if (res.data?.fields) {
           setStagingFields(res.data.fields);
+
           setValue('stagingModelName', res.data.modelName);
           setValue('stagingRepositoryName', res.data.repositoryName);
+          setValue('stagingModelId', res.data.id)
         }
       })
       .catch((err) => {
@@ -115,6 +117,7 @@ export default function TransformationComponents() {
 
   // Fetch fields for selected Production model
   useEffect(() => {
+    console.log({productionId})
     if (!productionId) {
       setProductionFields([]);
       return;
@@ -122,10 +125,15 @@ export default function TransformationComponents() {
     axiosInstance
       .get(`/deliver/${productionId}/fields/false`)
       .then((res) => {
-        if (res.data?.fields) {
+        if (res.data?.fields?.length > 0) {
           setProductionFields(res.data.fields);
+          res?.data?.fields?.forEach((field, index) => {
+            setValue(`fields[${index}].modelField`, field.name, { shouldValidate: true });
+            setValue(`fields[${index}].type`, field.type, { shouldValidate: true });
+          })
           setValue('deliverModelName', res.data.modelName);
           setValue('deliverRepositoryName', res.data.repositoryName);
+          setValue('deliverModelId', res.data.id)
         }
       })
       .catch((err) => {
@@ -154,23 +162,22 @@ export default function TransformationComponents() {
       </Grid>
 
       {/* Select Production Model */}
-      {stagingId && (
-        <Grid item xs={12}>
-          <RHFSelect
-            fullWidth
-            label="Select Production Model"
-            name="deliverModelId"
-            value={productionId}
-            onChange={(e) => setProductionId(e.target.value)}
-          >
-            {databases.map((db) => (
-              <MenuItem key={db.id} value={db.id}>
-                {db.modelName}
-              </MenuItem>
-            ))}
-          </RHFSelect>
-        </Grid>
-      )}
+      <Grid item xs={12}>
+        <RHFSelect
+          fullWidth
+          label="Select Production Model"
+          name="deliverModelId"
+          value={productionId}
+          onChange={(e)=> {
+            setProductionId(e.target.value)}}
+        >
+          {databases.map((db) => (
+            <MenuItem key={db.id} value={db.id}>
+              {db.modelName}
+            </MenuItem>
+          ))}
+        </RHFSelect>
+      </Grid>
 
       {/* Production fields mapping */}
       {productionId && productionFields.length > 0 && (
@@ -186,7 +193,6 @@ export default function TransformationComponents() {
                   {/* modelField */}
                   <RHFTextField
                     fullWidth
-                    value={field.name}
                     name={`fields[${index}].modelField`}
                     label="Production Field"
                     InputProps={{ readOnly: true }}
@@ -195,7 +201,6 @@ export default function TransformationComponents() {
                   {/* type */}
                   <RHFTextField
                     fullWidth
-                    value={field.type}
                     name={`fields[${index}].type`}
                     label="Field Type"
                     InputProps={{ readOnly: true }}
@@ -206,47 +211,47 @@ export default function TransformationComponents() {
                     fullWidth
                     label="Map from Staging"
                     name={`fields[${index}].mappedField`}
-                    onChange={(e) => {
-                      if (e.target.value === "custom") {
-                        setCustomSelected((prev) => ({
-                          ...prev,
-                          [field.name]: true,
-                        }));
-                      } else {
-                        setCustomSelected((prev) => ({
-                          ...prev,
-                          [field.name]: false,
-                        }));
-                      }
-                    }}
+                  // onChange={(e) => {
+                  //   if (e.target.value === "custom") {
+                  //     setCustomSelected((prev) => ({
+                  //       ...prev,
+                  //       [field.name]: true,
+                  //     }));
+                  //   } else {
+                  //     setCustomSelected((prev) => ({
+                  //       ...prev,
+                  //       [field.name]: false,
+                  //     }));
+                  //   }
+                  // }}
                   >
                     {stagingFields.map((srcField) => (
                       <MenuItem key={srcField.name} value={srcField.name}>
                         {srcField.name}
                       </MenuItem>
                     ))}
-                    <MenuItem value="custom">Custom</MenuItem>
+                    {/* <MenuItem value="custom">Custom</MenuItem> */}
                   </RHFSelect>
-
+                  {/* 
                   {isCustom && (
                     <RHFTextField
                       fullWidth
                       name={`fields[${index}].customValue`}
                       label="Custom Value"
                     />
-                  )}
+                  )} */}
 
                   {/* isNullAccepted */}
-                  <FormControlLabel
-                    control={
-                      <Checkbox
-                        checked={isNullAccepted}
-                        onChange={(e) =>
-                          setValue(`fields[${index}].isNullAccepted`, e.target.checked)
-                        }
+                  <Controller
+                    name={`fields[${index}].isNullAccepted`}
+                    control={control}
+                    defaultValue={false}
+                    render={({ field }) => (
+                      <FormControlLabel
+                        control={<Checkbox {...field} checked={!!field.value} />}
+                        label="Nullable"
                       />
-                    }
-                    label="Nullable"
+                    )}
                   />
                 </Stack>
 

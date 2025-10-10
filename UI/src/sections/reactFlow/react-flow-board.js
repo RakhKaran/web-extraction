@@ -20,7 +20,7 @@ import { Box, Button } from '@mui/material';
 // import { useGetBluePrint } from 'src/api/blue-print';
 import OperationSelectorModal from './react-flow-operation-model';
 import ReactFlowCustomNodeStructure from './react-flow-custom-node';
-import { ReactFlowClassify, ReactFlowDeliver, ReactFlowExtract, ReactFlowIngestion, ReactFlowTransformation, ReactFlowValidate } from './components';
+import { ReactFlowClassify, ReactFlowDeliver, ReactFlowExtract, ReactFlowIngestion, ReactFlowLocate, ReactFlowSearch, ReactFlowTransformation, ReactFlowValidate } from './components';
 import ReactFlowCustomAddNodeStructure from './react-flow-custom-add-node';
 import axiosInstance from 'src/utils/axios';
 import { useGetWorkflowBluePrint } from 'src/api/blue-print';
@@ -31,8 +31,8 @@ const nodeTypes = {
   custom: ReactFlowCustomNodeStructure,
   customAddNode: ReactFlowCustomAddNodeStructure,
   start: ReactFlowIngestion,
-  locate: ReactFlowClassify,
-  search: ReactFlowExtract,
+  locate: ReactFlowLocate,
+  search: ReactFlowSearch,
   validate: ReactFlowValidate,
   transformation: ReactFlowTransformation,
   deliver: ReactFlowDeliver,

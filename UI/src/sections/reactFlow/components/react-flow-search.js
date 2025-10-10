@@ -31,7 +31,7 @@ const searchSelectorOptions = [
 // Validation schema
 
 
-export default function ReactFlowExtract({ data }) {
+export default function ReactFlowSearch({ data }) {
     const [isOpen, setIsOpen] = useState(false);
     const [logsOpen, setLogsOpen] = useState(false);
 
@@ -185,6 +185,6 @@ export default function ReactFlowExtract({ data }) {
     );
 }
 
-ReactFlowExtract.propTypes = {
+ReactFlowSearch.propTypes = {
     data: PropTypes.object,
 };

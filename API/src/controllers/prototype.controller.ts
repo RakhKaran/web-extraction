@@ -846,7 +846,7 @@ export class PrototypeController {
 
   // transformation node
   private async handleTransformationNode(node: any, extractionId: string) {
-    if (!node.stagingMode || !node.stagingModelName || !node.stagingRespositoryName) {
+    if (!node.stagingMode || !node.stagingModelName || !node.stagingRepositoryName) {
       await this.testExtractionLogsRepository.create({
         extractionId: extractionId,
         logsDescription: "Staging details are not properly configured",
@@ -857,10 +857,10 @@ export class PrototypeController {
     }
 
     const stagingRepo = await this.ctx.get<DefaultCrudRepository<any, any>>(
-      `repositories.${node.stagingRespositoryName}`,
+      `repositories.${node.stagingRepositoryName}`,
     );
 
-    if (!node.deliverMode || !node.deliverModelName || !node.deliverRespositoryName) {
+    if (!node.deliverMode || !node.deliverModelName || !node.deliverRepositoryName) {
       await this.testExtractionLogsRepository.create({
         extractionId: extractionId,
         logsDescription: "Deliver details are not properly configured",
@@ -871,7 +871,7 @@ export class PrototypeController {
     }
 
     const deliverRepo = await this.ctx.get<DefaultCrudRepository<any, any>>(
-      `repositories.${node.deliverRespositoryName}`,
+      `repositories.${node.deliverRepositoryName}`,
     );
 
     const deliveredRecords: any[] = [];
