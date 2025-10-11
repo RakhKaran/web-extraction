@@ -188,6 +188,17 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/scheduler/${MOCK_ID}/edit`,
       },
     },
+     companyList: {
+      root: `${ROOTS.DASHBOARD}/companyList`,
+      new: `${ROOTS.DASHBOARD}/companyList/new`,
+      list: `${ROOTS.DASHBOARD}/companyList/list`,
+      details: (id) => `${ROOTS.DASHBOARD}/companyList/${id}`,
+      edit: (id) => `${ROOTS.DASHBOARD}/companyList/${id}/edit`,
+      demo: {
+        details: `${ROOTS.DASHBOARD}/companyList/${MOCK_ID}`,
+        edit: `${ROOTS.DASHBOARD}/companyList/${MOCK_ID}/edit`,
+      },
+    },
 
     designation: {
       root: `${ROOTS.DASHBOARD}/designation`,

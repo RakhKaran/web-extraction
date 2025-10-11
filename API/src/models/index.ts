@@ -12,3 +12,4 @@ export * from './dags.model';
 export * from './test-extraction-logs.model';
 export * from './staging-linkedin.model';
 export * from './company.model';
+export * from './company-list.model';

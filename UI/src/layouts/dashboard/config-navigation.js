@@ -141,8 +141,18 @@ export function useNavData() {
             ],
           },
           { title: t('Extraction Flow'), path: paths.dashboard.workflow.root, icon: ICONS.analytics },
-          // { title: t('Workflow Instance'), path: paths.dashboard.workflowInstance.root, icon: ICONS.analytics },
-
+          // { title: t('Workflow Instance'), path: paths.dashboard.workflowInstance.root, icon: ICONS.analytics }, 
+            {
+            title: t('Company List'),
+            path: paths.dashboard.companyList.root,
+            icon: ICONS.scheduler,
+            children: [
+              { title: t('list'), path: paths.dashboard.companyList.list },
+              //  { title: t('details'), path: paths.dashboard.scheduler.details },
+              { title: t('create'), path: paths.dashboard.companyList.new },
+              //  { title: t('edit'), path: paths.dashboard.scheduler.edit },
+            ],
+          },
           // PRODUCT
           //     {
           //       title: t('product'),

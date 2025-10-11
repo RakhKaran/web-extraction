@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 // @mui
 import {
   alpha,
@@ -51,18 +51,19 @@ import CompanyTableFiltersResult from '../company-table-filters-result';
 import CompanyTableRow from '../company-table-row';
 import CompanyTableToolbar from '../company-table-toolbar';
 import { companyMock } from '../mockData';
+import { useGetCompanies } from 'src/api/company';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONSS]; 
+const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONSS];
 
 
 const TABLE_HEAD = [
-  { id: 'name', label: 'Name' },
-  { id: 'company', label: 'Company Name'},
-  { id: 'designetion', label: 'Designetion'},
-  { id: 'linkedInUrl', label: 'Linked In'},
-  { id: 'createdAt', label: 'Created At'},
+  { id: 'fullName', label: 'Name' },
+  { id: 'company', label: 'Company Name' },
+  { id: 'designetion', label: 'Designetion' },
+  { id: 'redirectUrl', label: 'Linked In' },
+  { id: 'location', label: 'Location' },
 ];
 
 const defaultFilters = {
@@ -83,7 +84,17 @@ export default function CompanyListView() {
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(companyMock);
+  const { Companies } = useGetCompanies();
+
+  console.log("Companies", Companies)
+
+  const [tableData, setTableData] = useState([]);
+
+  useEffect(() => {
+    if (Companies && Array.isArray(Companies)) {
+      setTableData(Companies);
+    }
+  }, [Companies]);
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -363,7 +374,7 @@ function applyFilter({ inputData, comparator, filters }) {
 
   inputData = stabilizedThis.map((el) => el[0]);
 
-    if (companyName) {
+  if (companyName) {
     inputData = inputData.filter((job) =>
       Object.values(job).some((value) => String(value).toLowerCase().includes(companyName.toLowerCase()))
     );

@@ -23,6 +23,16 @@ export class Company extends Entity {
   @property({
     type: 'string',
   })
+  company?: string;
+
+  @property({
+    type: 'string',
+  })
+  designation?: string;
+
+  @property({
+    type: 'string',
+  })
   profileAbout?: string;
 
   @property({

@@ -66,6 +66,8 @@ export default function TransformationComponents() {
     { label: "updatedAt", value: "updatedAt" },
     { label: "deletedAt", value: "deletedAt" },
     { label: "scrappedAt", value: "scrappedAt" },
+    { label: "Company", value: "company" },
+    {label:"Designation", value: "designation"},
   ];
 
   const fieldsType = [

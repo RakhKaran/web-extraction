@@ -10,3 +10,5 @@ export * from './workflow-blueprint.controller';
 export * from './workflow-instances.controller';
 export * from './scheduler-workflow.controller';
 export * from './dags-scheduler.controller';
+export * from './company.controller';
+export * from './company-list.controller';

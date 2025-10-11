@@ -20,7 +20,7 @@ import { Avatar, Link } from '@mui/material';
 // ----------------------------------------------------------------------
 
 export default function CompanyTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { profileName, profileImage, profileUrl } = row;
+  const { fullName, profileUrl, company,designation, location,redirectUrl} = row;
 
   const confirm = useBoolean();
   const popover = usePopover();
@@ -35,8 +35,7 @@ export default function CompanyTableRow({ row, selected, onEditRow, onSelectRow,
 
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar
-            alt={profileName}
-            src={profileImage}
+            src={profileUrl}
             variant="rounded"
             sx={{ width: 64, height: 64, mr: 2 }}
           />
@@ -51,17 +50,18 @@ export default function CompanyTableRow({ row, selected, onEditRow, onSelectRow,
                 onClick={() => console.log('')}
                 sx={{ cursor: 'pointer' }}
               >
-                {profileName}
+                {fullName}
               </Link>
             }
           />
         </TableCell>
 
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'Google' || 'N/A'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{company}</TableCell>
 
 
         {/* Address */}
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{'Software Engineer' || 'N/A'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{designation}</TableCell>
+    
 
         {/* Phone Number */}
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
@@ -69,24 +69,26 @@ export default function CompanyTableRow({ row, selected, onEditRow, onSelectRow,
             noWrap
             color="inherit"
             variant="subtitle2"
-            onClick={() => window.open(profileUrl, '_blank')}
+            onClick={() => window.open(redirectUrl, '_blank')}
             sx={{ cursor: 'pointer' }}
           >
             Profile
           </Link>
         </TableCell>
 
+             <TableCell sx={{ whiteSpace: 'nowrap' }}>{location || 'N/A'}</TableCell>
+
         {/* Email */}
 
 
         {/* Created At */}
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {new Date().toLocaleDateString('en-GB', {
             day: '2-digit',
             month: 'short',
             year: 'numeric',
           })}
-        </TableCell>
+        </TableCell> */}
 
         {/* Actions */}
         {/* <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>

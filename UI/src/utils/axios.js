@@ -46,6 +46,11 @@ export const endpoints = {
     latest: '/api/post/latest',
     search: '/api/post/search',
   },
+   company:{
+    list: '/companies',
+    filterList: (filter) => `/companies?filter=${filter}`,
+    details: (id) => `/companies/${id}`,
+  },
   product: {
     list: '/api/product/list',
     details: '/api/product/details',
@@ -55,6 +60,11 @@ export const endpoints = {
     list: '/schedulers',
     filterList: (filter) => `/schedulers?filter=${filter}`,
     details: (id) => `/schedulers/${id}`,
+  },
+  companyList:{
+    list: '/company-lists',
+    filterList: (filter) => `/company-lists?filter=${filter}`,
+    details: (id) => `/company-lists/${id}`,
   },
   designation: {
     list: '/designations',

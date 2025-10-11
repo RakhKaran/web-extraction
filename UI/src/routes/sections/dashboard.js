@@ -41,6 +41,13 @@ const UserEditPage = lazy(() => import('src/pages/dashboard/user/edit'));
 const CompanyListPage = lazy(() => import('src/pages/dashboard/company/list'));
 // WORKFLOW
 const ReactFlowPage = lazy(() => import('src/pages/dashboard/react-flow/board'))
+
+// COMPANIESLIST
+const CompaniesListPage = lazy(() => import('src/pages/dashboard/companyList/list'));
+const CompaniesCreatePage = lazy(() => import('src/pages/dashboard/companyList/new'));
+const CompaniesEditPage = lazy(() => import('src/pages/dashboard/companyList/edit'));
+const CompaniesViewPage = lazy(() => import('src/pages/dashboard/companyList/view'));
+
 // SCHEDULER
 const SchedulerNewPage = lazy(() => import('src/pages/dashboard/scheduler/new'));
 const SchedulerListPage = lazy(() => import('src/pages/dashboard/scheduler/list'));
@@ -157,6 +164,16 @@ export const dashboardRoutes = [
           // { path: ':id', element: <InvoiceDetailsPage /> },
           // { path: ':id/edit', element: <InvoiceEditPage /> },
           // { path: 'new', element: <InvoiceCreatePage /> },
+        ],
+      },
+       {
+        path: 'companyList',
+        children: [
+          { element: <CompaniesListPage />, index: true },
+          { path: 'list', element: <CompaniesListPage /> },
+          { path: ':id', element: <CompaniesViewPage /> },
+          { path: ':id/edit', element: <CompaniesEditPage /> },
+          { path: 'new', element: <CompaniesCreatePage /> },
         ],
       },
 
