@@ -28,12 +28,14 @@ export default function CompanyNewEditForm({ currentCompany, open, onClose }) {
   const CompanySchema = Yup.object().shape({
     companyName: Yup.string().required('Company Name is required'),
     description: Yup.string(),
+    designation: Yup.string().required('Designation is required'),
   });
 
   const defaultValues = useMemo(
     () => ({
       companyName: currentCompany?.companyName || '',
       description: currentCompany?.description || '',
+      designation: currentCompany?.designation || '',
     }),
     [currentCompany]
   );
@@ -54,6 +56,7 @@ export default function CompanyNewEditForm({ currentCompany, open, onClose }) {
       const inputData = {
         companyName: data.companyName,
         description: data.description,
+        designation: data.designation,
       };
 
       if (!currentCompany) {
@@ -97,6 +100,8 @@ export default function CompanyNewEditForm({ currentCompany, open, onClose }) {
               }}
             >
               <RHFTextField name="companyName" label="Company Name" />
+
+              <RHFTextField name="designation" label="Designation" />
 
               <RHFTextField
                 name="description"

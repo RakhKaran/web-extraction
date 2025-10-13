@@ -133,7 +133,7 @@ export default function ReactFlowLocate({ data }) {
         .when("mode", {
           is: "list",
           then: (schema) => schema.required("Number of pages to scrape is required"),
-          otherwise: (schema) => schema.notRequired(),
+          otherwise: (schema) => schema.nullable().notRequired(),
         }),
       nextPageSelectorName: Yup.string()
         .when("mode", {
@@ -141,7 +141,7 @@ export default function ReactFlowLocate({ data }) {
           then: (schema) => schema.required("Next page selector is required"),
           otherwise: (schema) => schema.notRequired(),
         }),
-    }),
+    }).nullable(),
   });
 
   const defaultValues = useMemo(

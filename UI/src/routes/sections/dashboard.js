@@ -48,6 +48,12 @@ const CompaniesCreatePage = lazy(() => import('src/pages/dashboard/companyList/n
 const CompaniesEditPage = lazy(() => import('src/pages/dashboard/companyList/edit'));
 const CompaniesViewPage = lazy(() => import('src/pages/dashboard/companyList/view'));
 
+// JOBLIST
+const JobsListPage = lazy(() => import('src/pages/dashboard/companyList/list'));
+const JobsCreatePage = lazy(() => import('src/pages/dashboard/companyList/new'));
+const JobsEditPage = lazy(() => import('src/pages/dashboard/companyList/edit'));
+const JobsViewPage = lazy(() => import('src/pages/dashboard/companyList/view'));
+
 // SCHEDULER
 const SchedulerNewPage = lazy(() => import('src/pages/dashboard/scheduler/new'));
 const SchedulerListPage = lazy(() => import('src/pages/dashboard/scheduler/list'));
@@ -174,6 +180,17 @@ export const dashboardRoutes = [
           { path: ':id', element: <CompaniesViewPage /> },
           { path: ':id/edit', element: <CompaniesEditPage /> },
           { path: 'new', element: <CompaniesCreatePage /> },
+        ],
+      },
+
+        {
+        path: 'jobList',
+        children: [
+          { element: <JobsListPage />, index: true },
+          { path: 'list', element: <JobsListPage /> },
+          { path: ':id', element: <JobsViewPage /> },
+          { path: ':id/edit', element: <JobsEditPage /> },
+          { path: 'new', element: <JobsCreatePage /> },
         ],
       },
 
