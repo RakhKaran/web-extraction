@@ -200,6 +200,19 @@ export const paths = {
       },
     },
 
+    jobList: {
+      root: `${ROOTS.DASHBOARD}/jobList`,
+      new: `${ROOTS.DASHBOARD}/jobList/new`,
+      list: `${ROOTS.DASHBOARD}/jobList/list`,
+      details: (id) => `${ROOTS.DASHBOARD}/jobList/${id}`,
+      edit: (id) => `${ROOTS.DASHBOARD}/jobList/${id}/edit`,
+      demo: {
+        details: `${ROOTS.DASHBOARD}/jobList/${MOCK_ID}`,
+        edit: `${ROOTS.DASHBOARD}/jobList/${MOCK_ID}/edit`,
+      },
+    },
+
+
     designation: {
       root: `${ROOTS.DASHBOARD}/designation`,
       new: `${ROOTS.DASHBOARD}/designation/new`,

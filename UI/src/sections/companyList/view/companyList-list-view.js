@@ -55,6 +55,7 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'All' }];
 
 const TABLE_HEAD = [
   { id: 'companyName', label: 'Company Name' },
+  {id:'designation', label: 'Designation'},
   { id: 'description', label: 'Description' },
   { id: '', label: 'Actions' },
 ];

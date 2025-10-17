@@ -47,10 +47,11 @@ import {
 // import { TableRow,TableCell } from '@mui/material';
 
 //
-import { mockJob } from 'src/sections/job/mockData';
+import { useGetJobs } from 'src/api/job';
 import JobTableRow from '../jobs-table-row';
 import JobTableToolbar from '../jobs-table-toolbar';
 import JobsTableFiltersResult from '../jobs-table-filters-result';
+
 
 // ----------------------------------------------------------------------
 
@@ -58,13 +59,13 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
   { id: 'title', label: 'Title' },
-  { id: 'source', label: 'Source' },
+  { id: 'description', label: 'Description' },
   { id: 'company', label: 'Company'},
+  { id: 'location', label: 'Location'},
   { id: 'experience', label: 'Experience'},
-  { id: 'salary', label: 'Salary'},
-  { id: 'jobType', label: 'Job Type'},
-  { id: 'createdAt', label: 'Created At'},
-  {id:'postedDate', label: 'Posted Date'},
+  { id: 'salary', label: 'salary'},
+  { id: 'openings', label: 'Openings'},
+  {id:'applicants', label: 'Applicants'},
   { id: '',label:'Actions', width: 88 },
 ];
 
@@ -86,7 +87,9 @@ export default function JobsListView() {
 
   const confirm = useBoolean();
 
-  const [tableData, setTableData] = useState(mockJob);
+  const {JobsList}= useGetJobs();
+
+  const [tableData, setTableData] = useState(JobsList);
 
   const [filters, setFilters] = useState(defaultFilters);
 

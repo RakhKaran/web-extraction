@@ -13,3 +13,4 @@ export * from './test-extraction-logs.repository';
 export * from './staging-linkedin.repository';
 export * from './company.repository';
 export * from './company-list.repository';
+export * from './job-list.repository';

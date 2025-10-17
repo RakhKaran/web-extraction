@@ -21,6 +21,12 @@ export class CompanyList extends Entity {
   description?: string;
 
    @property({
+    type: 'string',
+  })
+  designation?: string;
+
+
+   @property({
     type: 'date',
     defaultFn: 'now',
   })

@@ -15,6 +15,7 @@ import { useSettingsContext } from 'src/components/settings';
 import { mockJob } from 'src/sections/job/mockData';
 import JobsDetailsToolbar from '../jobs-details-toolbar';
 import JobsDetailsContent from '../jobs-details-content';
+import { useGetJob } from 'src/api/job';
 
 
 // ----------------------------------------------------------------------
@@ -27,7 +28,9 @@ export default function JobsDetailsView() {
   const { id } = params;
   console.log('id', id )
 
-  const currentJob = mockJob.filter((job) => job._id.$oid === id)[0];
+  const {jobList:currentJob}= useGetJob(id);
+
+  // const currentJob = mockJob.filter((job) => job._id.$oid === id)[0];
 
   const [publish, setPublish] = useState(currentJob?.publish);
 

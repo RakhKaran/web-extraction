@@ -153,6 +153,18 @@ export function useNavData() {
               //  { title: t('edit'), path: paths.dashboard.scheduler.edit },
             ],
           },
+
+          //   {
+          //   title: t('Job List'),
+          //   path: paths.dashboard.jobList.root,
+          //   icon: ICONS.scheduler,
+          //   children: [
+          //     { title: t('list'), path: paths.dashboard.jobList.list },
+          //     //  { title: t('details'), path: paths.dashboard.scheduler.details },
+          //     { title: t('create'), path: paths.dashboard.jobList.new },
+          //     //  { title: t('edit'), path: paths.dashboard.scheduler.edit },
+          //   ],
+          // },
           // PRODUCT
           //     {
           //       title: t('product'),

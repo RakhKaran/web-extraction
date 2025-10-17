@@ -12,3 +12,4 @@ export * from './scheduler-workflow.controller';
 export * from './dags-scheduler.controller';
 export * from './company.controller';
 export * from './company-list.controller';
+export * from './job-list.controller';

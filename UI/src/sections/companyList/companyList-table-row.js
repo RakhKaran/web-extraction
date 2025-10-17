@@ -12,12 +12,13 @@ import Label from 'src/components/label';
 
 
 export default function CompanyListTableRow({ row, selected, onSelectRow, onViewRow, onEditRow }) {
-  const { companyName, description } = row;
+  const { companyName, description, designation } = row;
 
 
   return (
     <TableRow hover selected={selected}>
       <TableCell>{companyName || 'NA'}</TableCell>
+        <TableCell>{designation || 'NA'}</TableCell>
       <TableCell>
         {description|| 'NA'}
       </TableCell>

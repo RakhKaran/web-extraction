@@ -21,7 +21,7 @@ import { ConfirmDialog } from 'src/components/custom-dialog';
 // ----------------------------------------------------------------------
 
 export default function JobTableRow({ row, selected, onViewRow, onSelectRow, onDeleteRow }) {
-  const { title, source , company, experience, skills, salary, jobType, createdAt, postedDate } = row;
+  const { title, description , company, experience, location, salary, openings, applicants} = row;
 
   const confirm = useBoolean();
   const popover = usePopover();
@@ -40,7 +40,7 @@ export default function JobTableRow({ row, selected, onViewRow, onSelectRow, onD
         </TableCell>
 
         {/* Address */}
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{source || 'N/A'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{description || 'N/A'}</TableCell>
 
         {/* Phone Number */}
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{company || 'N/A'}</TableCell>
@@ -51,7 +51,10 @@ export default function JobTableRow({ row, selected, onViewRow, onSelectRow, onD
         {/* Role */}
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{salary || 'N/A'}</TableCell>
 
-         <TableCell sx={{ whiteSpace: 'nowrap' }}>{jobType || 'N/A'}</TableCell>
+         <TableCell sx={{ whiteSpace: 'nowrap' }}>{location || 'N/A'}</TableCell>
+         
+          <TableCell sx={{ whiteSpace: 'nowrap' }}>{openings || 'N/A'}</TableCell>
+          <TableCell sx={{ whiteSpace: 'nowrap' }}>{applicants || 'N/A'}</TableCell>
          {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>
   <Label color={isSynced === 1 ? 'success' : 'warning'}>
     {isSynced === 1 ? 'Sync' : 'Not Sync'}
@@ -59,22 +62,22 @@ export default function JobTableRow({ row, selected, onViewRow, onSelectRow, onD
 </TableCell> */}
 
 
-<TableCell sx={{ whiteSpace: 'nowrap' }}>
+{/* <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {postedDate.$date ? new Date(postedDate.$date).toLocaleDateString('en-GB', {
             day: '2-digit',
             month: 'short',
             year: 'numeric',
           }) : 'N/A'}
-        </TableCell>
+        </TableCell> */}
 
         {/* Created At */}
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        {/* <TableCell sx={{ whiteSpace: 'nowrap' }}>
           {createdAt.$date ? new Date(createdAt.$date).toLocaleDateString('en-GB', {
             day: '2-digit',
             month: 'short',
             year: 'numeric',
           }) : 'N/A'}
-        </TableCell>
+        </TableCell> */}
 
         {/* Actions */}
          <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>

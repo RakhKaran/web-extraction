@@ -105,7 +105,7 @@ export class DeliverController {
     }
 
     // Fields to ignore
-    const ignoreFields = flag ? [] : ['createdAt', 'updatedAt', 'isActive', 'deletedAt', 'id', 'company', 'designation'];
+    const ignoreFields = flag ? [] : ['createdAt', 'updatedAt', 'isActive', 'deletedAt', 'id',];
 
     // Map properties to objects with name and type
     const fields = Object.entries(ModelClass.definition.properties)

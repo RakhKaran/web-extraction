@@ -849,6 +849,7 @@ export class PrototypeController {
     if (!node.stagingMode || !node.stagingModelName || !node.stagingRepositoryName) {
       await this.testExtractionLogsRepository.create({
         extractionId: extractionId,
+        
         logsDescription: "Staging details are not properly configured",
         logType: 1, // Info
         isActive: true,
