@@ -44,10 +44,12 @@ const ICONS = {
   ecommerce: icon('ic_ecommerce'),
   analytics: icon('ic_analytics'),
   dashboard: icon('ic_dashboard'),
- processInstance: icon('ic_process_instance'),
- scheduler: icon('ic_scheduler'),
- designation: icon('ic_designation'),
- company: icon('ic_company'),
+  processInstance: icon('ic_process_instance'),
+  scheduler: icon('ic_scheduler'),
+  designation: icon('ic_designation'),
+  company: icon('ic_company'),
+  companyProfile: icon('ic_profile'),
+
 };
 
 // ----------------------------------------------------------------------
@@ -93,9 +95,9 @@ export function useNavData() {
 
           // COMPANY
           {
-            title: t('company'),
+            title: t('company profile'),
             path: paths.dashboard.company.root,
-            icon: ICONS.company,
+            icon: ICONS.companyProfile,
             children: [
               { title: t('list'), path: paths.dashboard.company.list },
             ],
@@ -115,7 +117,7 @@ export function useNavData() {
             ],
           },
           // WORKFLOW
-          
+
 
           {
             title: t('scheduler'),
@@ -129,30 +131,9 @@ export function useNavData() {
             ],
           },
 
-          {
-            title: t('designation'),
-            path: paths.dashboard.designation.root,
-            icon: ICONS.designation,
-            children: [
-              { title: t('list'), path: paths.dashboard.designation.list },
-              //  { title: t('details'), path: paths.dashboard.scheduler.details },
-              { title: t('create'), path: paths.dashboard.designation.new },
-              //  { title: t('edit'), path: paths.dashboard.scheduler.edit },
-            ],
-          },
+
           { title: t('Extraction Flow'), path: paths.dashboard.workflow.root, icon: ICONS.analytics },
           // { title: t('Workflow Instance'), path: paths.dashboard.workflowInstance.root, icon: ICONS.analytics }, 
-            {
-            title: t('Company List'),
-            path: paths.dashboard.companyList.root,
-            icon: ICONS.scheduler,
-            children: [
-              { title: t('list'), path: paths.dashboard.companyList.list },
-              //  { title: t('details'), path: paths.dashboard.scheduler.details },
-              { title: t('create'), path: paths.dashboard.companyList.new },
-              //  { title: t('edit'), path: paths.dashboard.scheduler.edit },
-            ],
-          },
 
           //   {
           //   title: t('Job List'),
@@ -352,6 +333,40 @@ export function useNavData() {
           //       path: paths.dashboard.blank,
           //       icon: ICONS.blank,
           //     },
+        ],
+      },
+      {
+        subheader: t('Master Data'),
+        items: [
+          // { title: t('app'), path: paths.dashboard.root, icon: ICONS.dashboard },
+          // { title: t('ecommerce'), path: paths.dashboard.general.ecommerce, icon: ICONS.ecommerce },
+          // { title: t('Dashboard'), path: paths.dashboard.general.analytics, icon: ICONS.dashboard },
+          // { title: t('banking'), path: paths.dashboard.general.banking, icon: ICONS.banking },
+          // { title: t('booking'), path: paths.dashboard.general.booking, icon: ICONS.booking },
+          // { title: t('file'), path: paths.dashboard.general.file, icon: ICONS.file },
+          {
+            title: t('designation'),
+            path: paths.dashboard.designation.root,
+            icon: ICONS.designation,
+            children: [
+              { title: t('list'), path: paths.dashboard.designation.list },
+              //  { title: t('details'), path: paths.dashboard.scheduler.details },
+              { title: t('create'), path: paths.dashboard.designation.new },
+              //  { title: t('edit'), path: paths.dashboard.scheduler.edit },
+            ],
+          },
+          {
+            title: t('Company List'),
+            path: paths.dashboard.companyList.root,
+            icon: ICONS.company,
+            children: [
+              { title: t('list'), path: paths.dashboard.companyList.list },
+              //  { title: t('details'), path: paths.dashboard.scheduler.details },
+              { title: t('create'), path: paths.dashboard.companyList.new },
+              //  { title: t('edit'), path: paths.dashboard.scheduler.edit },
+            ],
+          },
+
         ],
       },
     ],

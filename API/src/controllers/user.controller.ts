@@ -221,7 +221,7 @@ export class UserController {
       },
     },
   })
-  async getSingleUser(@param.path.number('id') id: number): Promise<any> {
+  async getSingleUser(@param.path.string('id') id: string): Promise<any> {
     const user = await this.userRepository.findOne({
       where: {
         id: id,
@@ -245,7 +245,7 @@ export class UserController {
     description: 'User PATCH success',
   })
   async updateById(
-    @param.path.number('id') id: number,
+    @param.path.string('id') id: string,
     @requestBody({
       content: {
         'application/json': {
@@ -476,7 +476,7 @@ export class UserController {
   })
   async deleteById(
     @inject(AuthenticationBindings.CURRENT_USER) currentUser: UserProfile,
-    @param.path.number('id') id: number,
+    @param.path.string('id') id: string,
   ): Promise<void> {
     const user = await this.userRepository.findById(id);
     if (!user) {

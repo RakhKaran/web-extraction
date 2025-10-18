@@ -240,7 +240,7 @@ export default function ReactFlowLocate({ data }) {
         title="Add Mode"
       >
         <FormProvider methods={methods} onSubmit={onSubmit}>
-          <Grid container spacing={2}>
+          <Grid container spacing={2}> 
             {/* Mode selector */}
             <Grid item xs={12} md={12}>
               <RHFSelect name="mode" label="Select Mode">
@@ -255,10 +255,10 @@ export default function ReactFlowLocate({ data }) {
                 ))}
               </RHFSelect>
             </Grid>
-            <Grid item xs={12} md={12} sx={{ mt: 2 }}>
+            <Grid item xs={12} md={12}>
               {renderModeFields(values.mode)}
             </Grid>
-            <Grid item xs={12} md={12} sx={{ mt: 2 }}>
+            <Grid item xs={12} md={12} >
               <ActionsComponent />
             </Grid>
           </Grid>

@@ -209,22 +209,23 @@ export default function JobListFields() {
             ))}
           </RHFSelect>
         </Stack>
-
-        <Grid item xs={12} md={12}>
-          <Stack direction='column' spacing={1}>
-            <Typography variant="h5">Pagination Section</Typography>
-
-            <Grid container spacing={1}>
-              <Grid item xs={12} md={6}>
-                <RHFTextField name='paginationFields.numberOfPages' label='Number of pages' />
-              </Grid>
-              <Grid item xs={12} md={6}>
-                <RHFTextField name='paginationFields.nextPageSelectorName' label='Next page selector' />
-              </Grid>
-            </Grid>
-          </Stack>
-        </Grid>
       </Grid>
+
+      <Grid item xs={12} md={12}>
+        <Stack direction='column' spacing={2}>
+          <Typography variant="h5">Pagination Section</Typography>
+
+          <Grid container spacing={2}>
+            <Grid item xs={12} md={6}>
+              <RHFTextField name='paginationFields.numberOfPages' label='Number of pages' />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <RHFTextField name='paginationFields.nextPageSelectorName' label='Next page selector' />
+            </Grid>
+          </Grid>
+        </Stack>
+      </Grid>
+
 
       {/* Fields Section */}
       {/* <Grid item xs={12}>
