@@ -74,6 +74,7 @@ export default function ReactFlowDeliver({ data }) {
     defaultValues,
   });
 
+  
   const {
     reset,
     watch,
@@ -82,6 +83,7 @@ export default function ReactFlowDeliver({ data }) {
   } = methods;
 
   const values = watch();
+
 
   useEffect(() => {
     reset(defaultValues);
@@ -147,7 +149,7 @@ export default function ReactFlowDeliver({ data }) {
       <CustomProcessDialogue
         isOpen={isOpen}
         handleCloseModal={() => setIsOpen(false)}
-        title="Add Destination"
+        title="Deliver"
       >
         <FormProvider methods={methods} onSubmit={onSubmit}>
           <Grid container spacing={2}>
@@ -181,7 +183,7 @@ export default function ReactFlowDeliver({ data }) {
               variant="contained"
               loading={isSubmitting}
             >
-              Add
+              Save
             </LoadingButton>
           </Stack>
         </FormProvider>

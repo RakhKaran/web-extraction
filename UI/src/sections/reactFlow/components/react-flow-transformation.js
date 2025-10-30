@@ -261,7 +261,7 @@ export default function ReactFlowTransformation({ data }) {
       <CustomProcessDialogue
         isOpen={isOpen}
         handleCloseModal={() => setIsOpen(false)}
-        title="Add Destination"
+        title="Transformation"
       >
         <FormProvider methods={methods} onSubmit={onSubmit}>
           <Grid container spacing={2}>
@@ -309,7 +309,7 @@ export default function ReactFlowTransformation({ data }) {
               variant="contained"
               loading={isSubmitting}
             >
-              Add
+              Save
             </LoadingButton>
           </Stack>
         </FormProvider>

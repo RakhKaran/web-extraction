@@ -1,6 +1,6 @@
 import PropTypes from 'prop-types';
 import * as Yup from 'yup';
-import { useMemo, useEffect } from 'react';
+import { useMemo, useEffect, useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { yupResolver } from '@hookform/resolvers/yup';
 // @mui
@@ -11,6 +11,7 @@ import Stack from '@mui/material/Stack';
 import Grid from '@mui/material/Unstable_Grid2';
 import MenuItem from '@mui/material/MenuItem';
 // routes
+import { useGetDesignations } from 'src/api/designation';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 // components
@@ -21,9 +22,25 @@ import RHFTextField from 'src/components/hook-form/rhf-text-field';
 import axiosInstance from 'src/utils/axios';
 
 
+
 export default function CompanyNewEditForm({ currentCompany, open, onClose }) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
+
+  const [designation, setDesignation] = useState(null);
+
+  const { Designations, DesignationsLoading } = useGetDesignations();
+
+
+  useEffect(() => {
+    if (Designations && !DesignationsLoading) {
+      const activeDesignations = Designations.filter(
+        (item) => item.isActive === true
+      );
+      setDesignation(activeDesignations);
+    }
+  }, [Designations, DesignationsLoading]);
+
 
   const CompanySchema = Yup.object().shape({
     companyName: Yup.string().required('Company Name is required'),
@@ -101,7 +118,19 @@ export default function CompanyNewEditForm({ currentCompany, open, onClose }) {
             >
               <RHFTextField name="companyName" label="Company Name" />
 
-              <RHFTextField name="designation" label="Designation" />
+              <RHFSelect name="designation" label="Select Designation">
+                {designation && designation.length > 0 ? (
+                  designation.map((option) => (
+                    <MenuItem key={option.id} value={option.id}>
+                      {option.designation}
+                    </MenuItem>
+                  ))
+                ) : (
+                  <MenuItem disabled value="">
+                    No Designation
+                  </MenuItem>
+                )}
+              </RHFSelect>
 
               <RHFTextField
                 name="description"

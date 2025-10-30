@@ -1262,47 +1262,39 @@ export class PrototypeController {
     }
   }
 
-  @post('/log-entries/logs-by-extraction')
-  async logsByNode(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: {
-            type: 'object',
-            properties: {
-              extractionId: { type: 'string' },
-              limit: { type: 'number', default: 10 },
-              skip: { type: 'number', default: 0 },
-            },
-            required: ['processInstanceId']
-          }
-        }
-      }
-    })
-    requestBody: {
-      extractionId: string;
-      limit?: number;
-      skip?: number;
-    }
-  ): Promise<TestExtractionLogs[]> {
-    try {
-      const { extractionId, limit = 10, skip = 0 } = requestBody;
-
-      const logs = await this.testExtractionLogsRepository.find({
-        where: {
-          and: [
-            { extractionId },
-          ]
+@post('/log-entries/logs-by-extraction')
+logsByNode(
+  @requestBody({
+    content: {
+      'application/json': {
+        schema: {
+          type: 'object',
+          properties: {
+            extractionId: { type: 'string' },
+            limit: { type: 'number', default: 10 },
+            skip: { type: 'number', default: 0 },
+          },
+          required: ['extractionId'], // fixed key name
         },
-        limit,
-        skip,
-        order: ['createdAt DESC'],
-      });
-
-      return logs;
-    } catch (error) {
-      throw error;
-    }
+      },
+    },
+  })
+  requestBody: {
+    extractionId: string;
+    limit?: number;
+    skip?: number;
   }
+): Promise<TestExtractionLogs[]> {
+  const { extractionId, limit = 10, skip = 0 } = requestBody;
+
+  return this.testExtractionLogsRepository.find({
+    where: {
+      and: [{ extractionId }],
+    },
+    limit,
+    skip,
+    order: ['createdAt DESC'],
+  });
+}
 
 }

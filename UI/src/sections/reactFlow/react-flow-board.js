@@ -25,6 +25,7 @@ import ReactFlowCustomAddNodeStructure from './react-flow-custom-add-node';
 import axiosInstance from 'src/utils/axios';
 import { useGetWorkflowBluePrint } from 'src/api/blue-print';
 import LogsProcessDialogue from './components/logs-dialogue';
+import LoadingButton from '@mui/lab/LoadingButton';
 
 
 const nodeTypes = {
@@ -97,6 +98,7 @@ export default function ReactFlowBoard({ isUnlock }) {
   const [lastNodeId, setLastNodeId] = useState(0);
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [viewLogs, setViewLogs] = useState(false);
+  const [issaved , setIsSaved]= useState(false);
 
   useEffect(() => {
     if (bluePrints && !bluePrintsLoading) {
@@ -162,6 +164,11 @@ export default function ReactFlowBoard({ isUnlock }) {
       }])
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
+     if (data?.bluePrint?.length > 0) {
+      setIsSaved(true);
+    } else {
+      setIsSaved(false);
+    }
   }, [data])
 
   useEffect(() => {
@@ -630,6 +637,7 @@ export default function ReactFlowBoard({ isUnlock }) {
       const response = await axiosInstance.post('/workflow-blueprints', data);
       if (response?.data) {
         enqueueSnackbar("Blue Print Saved", { variant: 'success' });
+        setIsSaved(true);
       }
     } catch (error) {
       console.error(error);
@@ -672,7 +680,19 @@ export default function ReactFlowBoard({ isUnlock }) {
     <div style={{ width: '100%', height: '100vh' }}>
       <Box sx={{ width: '100%', display: 'flex', justifyContent: 'end', alignItems: 'center', gap: '10px' }}>
         <Button onClick={() => handleSubmitBluePrint()} variant='contained'>Save</Button>
-        <Button onClick={() => handleTestBluePrint()} variant='contained'>Test</Button>
+        <LoadingButton
+  onClick={handleTestBluePrint}
+  variant="contained"
+  disabled={
+    !bluePrint ||
+    !issaved ||
+    bluePrint.length === 0 ||
+    bluePrint.some((b) => !b.component)
+  }
+>
+  Test
+</LoadingButton>
+
         <Button onClick={() => setViewLogs(true)} variant='contained'>View Logs</Button>
       </Box>
       <ReactFlowProvider >

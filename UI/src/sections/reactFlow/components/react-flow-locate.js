@@ -237,7 +237,7 @@ export default function ReactFlowLocate({ data }) {
       <CustomProcessDialogue
         isOpen={isOpen}
         handleCloseModal={handleCloseModal}
-        title="Add Mode"
+        title="Locate"
       >
         <FormProvider methods={methods} onSubmit={onSubmit}>
           <Grid container spacing={2}> 
@@ -271,7 +271,7 @@ export default function ReactFlowLocate({ data }) {
               variant="contained"
               loading={isSubmitting}
             >
-              Add
+              Save
             </LoadingButton>
           </Stack>
         </FormProvider>

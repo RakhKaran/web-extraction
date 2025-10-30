@@ -7,7 +7,7 @@ export default function ReactFlowPage(){
     return(
         <>
             <Helmet>
-                <title>React flow</title>
+                <title>Extraction flow</title>
             </Helmet>
 
            <ReactFlowView/>

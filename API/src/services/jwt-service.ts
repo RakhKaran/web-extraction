@@ -14,7 +14,7 @@ export class JWTService {
     let token = '';
     try {
       token = await signAsync(userProfile, 'jobPortal', {
-        expiresIn: '7h',
+        expiresIn: '10d',
       });
     } catch (err) {
       throw new HttpErrors.Unauthorized(`error generating token${err}`);

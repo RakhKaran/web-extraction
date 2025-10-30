@@ -256,7 +256,7 @@ export default function ReactFlowIngestion({ data }) {
                             <Grid item xs={12}>
                                 <Stack alignItems="flex-end" sx={{ mt: 2 }}>
                                     <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                                        Add
+                                        Save
                                     </LoadingButton>
                                 </Stack>
                             </Grid>
