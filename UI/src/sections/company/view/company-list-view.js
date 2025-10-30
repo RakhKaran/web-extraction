@@ -61,7 +61,7 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONSS]
 const TABLE_HEAD = [
   { id: 'fullName', label: 'Name' },
   { id: 'company', label: 'Company Name' },
-  { id: 'designetion', label: 'Designetion' },
+  { id: 'designetion', label: 'Designation' },
   { id: 'redirectUrl', label: 'Linked In' },
   { id: 'location', label: 'Location' },
 ];
@@ -172,7 +172,7 @@ export default function CompanyListView() {
           heading="List"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Company', href: paths.dashboard.company.root },
+            { name: 'Candidates', href: paths.dashboard.company.root },
             { name: 'List' },
           ]}
           // action={

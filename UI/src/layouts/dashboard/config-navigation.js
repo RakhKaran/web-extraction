@@ -95,7 +95,7 @@ export function useNavData() {
 
           // COMPANY
           {
-            title: t('company profile'),
+            title: t('Candidates'),
             path: paths.dashboard.company.root,
             icon: ICONS.companyProfile,
             children: [
