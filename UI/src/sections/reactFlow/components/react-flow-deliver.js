@@ -30,21 +30,29 @@ const deliverSchemas = {
   database: Yup.object().shape({
     model: Yup.string().required("Model is required"),
     modelId: Yup.string().required("Model Id is required"),
-    mapping: Yup.array().of(
-      Yup.object().shape({
-        modelField: Yup.string().required("Model field name is required"),
-        type: Yup.string().required("Field type is required"),
-        mappedField: Yup.string().required("Mapped field is required"),
-        conditions: Yup.array().of(
-          Yup.object().shape({
-            condition: Yup.string().required("Please select condition"),
-            value: Yup.mixed(),
-          })
-        ),
-      })
-    ).min(1, "Field mapping is required"),
-    additionalFields: Yup.array(),
     repository: Yup.string().required("Repository is required"),
+
+    mapping: Yup.array()
+      .of(
+        Yup.object().shape({
+          modelField: Yup.string().required("Model field name is required"),
+          type: Yup.string().required("Field type is required"),
+          mappedField: Yup.string().required("Mapped field is required"),
+          conditions: Yup.array().of(
+            Yup.object().shape({
+              condition: Yup.string().required("Please select condition"),
+              value: Yup.mixed().nullable(),
+            })
+          ),
+        })
+      )
+      .min(1, "Field mapping is required"),
+    additionalFields: Yup.array().of(
+      Yup.object().shape({
+        modelField: Yup.string().required("Field name is required"),
+        type: Yup.string().required("Field type is required"),
+      })
+    ),
   }),
 
   api: Yup.object().shape({
@@ -53,6 +61,7 @@ const deliverSchemas = {
     payload: Yup.object().required("Payload mapping is required"),
   }),
 };
+
 
 
 export default function ReactFlowDeliver({ data }) {

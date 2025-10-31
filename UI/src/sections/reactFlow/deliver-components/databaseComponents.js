@@ -1,9 +1,10 @@
 import { useEffect, useState } from "react";
-import { Grid, MenuItem, TextField, Stack, Button, Typography } from "@mui/material";
+import { Grid, MenuItem, TextField, Stack, Button, Typography, IconButton } from "@mui/material";
 import { RHFSelect, RHFTextField } from "src/components/hook-form";
 import axiosInstance from "src/utils/axios";
 import { useFieldArray, useFormContext } from "react-hook-form";
 import Conditions from "./conditions";
+import Iconify from "src/components/iconify";
 
 // Dummy Locate JSON schema
 // const locateSchema = {
@@ -22,7 +23,7 @@ export default function DatabaseComponents() {
   const [selectedId, setSelectedId] = useState("");
   const [dbFields, setDbFields] = useState([]);
   const { control, watch, setValue } = useFormContext();
-  
+
 
   const { fields, append, remove } = useFieldArray({
     control,
@@ -192,6 +193,9 @@ export default function DatabaseComponents() {
                 label="Value"
               />
             )}
+            <IconButton color="error" onClick={() => remove(index)}>
+              <Iconify icon="mdi:delete-outline" />
+            </IconButton>
 
 
           </Stack>

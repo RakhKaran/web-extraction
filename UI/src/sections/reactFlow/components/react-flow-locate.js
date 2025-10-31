@@ -81,11 +81,13 @@ function storeFields(fieldsArray = []) {
 export default function ReactFlowLocate({ data }) {
   const [isOpen, setIsOpen] = useState(false);
   const [logsOpen, setLogsOpen] = useState(false);
+  const [initialMode, setInitialMode] = useState(null);
 
   const handleOpenModal = () => setIsOpen(true);
   const handleCloseModal = () => setIsOpen(false);
   const handleOpenLogsModal = () => setLogsOpen(true);
   const handleCloseLogsModal = () => setLogsOpen(false);
+  
 
   const fieldSchema = Yup.object().shape({
     fieldName: Yup.string().required("Field name is required"),
@@ -174,6 +176,27 @@ export default function ReactFlowLocate({ data }) {
     reset(defaultValues);
   }, [defaultValues, reset]);
 
+
+
+useEffect(() => {
+  if (initialMode === null && values.mode) {
+    setInitialMode(values.mode);
+    return;
+  }
+  if (initialMode === values.mode) return;
+  if (values.mode === "list" || values.mode === "detail") {
+    reset({
+      mode: values.mode,
+      selector: { name: "", selectorType: "" },
+      fields: [],
+      paginationFields:
+        values.mode === "list"
+          ? { numberOfPages: "", nextPageSelectorName: "" }
+          : null,
+      actionFlow: [],
+    });
+  }
+}, [values.mode, reset, initialMode]);
   const onSubmit = handleSubmit(async (formData) => {
     console.log("Escalation Matrix", formData);
     const newData = {
