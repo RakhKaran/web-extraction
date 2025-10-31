@@ -114,21 +114,21 @@ export default function ReactFlowIngestion({ data }) {
 
 
     useEffect(() => {
-  if (values.loginSessionEnabled) {
-    if (fields.length === 0) {
-      append({
-        loginUsername: "",
-        usernameSelector: "",
-        loginPassword: "",
-        loginPasswordSelector: "",
-      });
-    }
-  } else {
-    if (fields.length > 0) {
-      remove();
-    }
-  }
-}, [values.loginSessionEnabled]);
+        if (values.loginSessionEnabled) {
+            if (fields.length === 0) {
+                append({
+                    loginUsername: "",
+                    usernameSelector: "",
+                    loginPassword: "",
+                    loginPasswordSelector: "",
+                });
+            }
+        } else {
+            if (fields.length > 0) {
+                remove();
+            }
+        }
+    }, [values.loginSessionEnabled]);
 
     // Open modal
     const handleOpenModal = () => {
@@ -232,13 +232,14 @@ export default function ReactFlowIngestion({ data }) {
                                                 />
                                             </Grid>
 
-                                            {index !== 0 && (
+                                            {fields.length > 1 && (
                                                 <Grid item xs={12} md={12} display="flex" justifyContent="flex-end" alignItems="center">
                                                     <IconButton color="error" onClick={() => remove(index)}>
                                                         <Iconify icon="mdi:minus-circle-outline" width={24} />
                                                     </IconButton>
                                                 </Grid>
                                             )}
+
 
 
                                             {index < fields.length - 1 && (
