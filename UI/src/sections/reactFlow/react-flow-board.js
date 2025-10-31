@@ -31,7 +31,7 @@ import LoadingButton from '@mui/lab/LoadingButton';
 const nodeTypes = {
   custom: ReactFlowCustomNodeStructure,
   customAddNode: ReactFlowCustomAddNodeStructure,
-  start: ReactFlowIngestion,
+  initialize: ReactFlowIngestion,
   locate: ReactFlowLocate,
   search: ReactFlowSearch,
   validate: ReactFlowValidate,
@@ -42,11 +42,11 @@ const nodeTypes = {
 const initialNodes = [
   {
     id: '1',
-    type: 'start',
+    type: 'initialize',
     data: {
       id: '1',
       label: 'Initialize',
-      type: 'start',
+      type: 'initialize',
       icon: '/assets/icons/document-process/ignestion.svg',
       style: {
         border: `5px solid #2DCA73`,

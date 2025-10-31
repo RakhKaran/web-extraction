@@ -1176,7 +1176,7 @@ export class PrototypeController {
       for (const node of nodes) {
         try {
           switch (node.type) {
-            case "start":
+            case "initialize":
               const init = await this.handleInitializeNode(node, extractionId);
               browser = init.browserContext;
               page = init.page;
