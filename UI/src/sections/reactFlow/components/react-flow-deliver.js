@@ -26,32 +26,39 @@ const deliverOptions = [
 ];
 
 // Yup validation schemas
-const deliverSchemas = Yup.object().shape({
+const deliverSchemas = {
   database: Yup.object().shape({
     model: Yup.string().required("Model is required"),
     modelId: Yup.string().required("Model Id is required"),
-    mapping: Yup.array().of(Yup.object().shape({
-      modelField: Yup.string().required("Model field name is required"),
-      type: Yup.string().required('Field type is required'),
-      mappedField: Yup.string().required('Mapped field is required'),
-      conditions: Yup.array().of(Yup.object().shape({
-        condition: Yup.string().required('Please select condition'),
-        value: Yup.mixed(),
-      }))
-    })).min(1, "Field mapping is required"),
+    mapping: Yup.array().of(
+      Yup.object().shape({
+        modelField: Yup.string().required("Model field name is required"),
+        type: Yup.string().required("Field type is required"),
+        mappedField: Yup.string().required("Mapped field is required"),
+        conditions: Yup.array().of(
+          Yup.object().shape({
+            condition: Yup.string().required("Please select condition"),
+            value: Yup.mixed(),
+          })
+        ),
+      })
+    ).min(1, "Field mapping is required"),
     additionalFields: Yup.array(),
     repository: Yup.string().required("Repository is required"),
   }),
+
   api: Yup.object().shape({
     endpoint: Yup.string().url("Invalid URL").required("Endpoint is required"),
     headers: Yup.string().nullable(),
     payload: Yup.object().required("Payload mapping is required"),
   }),
-});
+};
+
 
 export default function ReactFlowDeliver({ data }) {
   const [isOpen, setIsOpen] = useState(false);
   const [logsOpen, setLogsOpen] = useState(false);
+
 
   // default values
   const defaultValues = useMemo(
@@ -68,12 +75,22 @@ export default function ReactFlowDeliver({ data }) {
     }),
     [data]
   );
+  const [currentMode, setCurrentMode] = useState(defaultValues.mode || "");
+
+    const validationSchema = useMemo(() => {
+    const baseSchema = Yup.object({
+      mode: Yup.string().required("Please select a Deliver mode"),
+    });
+    if (currentMode && deliverSchemas[currentMode]) {
+      return baseSchema.concat(deliverSchemas[currentMode]);
+    }
+    return baseSchema;
+  }, [currentMode]);
 
   const methods = useForm({
-    resolver: yupResolver(deliverSchemas[defaultValues.mode] || Yup.object()),
+    resolver: yupResolver(validationSchema),
     defaultValues,
   });
-
   
   const {
     reset,
@@ -83,11 +100,18 @@ export default function ReactFlowDeliver({ data }) {
   } = methods;
 
   const values = watch();
-
+  console.log("values",values)
 
   useEffect(() => {
-    reset(defaultValues);
-  }, [defaultValues, reset]);
+
+  if (values.mode && values.mode !== currentMode) {
+    setCurrentMode(values.mode);
+  }
+}, [values.mode]);
+
+useEffect(() => {
+  reset(defaultValues);
+}, [defaultValues, reset]);
 
   const onSubmit = handleSubmit(async (formData) => {
     const newData = {

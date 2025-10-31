@@ -22,6 +22,7 @@ export default function DatabaseComponents() {
   const [selectedId, setSelectedId] = useState("");
   const [dbFields, setDbFields] = useState([]);
   const { control, watch, setValue } = useFormContext();
+  
 
   const { fields, append, remove } = useFieldArray({
     control,

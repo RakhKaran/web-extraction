@@ -141,7 +141,7 @@ export default function ReactFlowIngestion({ data }) {
             <CustomProcessDialogue
                 isOpen={isOpen}
                 handleCloseModal={handleCloseModal}
-                title='Add Url'
+                title='Initialize'
             >
                 <FormProvider methods={methods} onSubmit={onSubmit}>
                     <Grid container spacing={3}>

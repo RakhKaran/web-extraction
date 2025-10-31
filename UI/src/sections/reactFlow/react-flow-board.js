@@ -98,15 +98,22 @@ export default function ReactFlowBoard({ isUnlock }) {
   const [lastNodeId, setLastNodeId] = useState(0);
   const [selectedNodeId, setSelectedNodeId] = useState(null);
   const [viewLogs, setViewLogs] = useState(false);
-  const [issaved , setIsSaved]= useState(false);
+  const [isBlueprintSaved, setIsBlueprintSaved] = useState(false);
+
 
   useEffect(() => {
     if (bluePrints && !bluePrintsLoading) {
       if (bluePrints?.success) {
         setData(bluePrints?.data);
+
+          if (bluePrints?.data?.bluePrint?.length > 0) {
+        setIsBlueprintSaved(true);
+      }
       }
     }
   }, [bluePrints, bluePrintsLoading]);
+
+  console.log("bleprint",bluePrints)
 
   useEffect(() => {
     if (data) {
@@ -164,11 +171,7 @@ export default function ReactFlowBoard({ isUnlock }) {
       }])
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-     if (data?.bluePrint?.length > 0) {
-      setIsSaved(true);
-    } else {
-      setIsSaved(false);
-    }
+
   }, [data])
 
   useEffect(() => {
@@ -637,7 +640,7 @@ export default function ReactFlowBoard({ isUnlock }) {
       const response = await axiosInstance.post('/workflow-blueprints', data);
       if (response?.data) {
         enqueueSnackbar("Blue Print Saved", { variant: 'success' });
-        setIsSaved(true);
+        setIsBlueprintSaved(true);
       }
     } catch (error) {
       console.error(error);
@@ -684,9 +687,7 @@ export default function ReactFlowBoard({ isUnlock }) {
   onClick={handleTestBluePrint}
   variant="contained"
   disabled={
-    !bluePrint ||
-    !issaved ||
-    bluePrint.length === 0 ||
+    !isBlueprintSaved || 
     bluePrint.some((b) => !b.component)
   }
 >
