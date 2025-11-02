@@ -78,6 +78,17 @@ function storeFields(fieldsArray = []) {
   return fields;
 }
 
+function convertWaitToLoadSelectors(fieldsArray = []) {
+  const selectorsArray = [];
+  fieldsArray.map((field) => {
+    if(field.selector){
+      selectorsArray.push(field.selector);
+    }
+  });
+
+  return selectorsArray;
+}
+
 export default function ReactFlowLocate({ data }) {
   const [isOpen, setIsOpen] = useState(false);
   const [logsOpen, setLogsOpen] = useState(false);
@@ -214,6 +225,7 @@ useEffect(() => {
 
     if (formData.mode === 'detail') {
       newData.fields = storeFields(formData.fields);
+      newData.waitToLoadSelectors = convertWaitToLoadSelectors(formData.fields);
     };
 
     data.functions?.handleBluePrintComponent?.(data.label, data.id, newData);

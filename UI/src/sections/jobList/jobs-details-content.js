@@ -19,7 +19,7 @@ import Markdown from 'src/components/markdown';
 
 export default function JobsDetailsContent({ job }) {
   console.log('job', job);
-const { title, company,source, createdAt,description,postedDate,updatedAt, experience,jobType, salary,skills } =
+const { title, posted, createdAt,description,updatedAt, experience, salary,keySkills } =
     job;
 
   const renderContent = (
@@ -31,7 +31,7 @@ const { title, company,source, createdAt,description,postedDate,updatedAt, exper
       <Stack spacing={2}>
         <Typography variant="h6">Skills</Typography>
         <Stack direction="row" alignItems="center" spacing={1}>
-          {skills.map((skill) => (
+          {keySkills.map((skill) => (
             <Chip key={skill} label={skill} variant="soft" />
           ))}
         </Stack>
@@ -53,7 +53,7 @@ const { title, company,source, createdAt,description,postedDate,updatedAt, exper
       {[
         {
           label: 'Date Posted',
-          value: fDate(createdAt.$date),
+          value: fDate(posted),
           icon: <Iconify icon="solar:calendar-date-bold" />,
         },
         {

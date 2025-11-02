@@ -26,13 +26,10 @@ export default function JobsDetailsView() {
   const params = useParams();
 
   const { id } = params;
-  console.log('id', id )
 
-  const {jobList:currentJob}= useGetJob(id);
+  const {jobList: currentJob}= useGetJob(id);
 
-  // const currentJob = mockJob.filter((job) => job._id.$oid === id)[0];
-
-  const [publish, setPublish] = useState(currentJob?.publish);
+  const [publish, setPublish] = useState(false);
 
   const [currentTab, setCurrentTab] = useState('title');
 
@@ -60,7 +57,7 @@ export default function JobsDetailsView() {
           label={tab.label}
           icon={
             tab.value === 'candidates' ? (
-              <Label variant="filled">{currentJob?.candidates.length}</Label>
+              <Label variant="filled">{currentJob?.candidates.length || 0}</Label>
             ) : (
               ''
             )
@@ -82,7 +79,7 @@ export default function JobsDetailsView() {
       />
       {renderTabs}
 
-      {currentTab === 'title' && <JobsDetailsContent job={currentJob} />}
+      {currentTab === 'title' && currentJob && <JobsDetailsContent job={currentJob} />}
        {/* {mockJob.map((job) => (
                 <JobDetailsContent
                   key={job.id}

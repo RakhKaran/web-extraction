@@ -13,11 +13,11 @@ export function useGetJobs() {
 
   const memoizedValue = useMemo(
     () => ({
-      JobsList: data || [],
-      JobsListLoading: isLoading,
-      JobsListError: error,
-      JobsListValidating: isValidating,
-      JobsListEmpty: !isLoading && (!data || data.length === 0),
+      jobsList: data || [],
+      jobsListLoading: isLoading,
+      jobsListError: error,
+      jobsListValidating: isValidating,
+      jobsListEmpty: !isLoading && (!data || data.length === 0),
     }),
     [data, error, isLoading, isValidating]
   );

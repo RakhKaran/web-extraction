@@ -849,7 +849,7 @@ export class PrototypeController {
     if (!node.stagingMode || !node.stagingModelName || !node.stagingRepositoryName) {
       await this.testExtractionLogsRepository.create({
         extractionId: extractionId,
-        
+
         logsDescription: "Staging details are not properly configured",
         logType: 1, // Info
         isActive: true,
@@ -1002,11 +1002,31 @@ export class PrototypeController {
 
     // Now you can insert only successRecords
     for (const data of successRecords) {
-      const exists = await deliverRepo.findOne({
-        where: {
-          and: Object.keys(data).map(key => ({ [key]: data[key] })),
-        },
-      });
+      const whereCondition = {
+        and: Object.entries(data).map(([key, value]) => {
+          // ✅ Check if value is a valid date
+          const parsedDate = Date.parse(String(value));
+          const isDate = !isNaN(parsedDate) && typeof value === 'string';
+
+          if (isDate) {
+            const currentDate = new Date(parsedDate);
+            const startDate = new Date(currentDate);
+            const endDate = new Date(currentDate);
+
+            // Allow ±1 day tolerance
+            startDate.setDate(currentDate.getDate() - 1);
+            endDate.setDate(currentDate.getDate() + 1);
+
+            return { [key]: { between: [startDate, endDate] } };
+          }
+
+          // Non-date field → exact match
+          return { [key]: value };
+        }),
+      };
+
+      const exists = await deliverRepo.findOne({ where: whereCondition });
+
       if (!exists) {
         await deliverRepo.create(data);
       }
@@ -1262,39 +1282,39 @@ export class PrototypeController {
     }
   }
 
-@post('/log-entries/logs-by-extraction')
-logsByNode(
-  @requestBody({
-    content: {
-      'application/json': {
-        schema: {
-          type: 'object',
-          properties: {
-            extractionId: { type: 'string' },
-            limit: { type: 'number', default: 10 },
-            skip: { type: 'number', default: 0 },
+  @post('/log-entries/logs-by-extraction')
+  logsByNode(
+    @requestBody({
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              extractionId: { type: 'string' },
+              limit: { type: 'number', default: 10 },
+              skip: { type: 'number', default: 0 },
+            },
+            required: ['extractionId'], // fixed key name
           },
-          required: ['extractionId'], // fixed key name
         },
       },
-    },
-  })
-  requestBody: {
-    extractionId: string;
-    limit?: number;
-    skip?: number;
-  }
-): Promise<TestExtractionLogs[]> {
-  const { extractionId, limit = 10, skip = 0 } = requestBody;
+    })
+    requestBody: {
+      extractionId: string;
+      limit?: number;
+      skip?: number;
+    }
+  ): Promise<TestExtractionLogs[]> {
+    const { extractionId, limit = 10, skip = 0 } = requestBody;
 
-  return this.testExtractionLogsRepository.find({
-    where: {
-      and: [{ extractionId }],
-    },
-    limit,
-    skip,
-    order: ['createdAt DESC'],
-  });
-}
+    return this.testExtractionLogsRepository.find({
+      where: {
+        and: [{ extractionId }],
+      },
+      limit,
+      skip,
+      order: ['createdAt DESC'],
+    });
+  }
 
 }

@@ -1,5 +1,5 @@
 import isEqual from 'lodash/isEqual';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 // @mui
 import {
   alpha,
@@ -59,7 +59,7 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
   { id: 'title', label: 'Title' },
-  { id: 'description', label: 'Description' },
+  // { id: 'description', label: 'Description' },
   { id: 'company', label: 'Company'},
   { id: 'location', label: 'Location'},
   { id: 'experience', label: 'Experience'},
@@ -87,9 +87,9 @@ export default function JobsListView() {
 
   const confirm = useBoolean();
 
-  const {JobsList}= useGetJobs();
+  const {jobsList, jobsListLoading}= useGetJobs();
 
-  const [tableData, setTableData] = useState(JobsList);
+  const [tableData, setTableData] = useState([]);
 
   const [filters, setFilters] = useState(defaultFilters);
 
@@ -147,13 +147,6 @@ const handleView = useCallback(
     });
   }, [dataFiltered.length, dataInPage.length, table, tableData]);
 
-  // const handleEditRow = useCallback(
-  //   (id) => {
-  //     router.push(paths.dashboard.company.edit(id));
-  //   },
-  //   [router]
-  // );
-
   const handleFilterStatus = useCallback(
     (event, newValue) => {
       handleFilters('status', newValue);
@@ -164,6 +157,12 @@ const handleView = useCallback(
   const handleResetFilters = useCallback(() => {
     setFilters(defaultFilters);
   }, []);
+
+  useEffect(() => {
+    if(jobsList && !jobsListLoading){
+      setTableData(jobsList);
+    }
+  }, [jobsList, jobsListLoading])
 
   return (
     <>
@@ -298,7 +297,7 @@ const handleView = useCallback(
                           row={row}
                           selected={table.selected.includes(row.id)}
                           onSelectRow={() => table.onSelectRow(row.id)}
-                            onViewRow={() => handleView(row._id.$oid)}
+                            onViewRow={() => handleView(row.id)}
                           // onDeleteRow={() => handleDeleteRow(row.id)}
                           // onEditRow={() => handleEditRow(row.id)}
                         />
