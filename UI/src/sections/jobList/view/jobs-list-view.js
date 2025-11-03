@@ -190,7 +190,7 @@ const handleView = useCallback(
         />
 
         <Card>
-          <Tabs
+          {/* <Tabs
             value={filters.status}
             onChange={handleFilterStatus}
             sx={{
@@ -226,7 +226,7 @@ const handleView = useCallback(
                 }
               />
             ))}
-          </Tabs>
+          </Tabs> */}
 
           <JobTableToolbar
             filters={filters}

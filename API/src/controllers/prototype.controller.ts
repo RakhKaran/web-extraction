@@ -1005,13 +1005,21 @@ export class PrototypeController {
       const whereCondition = {
         and: Object.entries(data).map(([key, value]) => {
           // ✅ Check if value is a valid date
-          const parsedDate = Date.parse(String(value));
-          const isDate = !isNaN(parsedDate) && typeof value === 'string';
+          const isDate =
+            value instanceof Date ||
+            (typeof value === 'string' &&
+              /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z?$/.test(value));
 
+          console.log('key', key);
+          console.log('value', value);
+          console.log('isDate', isDate);
           if (isDate) {
-            const currentDate = new Date(parsedDate);
+            const currentDate = new Date(value);
             const startDate = new Date(currentDate);
             const endDate = new Date(currentDate);
+            console.log('current Date', currentDate);
+            console.log('startDate', startDate);
+            console.log('endDate', endDate);
 
             // Allow ±1 day tolerance
             startDate.setDate(currentDate.getDate() - 1);
@@ -1032,14 +1040,12 @@ export class PrototypeController {
       }
     }
 
-    console.log('success records:', successRecords.length);
     await this.testExtractionLogsRepository.create({
       extractionId: extractionId,
       logsDescription: `success records: ${successRecords.length}`,
       logType: 2, // Info
       isActive: true,
     });
-    console.log('errored records:', errorRecords.length);
     await this.testExtractionLogsRepository.create({
       extractionId: extractionId,
       logsDescription: `errored records: ${errorRecords.length}`,
@@ -1178,12 +1184,7 @@ export class PrototypeController {
       },
     })
     requestBody: { bluePrint: any; extractionId: string }
-  ): Promise<{ success: boolean; message: string; data?: any[] }> {
-    let browser: any;
-    let page: any;
-    let links: string[] = [];
-    let extractedData: any[] = [];
-
+  ): Promise<{ success: boolean; message: string }> {
     try {
       const { bluePrint, extractionId } = requestBody;
 
@@ -1191,94 +1192,106 @@ export class PrototypeController {
         throw new HttpErrors.BadRequest('Blueprint is missing or invalid');
       }
 
-      const nodes = bluePrint.nodes.sort((a: any, b: any) => a.id - b.id);
+      // ✅ Run the workflow in the background (non-blocking)
+      (async () => {
+        let browser: any;
+        let page: any;
+        let links: string[] = [];
+        let extractedData: any[] = [];
 
-      for (const node of nodes) {
         try {
-          switch (node.type) {
-            case "initialize":
-              const init = await this.handleInitializeNode(node, extractionId);
-              browser = init.browserContext;
-              page = init.page;
-              break;
+          const nodes = bluePrint.nodes.sort((a: any, b: any) => a.id - b.id);
 
-            case "search":
-              if (page) {
-                await this.handleSearchNode(page, node);
+          for (const node of nodes) {
+            try {
+              switch (node.type) {
+                case "initialize":
+                  const init = await this.handleInitializeNode(node, extractionId);
+                  browser = init.browserContext;
+                  page = init.page;
+                  break;
+
+                case "search":
+                  if (page) {
+                    await this.handleSearchNode(page, node);
+                  }
+                  break;
+
+                case "locate":
+                  if (node.mode === "list" && page) {
+                    links = await this.handleJobListNode(page, node);
+                  }
+                  if (node.mode === "detail" && browser) {
+                    extractedData = await this.handleJobDetailNode(browser, links, node, extractionId);
+                  }
+                  break;
+
+                case "deliver":
+                  if (extractedData.length > 0) {
+                    await this.handleDeliverNode(extractedData, node, extractionId);
+                  }
+                  break;
+
+                case "transformation":
+                  await this.handleTransformationNode(node, extractionId);
+                  break;
+
+                default:
+                  console.warn(`⚠️ Unknown node type: ${node.type}`);
+                  await this.testExtractionLogsRepository.create({
+                    extractionId,
+                    logsDescription: `⚠️ Unknown node type: ${node.type}`,
+                    logType: 1,
+                    isActive: true,
+                  });
               }
-              break;
 
-            case "locate":
-              if (node.mode === "list" && page) {
-                links = await this.handleJobListNode(page, node);
-              }
-              if (node.mode === "detail" && browser) {
-                extractedData = await this.handleJobDetailNode(browser, links, node, extractionId);
-              }
-              break;
-
-            case "deliver":
-              if (extractedData.length > 0) {
-                await this.handleDeliverNode(extractedData, node, extractionId);
-              }
-              break;
-
-            case "transformation":
-              await this.handleTransformationNode(node, extractionId);
-
-            default:
-              console.warn(`⚠️ Unknown node type: ${node.type}`);
               await this.testExtractionLogsRepository.create({
-                extractionId: extractionId,
-                logsDescription: `⚠️ Unknown node type: ${node.type}`,
-                logType: 1, // Info
+                extractionId,
+                logsDescription: `Node "${node.type}" executed successfully`,
+                logType: 0,
                 isActive: true,
               });
+
+            } catch (nodeError: any) {
+              await this.testExtractionLogsRepository.create({
+                extractionId,
+                logsDescription: `Error executing node "${node.type}": ${nodeError.message}`,
+                logType: 1,
+                isActive: true,
+              });
+              console.error(`Error in node ${node.type}:`, nodeError);
+            }
           }
 
-          // Log successful node execution
+          await browser?.close();
           await this.testExtractionLogsRepository.create({
-            extractionId: extractionId,
-            logsDescription: `Node "${node.type}" executed successfully`,
-            logType: 0, // Info
+            extractionId,
+            logsDescription: "Workflow executed successfully",
+            logType: 2,
             isActive: true,
           });
-
-        } catch (nodeError) {
-          // Log node-level error
-          await this.testExtractionLogsRepository.create({
-            extractionId: extractionId,
-            logsDescription: `Error executing node "${node.type}": ${nodeError.message}`,
-            logType: 1, // Error
-            isActive: true,
-          });
-
-          console.error(`Error in node ${node.type}:`, nodeError);
+        } catch (error: any) {
+          if (requestBody?.extractionId) {
+            await this.testExtractionLogsRepository.create({
+              extractionId: requestBody.extractionId,
+              logsDescription: `Workflow execution failed: ${error.message}`,
+              logType: 1,
+              isActive: true,
+            });
+          }
+          if (browser) await browser.close();
+          console.error("Workflow execution failed:", error);
         }
-      }
+      })(); // <- fire and forget
 
-      await browser?.close();
-      await this.testExtractionLogsRepository.create({
-        extractionId: extractionId,
-        logsDescription: "Workflow executed successfully",
-        logType: 2, // Info
-        isActive: true,
-      });
-      return { success: true, message: "Workflow executed successfully" };
-
-    } catch (error) {
-      // Log workflow-level error
-      if (requestBody?.extractionId) {
-        await this.testExtractionLogsRepository.create({
-          extractionId: requestBody.extractionId,
-          logsDescription: `Workflow execution failed: ${error.message}`,
-          logType: 1, // Error
-          isActive: true,
-        });
-      }
-
-      if (browser) await browser.close();
-      throw error; // still throw so frontend can handle
+      // ✅ Immediately return to client
+      return {
+        success: true,
+        message: "Workflow triggered. Check logs for tracking.",
+      };
+    } catch (error: any) {
+      throw new HttpErrors.InternalServerError(error.message);
     }
   }
 
