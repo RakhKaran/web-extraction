@@ -50,6 +50,24 @@ export default function ReactFlowIngestion({ data }) {
                         .required("Login credentials are required"),
                 otherwise: (schema) => schema.notRequired(),
             }),
+        proxiesEnabled: Yup.boolean().required('Please select whether to use proxies or not'),
+        proxies: Yup.array()
+            .of(
+                Yup.object().shape({
+                    server: Yup.string().required("Server Ip is required"),
+                    username: Yup.string().required("Username is required"),
+                    password: Yup.string().required("Password is required"),
+                })
+            )
+            .when("proxiesEnabled", {
+                is: true,
+                then: (schema) =>
+                    schema
+                        .min(1, "At least one proxy is required")
+                        .required("Proxy credentials are required"),
+                otherwise: (schema) => schema.notRequired(),
+            }),
+
     });
 
 
@@ -59,6 +77,8 @@ export default function ReactFlowIngestion({ data }) {
             loginSessionEnabled: data.bluePrint?.data?.session?.enabled || false,
             storageStatePath: data.bluePrint?.data?.session?.storageStatePath || '',
             logins: data.bluePrint?.data?.session?.logins || [],
+            proxiesEnabled: data.bluePrint?.data?.proxiesEnabled || false,
+            proxies: data.bluePrint?.data?.proxies || []
         }),
         [data]
     );
@@ -84,6 +104,11 @@ export default function ReactFlowIngestion({ data }) {
         control
     });
 
+    const { fields: proxyFields, append: proxyAppend, remove: proxyRemove } = useFieldArray({
+        name: 'proxies',
+        control
+    });
+
     const onSubmit = handleSubmit(async (formData) => {
         const newData = {
             id: data.id,
@@ -100,7 +125,9 @@ export default function ReactFlowIngestion({ data }) {
                     load: formData.loginSessionEnabled ? true : false,
                     save: formData.loginSessionEnabled ? true : false,
                     logins: formData.logins,
-                }
+                },
+                proxiesEnabled: formData.proxiesEnabled,
+                proxies: formData.proxies
             }
         }
         data.functions?.handleBluePrintComponent?.(data.label, data.id, newData);
@@ -129,6 +156,22 @@ export default function ReactFlowIngestion({ data }) {
             }
         }
     }, [values.loginSessionEnabled]);
+
+    useEffect(() => {
+        if (values.proxiesEnabled) {
+            if (proxyFields.length === 0) {
+                proxyAppend({
+                    server: "",
+                    username: "",
+                    password: "",
+                });
+            }
+        } else {
+            if (proxyFields.length > 0) {
+                proxyRemove();
+            }
+        }
+    }, [values.proxiesEnabled]);
 
     // Open modal
     const handleOpenModal = () => {
@@ -264,6 +307,95 @@ export default function ReactFlowIngestion({ data }) {
                                                     loginPassword: "",
                                                     loginPasswordSelector: "",
                                                     storageStatePath: "",
+                                                })
+                                            }
+                                        >
+                                            <Iconify icon="mdi:plus-circle-outline" width={26} />
+                                        </IconButton>
+                                    </Box>
+                                </Grid>
+                            </>
+                        )}
+
+                        {/* Proxy Management */}
+                        <Grid item xs={12}>
+                            <Typography variant="h6" sx={{ mb: 1 }}>
+                                Proxies Management
+                            </Typography>
+                            <RHFSelect name="proxiesEnabled" label="Proxies Enabled" fullWidth>
+                                {[{ label: "True", value: true }, { label: "False", value: false }].map((opt) => (
+                                    <MenuItem key={opt.value.toString()} value={opt.value}>
+                                        {opt.label}
+                                    </MenuItem>
+                                ))}
+                            </RHFSelect>
+                        </Grid>
+
+                        {values.proxiesEnabled && (
+                            <>
+                                <Grid item xs={12}>
+                                    <Typography variant="subtitle1">Proxies Credentials</Typography>
+                                    <Divider sx={{ my: 1 }} />
+                                </Grid>
+
+                                <Grid item xs={12}>
+                                    {proxyFields.map((item, index) => (
+                                        <Grid container spacing={2} alignItems="center" key={item.id}>
+                                            <Grid item xs={12} md={4}>
+                                                <RHFTextField
+                                                    name={`proxies[${index}].server`}
+                                                    label="Server IP"
+                                                    fullWidth
+                                                />
+                                            </Grid>
+
+                                            <Grid item xs={12} md={4}>
+                                                <RHFTextField
+                                                    name={`proxies[${index}].username`}
+                                                    label="Username"
+                                                    fullWidth
+                                                />
+                                            </Grid>
+
+                                            <Grid item xs={12} md={4}>
+                                                <RHFTextField
+                                                    name={`proxies[${index}].password`}
+                                                    label="Password"
+                                                    type="password"
+                                                    fullWidth
+                                                />
+                                            </Grid>
+
+                                            {proxyFields.length > 1 && (
+                                                <Grid item xs={12} md={12} display="flex" justifyContent="flex-end" alignItems="center">
+                                                    <IconButton color="error" onClick={() => proxyRemove(index)}>
+                                                        <Iconify icon="mdi:minus-circle-outline" width={24} />
+                                                    </IconButton>
+                                                </Grid>
+                                            )}
+
+
+
+                                            {index < proxyFields.length - 1 && (
+                                                <Grid item xs={12}>
+                                                    <Divider sx={{ my: 1 }} />
+                                                </Grid>
+                                            )}
+                                        </Grid>
+                                    ))}
+                                </Grid>
+
+
+                                {/* ➕ Add New Proxy */}
+                                <Grid item xs={12} md={12}>
+                                    <Box display="flex" justifyContent="flex-end">
+                                        <IconButton
+                                            color="primary"
+                                            onClick={() =>
+                                                proxyAppend({
+                                                    server: "",
+                                                    username: "",
+                                                    password: "",
                                                 })
                                             }
                                         >

@@ -1,28 +1,49 @@
-# Check out https://hub.docker.com/_/node to select a new base image
-FROM docker.io/library/node:24-slim
+# Use official Node base for backend (not Airflow)
+FROM node:18-bullseye
 
-# Set to a non-root built-in user `node`
-USER node
+# Install all dependencies for Playwright, Puppeteer, and virtual display
+RUN apt-get update && apt-get install -y \
+    xvfb \
+    x11-apps \
+    libnss3 \
+    libatk1.0-0 \
+    libatk-bridge2.0-0 \
+    libcups2 \
+    libdrm2 \
+    libxkbcommon0 \
+    libxcomposite1 \
+    libxdamage1 \
+    libxrandr2 \
+    libgbm1 \
+    libasound2 \
+    libpangocairo-1.0-0 \
+    libpango-1.0-0 \
+    libgtk-3-0 \
+    fonts-liberation \
+    libxshmfence1 \
+    && rm -rf /var/lib/apt/lists/*
 
-# Create app directory (with user `node`)
-RUN mkdir -p /home/node/app
+# Create a writable /tmp/.X11-unix directory for Xvfb
+RUN mkdir -p /tmp/.X11-unix && chmod 1777 /tmp/.X11-unix
 
-WORKDIR /home/node/app
+# Create app directory
+WORKDIR /usr/src/app
 
-# Install app dependencies
-# A wildcard is used to ensure both package.json AND package-lock.json are copied
-# where available (npm@5+)
-COPY --chown=node package*.json ./
-
+# Copy dependency files and install
+COPY package*.json ./
 RUN npm install
 
-# Bundle app source code
-COPY --chown=node . .
+# Install Playwright (if required)
+RUN npx playwright install --with-deps chromium
 
+# Copy rest of the source
+COPY . .
+
+# Build LB4 app
 RUN npm run build
 
-# Bind to all network interfaces so that it can be mapped to the host OS
-ENV HOST=0.0.0.0 PORT=3000
+# Expose port
+EXPOSE 3000
 
-EXPOSE ${PORT}
-CMD [ "node", "." ]
+# Use xvfb-run as entry command
+CMD ["xvfb-run", "--server-args=-screen 0 1280x720x24", "node", "dist/scripts/run-main.js"]

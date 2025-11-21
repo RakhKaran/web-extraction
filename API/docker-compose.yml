@@ -9,7 +9,7 @@ services:
       - ./src/dags:/opt/airflow/dags
       - ./dist:/opt/airflow/dist
       - ./package.json:/opt/airflow/package.json
-      - airflow_db:/opt/airflow  # persistent DB storage (directory, not file)
+      - airflow_db:/opt/airflow
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
@@ -25,7 +25,7 @@ services:
       - ./src/dags:/opt/airflow/dags
       - ./dist:/opt/airflow/dist
       - ./package.json:/opt/airflow/package.json
-      - airflow_db:/opt/airflow  # same volume as webserver
+      - airflow_db:/opt/airflow
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
@@ -38,7 +38,9 @@ services:
     volumes:
       - ./dist:/usr/src/app/dist
       - ./package.json:/usr/src/app/package.json
-    command: node dist/scripts/run-main.js
+    ports:
+      - "3000:3000"
+    command: xvfb-run --server-args="-screen 0 1280x720x24" node dist/scripts/run-main.js
 
 volumes:
   airflow_db:
