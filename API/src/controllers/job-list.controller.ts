@@ -73,7 +73,7 @@ export class JobListController {
   async find(
     @param.filter(JobList) filter?: Filter<JobList>,
   ): Promise<JobList[]> {
-    return this.jobListRepository.find(filter);
+    return this.jobListRepository.find({...filter, order: ['createdAt desc']});
   }
 
   @patch('/job-lists')

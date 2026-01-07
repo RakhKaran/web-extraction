@@ -603,7 +603,7 @@ export class PrototypeController {
         console.log(`Found ${jobCards.length} job cards`);
 
         // Extract up to 5 job links (optional)
-        for (let card of jobCards.slice(0, 5)) {
+        for (let card of jobCards.slice(0, 20)) {
           const href = await card.getAttribute("href");
           if (href) jobLinks.push(href);
         }
