@@ -3,7 +3,7 @@ import { Main } from "../services/nodes/main.service";
 import { WebExtractionApplication } from "../application";
 import { ApplicationConfig } from "@loopback/core";
 
-async function extraction(schedulerId: string) {
+async function extraction(searchField: string, schedulerId: string) {
     const config: ApplicationConfig = {
         rest: {
             port: 0,
@@ -18,7 +18,7 @@ async function extraction(schedulerId: string) {
     const mainService = await app.get<Main>('services.Main');
 
     try {
-        const result = await mainService.extraction(schedulerId);
+        const result = await mainService.extraction(searchField, schedulerId);
         console.log(JSON.stringify(result));
     } catch (err: any) {
         console.error(JSON.stringify({ error: err.message }));
@@ -42,10 +42,12 @@ async function extraction(schedulerId: string) {
 }
 
 // Get schedulerId from CLI args
+const searchField = process.argv[3];
 const schedulerId = process.argv[2];
-if (!schedulerId) {
-    console.error("Usage: script <schedulerId>");
+
+if (!searchField || !schedulerId) {
+    console.error("Usage: node run-extraction.js <searchField> <schedulerId>");
     process.exit(1);
 }
 
-extraction(schedulerId);
+extraction(searchField, schedulerId);

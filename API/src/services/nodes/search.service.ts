@@ -1,5 +1,13 @@
+import { inject } from "@loopback/core";
+import { ActionsService } from "./actions.service";
+import path from "path";
+import fs from "fs";
+
 export class Search {
-    constructor() { }
+    constructor(
+        @inject('services.Action')
+        private actionService: ActionsService,
+    ) { }
 
     private buildSelector(page: any, selector: { name: string; selectorType: string }) {
         switch (selector.selectorType) {
@@ -20,20 +28,44 @@ export class Search {
         }
     }
 
+    private async captureScreenshot(page: any, name: string) {
+        try {
+            const dir = path.resolve("./snapshots/search");
+            if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
+
+            const basePath = `/opt/airflow/logs/screenshots/${process.env.AIRFLOW_CTX_DAG_ID}/${process.env.AIRFLOW_CTX_TASK_ID}`;
+            await fs.promises.mkdir(basePath, { recursive: true });
+
+            await page.screenshot({
+                path: `${basePath}/${Date.now()}-before-search.png`,
+                fullPage: true,
+            });
+            console.log(`📸 Screenshot saved: ${basePath}`);
+        } catch (e) {
+            console.warn("⚠️ Failed to capture screenshot", e);
+        }
+    }
+
     // search service...
     async search(data: any, previousOutput: any) {
         try {
             if (!data?.selector) return data;
 
+            console.log('search text', data?.data?.searchText);
+
+            await this.captureScreenshot(previousOutput?.page, "before-search");
+
             const page = previousOutput?.page;
             const searchInput = this.buildSelector(page, data.selector);
-
-            console.log(await page.content());
             await page.screenshot({ path: "test.png", fullPage: true });
 
             // 1️⃣ Wait for parent container if provided
             if (data.parentSelector) {
                 await page.waitForSelector(data.parentSelector, { timeout: 15000 });
+            }
+
+            if (data.actionFlow && data.actionFlow.length > 0) {
+                await this.actionService.handleActions(data.actionFlow, page);
             }
 
             // 2️⃣ Retry logic for dynamic rendering
@@ -64,6 +96,8 @@ export class Search {
                     searchInput.press("Enter"),
                 ]);
             }
+
+            await this.captureScreenshot(page, "after-submit");
 
             // 4️⃣ Wait for results container if specified
             if (data.resultsSelector) {

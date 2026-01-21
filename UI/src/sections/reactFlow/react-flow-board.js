@@ -106,14 +106,14 @@ export default function ReactFlowBoard({ isUnlock }) {
       if (bluePrints?.success) {
         setData(bluePrints?.data);
 
-          if (bluePrints?.data?.bluePrint?.length > 0) {
-        setIsBlueprintSaved(true);
-      }
+        if (bluePrints?.data?.bluePrint?.length > 0) {
+          setIsBlueprintSaved(true);
+        }
       }
     }
   }, [bluePrints, bluePrintsLoading]);
 
-  console.log("bleprint",bluePrints)
+  console.log("bleprint", bluePrints)
 
   useEffect(() => {
     if (data) {
@@ -684,15 +684,15 @@ export default function ReactFlowBoard({ isUnlock }) {
       <Box sx={{ width: '100%', display: 'flex', justifyContent: 'end', alignItems: 'center', gap: '10px' }}>
         <Button onClick={() => handleSubmitBluePrint()} variant='contained'>Save</Button>
         <LoadingButton
-  onClick={handleTestBluePrint}
-  variant="contained"
-  disabled={
-    !isBlueprintSaved || 
-    bluePrint.some((b) => !b.component)
-  }
->
-  Test
-</LoadingButton>
+          onClick={handleTestBluePrint}
+          variant="contained"
+          disabled={
+            !isBlueprintSaved ||
+            bluePrint.some((b) => !b.component)
+          }
+        >
+          Test
+        </LoadingButton>
 
         <Button onClick={() => setViewLogs(true)} variant='contained'>View Logs</Button>
       </Box>

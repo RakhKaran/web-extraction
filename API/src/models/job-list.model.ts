@@ -1,4 +1,4 @@
-import {Entity, model, property} from '@loopback/repository';
+import { Entity, model, property } from '@loopback/repository';
 
 @model()
 export class JobList extends Entity {
@@ -115,7 +115,6 @@ export class JobList extends Entity {
     default: false,
   })
   isDeleted: boolean;
-
 
   constructor(data?: Partial<JobList>) {
     super(data);

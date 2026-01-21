@@ -34,6 +34,7 @@ import { Search } from './services/nodes/search.service';
 import { Locate } from './services/nodes/locate.service';
 import { Deliver } from './services/nodes/deliver.service';
 import { Transformation } from './services/nodes/transformation.service';
+import { ActionsService } from './services/nodes/actions.service';
 
 export { ApplicationConfig };
 
@@ -78,6 +79,7 @@ export class WebExtractionApplication extends BootMixin(
     this.bind('services.DagCreation').toClass(AirflowDagService);
     this.bind('services.Main').toClass(Main);
     this.bind('services.Initialize').toClass(Initialize);
+    this.bind('services.Action').toClass(ActionsService);
     this.bind('services.Search').toClass(Search);
     this.bind('services.Locate').toClass(Locate);
     this.bind('services.Deliver').toClass(Deliver);

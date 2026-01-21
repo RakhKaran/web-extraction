@@ -1,5 +1,11 @@
+import { inject } from "@loopback/core";
+import { ActionsService } from "./actions.service";
+
 export class Locate {
-    constructor() { }
+    constructor(
+        @inject('services.Action')
+        private actionService: ActionsService,
+    ) { }
 
     // Extract value (text or attribute)
     // Universal extractor
@@ -95,16 +101,74 @@ export class Locate {
 
     // listing node
     private async handleListNode(page: any, node: any): Promise<string[]> {
-        const links: string[] = [];
-        const selectorName = node?.selector?.name;
-        if (!selectorName) return links;
+        const jobLinks: string[] = [];
 
-        const cards = await page.$$(selectorName);
-        for (let card of cards) {
-            const href = await card.getAttribute("href");
-            if (href) links.push(href);
+        // Run actions (search / filters etc.)
+        if (node.actionFlow?.length) {
+            await this.actionService.handleActions(node.actionFlow, page, true);
         }
-        return links;
+
+        const selectorName = node?.selector?.name;
+        if (!selectorName) return jobLinks;
+
+        const pagination = node?.paginationFields;
+        const nextPageSelector = pagination?.nextPageSelectorName;
+        const totalPages = pagination?.numberOfPages || 1;
+
+        for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
+            console.log(`🔹 Scraping page ${pageIndex + 1}`);
+
+            await page.waitForSelector(selectorName, { timeout: 15000 });
+
+            const jobCards = await page.$$(selectorName);
+            console.log(`Found ${jobCards.length} job cards`);
+
+            for (let card of jobCards.slice(0, 20)) {
+                const href = await card.getAttribute("href");
+                if (href) jobLinks.push(href);
+            }
+
+            if (!pagination || !nextPageSelector || pageIndex === totalPages - 1) {
+                console.log("✅ No more pagination or last page reached.");
+                break;
+            }
+
+            let nextBtn = page.locator(nextPageSelector);
+
+            // 👇 Scroll if pagination not visible
+            if (await nextBtn.count() === 0) {
+                console.log("🔽 Pagination not visible, scrolling...");
+                for (let i = 0; i < 5; i++) {
+                    await page.mouse.wheel(0, 800);
+                    await page.waitForTimeout(700);
+                    if (await nextBtn.count() > 0) break;
+                }
+            }
+
+            if (await nextBtn.count() === 0) {
+                console.log("🚫 Next button not found after scrolling.");
+                break;
+            }
+
+            const isDisabled = await nextBtn.first().evaluate((btn: any) =>
+                btn.disabled || btn.getAttribute("disabled") !== null
+            );
+
+            if (isDisabled) {
+                console.log("🚫 Next button disabled.");
+                break;
+            }
+
+            console.log("➡️ Clicking next page...");
+            await nextBtn.first().scrollIntoViewIfNeeded();
+            await nextBtn.first().click();
+
+            await page.waitForLoadState("domcontentloaded");
+            await page.waitForTimeout(2000);
+        }
+
+        console.log("✅ Final job links:", jobLinks);
+        return jobLinks;
     }
 
     // detail data node

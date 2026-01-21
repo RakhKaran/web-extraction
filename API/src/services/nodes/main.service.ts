@@ -7,6 +7,7 @@ import { Search } from "./search.service";
 import { Locate } from "./locate.service";
 import { Deliver } from "./deliver.service";
 import { Transformation } from "./transformation.service";
+import { HttpErrors } from "@loopback/rest";
 
 export class Main {
     constructor(
@@ -42,7 +43,7 @@ export class Main {
     // main service where schedulers are fetching...
     async main() {
         try {
-            const schedulers : any = await this.schedulerRepository.find({
+            const schedulers: any = await this.schedulerRepository.find({
                 where: {
                     and: [
                         { isScheduled: false },
@@ -54,97 +55,89 @@ export class Main {
                     {
                         relation: 'workflow',
                         scope: {
-                            include: [
-                                { relation: 'workflowBlueprint' }
-                            ]
+                            include: [{ relation: 'workflowBlueprint' }]
                         }
                     }
                 ]
             });
 
-            if (schedulers && schedulers.length > 0) {
-                console.log('schedulers found');
-                for (const scheduler of schedulers) {
-                    if (scheduler.schedulerFor === 0) {
-                        console.log('entered');
-                        const designations = await this.designationRepository.find({
-                            where: {
-                                and: [
-                                    { isActive: true },
-                                    { isDeleted: false }
-                                ]
-                            }
-                        });
-                        console.log('designation found', designations);
+            if (!schedulers || schedulers.length === 0) {
+                console.log('schedulers not found');
+                return;
+            }
 
-                        for (let designation of designations) {
-                            console.log('designation found');
-                            const searchNodes = scheduler?.workflow?.workflowBlueprint?.bluePrint?.filter((node: any) => node.component.type === 'search');
+            console.log('schedulers found');
 
-                            const finalSearchArray = searchNodes?.map((node: any) => ({
-                                selectorName: node?.component?.selector?.name,
-                                searchType: node?.component?.searchType,
-                                value: node?.component?.searchType === 'jobs' ? designation?.designation : ''
-                            }));
+            for (const scheduler of schedulers) {
 
-                            const dagFileName = await this.dagsCreationService.createDagFile(scheduler, (designation?.designation || ''));
+                // lock scheduler early
+                await this.schedulerRepository.updateById(
+                    scheduler.id,
+                    { isScheduled: true }
+                );
+
+                if (scheduler.schedulerFor === 0) {
+                    const designations = await this.designationRepository.find({
+                        where: {
+                            and: [
+                                { isActive: true },
+                                { isDeleted: false }
+                            ]
+                        }
+                    });
+
+                    await Promise.all(
+                        designations.map(async (designation) => {
+                            const finalSearchArray = designations.map((desg) => {
+                                return {
+                                    selectorName: 'Search',
+                                    value: desg.designation
+                                }
+                            })
+
+                            const dagFileName =
+                                await this.dagsCreationService.createDagFile(
+                                    scheduler,
+                                    designation?.designation || ''
+                                );
 
                             if (dagFileName) {
-                                // creating entries in db..
                                 await this.dagsRepository.create({
                                     dagName: `dag-${scheduler.schedularName}-${designation?.designation}`,
-                                    dagFileName: dagFileName,
+                                    dagFileName,
                                     schedulerId: scheduler.id,
                                     searchArray: finalSearchArray,
                                     isActive: true,
                                     isDeleted: false,
                                 });
                             }
-                        }
+                        })
+                    );
 
-                        await this.schedulerRepository.updateById(scheduler.id, { isScheduled: true });
-                    } else {
-                        console.log('designation not found');
-                        // we will create airflow dags here...
-                        const dagFileName = await this.dagsCreationService.createDagFile(scheduler, '');
+                } else {
+                    const dagFileName =
+                        await this.dagsCreationService.createDagFile(scheduler, '');
 
-                        if (dagFileName) {
-                            // creating entries in db..
-                            await this.dagsRepository.create({
-                                dagName: `dag-${scheduler.schedularName}`,
-                                dagFileName: dagFileName,
-                                schedulerId: scheduler.id,
-                                isActive: true,
-                                isDeleted: false,
-                            });
-
-                            await this.schedulerRepository.updateById(scheduler.id, { isScheduled: true });
-                        }
+                    if (dagFileName) {
+                        await this.dagsRepository.create({
+                            dagName: `dag-${scheduler.schedularName}`,
+                            dagFileName,
+                            schedulerId: scheduler.id,
+                            isActive: true,
+                            isDeleted: false,
+                        });
                     }
                 }
             }
-
-            console.log('schedulers not found');
         } catch (error) {
             console.error('error in main service', error);
+            throw error; // critical for Airflow
         }
     }
 
     // executing ETL flow...
-    async extraction(schedulerId: string) {
+    async extraction(searchField: string, schedulerId: string) {
         try {
-            // const dag = await this.dagsRepository.findById(dagId);
-
-            // if (!dag) {
-            //     console.log(`dag with ID ${dagId} not found`);
-            //     return;
-            // }
-
-            // if (dag.isDeleted || !dag.isActive) {
-            //     console.log('dag is already deleted or temporary In-Active');
-            //     return;
-            // };
-
             const scheduler: any = await this.schedulerRepository.findById(
                 schedulerId,
                 {
@@ -185,11 +178,31 @@ export class Main {
 
             const workflowBlueprint = workflow.workflowBlueprint;
             const nodesData = workflowBlueprint.nodes || [];
-            const bluePrint = workflowBlueprint.bluePrint;
+            let bluePrint = workflowBlueprint.bluePrint || [];
             const outputData: any = [];
             let lastOutputData: any = {};
             const executionResults = [];
 
+            if (searchField) {
+                bluePrint = bluePrint?.map((node: any) => {
+                    if (node?.component?.type === 'search') {
+                        return {
+                            ...node,
+                            component: {
+                                ...node?.component,
+                                data: {
+                                    ...node?.component?.data,
+                                    searchText: searchField
+                                }
+                            }
+                        }
+                    }
+
+                    return node;
+                })
+            }
+
+            console.log('bluePrint', bluePrint);
             // Sequential execution of nodes
             for (const node of nodesData) {
                 try {

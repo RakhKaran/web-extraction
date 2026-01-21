@@ -4,6 +4,8 @@ import { WebExtractionApplication } from "../application";
 import { ApplicationConfig } from "@loopback/core";
 
 async function main() {
+    let exitCode = 0;
+
     const config: ApplicationConfig = {
         rest: {
             port: 0,
@@ -15,29 +17,33 @@ async function main() {
     await app.boot();
     await app.start();
 
-    const mainService = await app.get<Main>('services.Main');
-
     try {
-        const result = await mainService.main();
-        console.log(JSON.stringify(result));
-    } catch (err: any) {
-        console.error(JSON.stringify({ error: err.message }));
-        process.exit(1);
-    } finally {
-        console.log('stopping the app');
-        await app.stop();
+        const mainService = await app.get<Main>('services.Main');
+        await mainService.main();
 
-        // disconnect datasource if exists
+        console.log('Main workflow completed successfully');
+    } catch (err: any) {
+        console.error('Main workflow failed', err);
+        exitCode = 1;
+    } finally {
+        console.log('Stopping the app');
+
+        try {
+            await app.stop();
+        } catch (e) {
+            console.warn('Error stopping app', e);
+        }
+
         try {
             const ds: any = await app.get('datasources.db');
             if (ds?.connector?.disconnect) {
                 await ds.connector.disconnect();
             }
-        } catch (err) {
+        } catch {
             console.warn('No datasource to disconnect');
         }
 
-        setImmediate(() => process.exit(0));
+        process.exit(exitCode);
     }
 }
 

@@ -9,20 +9,20 @@ export class Transformation {
     // transformation node
     async transformation(node: any, previousOutput: any) {
         try {
-            if (!node.stagingMode || !node.stagingModelName || !node.stagingRespositoryName) {
+            if (!node.stagingMode || !node.stagingModelName || !node.stagingRepositoryName) {
                 throw new Error("Staging details are not properly configured");
             }
 
             const stagingRepo = await this.ctx.get<DefaultCrudRepository<any, any>>(
-                `repositories.${node.stagingRespositoryName}`,
+                `repositories.${node.stagingRepositoryName}`,
             );
 
-            if (!node.deliverMode || !node.deliverModelName || !node.deliverRespositoryName) {
+            if (!node.deliverMode || !node.deliverModelName || !node.deliverRepositoryName) {
                 throw new Error("Deliver details are not properly configured");
             }
 
             const deliverRepo = await this.ctx.get<DefaultCrudRepository<any, any>>(
-                `repositories.${node.deliverRespositoryName}`,
+                `repositories.${node.deliverRepositoryName}`,
             );
 
             const deliveredRecords: any[] = [];

@@ -121,7 +121,7 @@ export default function CompanyNewEditForm({ currentCompany, open, onClose }) {
               <RHFSelect name="designation" label="Select Designation">
                 {designation && designation.length > 0 ? (
                   designation.map((option) => (
-                    <MenuItem key={option.id} value={option.id}>
+                    <MenuItem key={option.id} value={option.designation}>
                       {option.designation}
                     </MenuItem>
                   ))

@@ -451,32 +451,111 @@ export class PrototypeController {
     return (await el.innerText())?.trim();
   }
 
-  // handleActions
-  private async handleActions(actions: any[], page: any) {
-    try {
-      for (const action of actions) {
-        const { selector } = action;
-        console.log(`Performing action for selector ${selector} - `, action.action);
+  // handleActions (generic, on-demand scroll, retry-safe)
+  async handleActions(actions: any[], page: any, usedScroll = false) {
+    for (const action of actions) {
+      const {
+        selector,
+        action: actionType,
+        timeout = 20000,
+        retries = 3,
+        waitAfter = 500,
+      } = action;
 
-        switch (action.action) {
-          case 'click':
-            await page.waitForSelector(selector, { timeout: 15000 });
-            const element = await page.$(selector);
-            if (element) {
-              console.log('element found');
-              await element.click();
-              console.log('element cliked');
-            } else {
-              console.log('element not found');
-            }
+      const scrollStep = 600;
+      const maxScrolls = 10;
+
+      console.log('scroll', usedScroll);
+      console.log(`⚙️ Performing action: ${actionType} on ${selector}`);
+
+      let attempt = 0;
+      let success = false;
+
+      while (attempt < retries && !success) {
+        try {
+          attempt++;
+
+          const locator = page.locator(selector);
+
+          console.log('locator', locator);
+
+          // ---------- STEP 1: Try WITHOUT scroll ----------
+          if (await locator.count() > 0) {
+            await locator.first().scrollIntoViewIfNeeded();
+            await locator.first().waitFor({ state: "visible", timeout });
+            await this.performAction(locator.first(), actionType, timeout);
+
+            success = true;
             break;
+          }
 
-          default:
-            console.warn(`Unknown action: ${selector.action}`);
+          // ---------- STEP 2: Scroll ONLY if enabled ----------
+          if (usedScroll) {
+            console.log(`🔽 Element not found, scrolling...`);
+
+            for (let i = 0; i < maxScrolls; i++) {
+              await page.mouse.wheel(0, scrollStep);
+              await page.waitForTimeout(2000);
+
+              if (await locator.count() > 0) {
+                await locator.first().scrollIntoViewIfNeeded();
+                await locator.first().waitFor({ state: "visible", timeout });
+                await this.performAction(locator.first(), actionType, timeout);
+
+                success = true;
+                break;
+              }
+            }
+
+            if (!success) {
+              console.log(`Element not found after scrolling`);
+            }
+          } else {
+            console.log(`Element not found (scroll disabled)`);
+          }
+
+          if (waitAfter) {
+            await page.waitForTimeout(waitAfter);
+          }
+
+          console.log(`✅ Action succeeded: ${actionType} on ${selector}`);
+
+        } catch (error: any) {
+          console.error(
+            `❌ Action failed (attempt ${attempt}/${retries}): ${error.message}`
+          );
+
+          if (attempt >= retries) {
+            return false;
+          }
+
+          await page.waitForTimeout(1000);
         }
       }
-    } catch (error) {
-      console.error('Error while performing action', error);
+    }
+  }
+
+  // Helper: keep actions clean & extensible
+  private async performAction(
+    locator: any,
+    actionType: string,
+    timeout: number
+  ) {
+    switch (actionType) {
+      case "click":
+        await locator.click({ timeout });
+        break;
+
+      case "hover":
+        await locator.hover({ timeout });
+        break;
+
+      case "focus":
+        await locator.focus();
+        break;
+
+      default:
+        throw new Error(`Unknown action type: ${actionType}`);
     }
   }
 
@@ -579,15 +658,14 @@ export class PrototypeController {
   private async handleJobListNode(page: any, node: any): Promise<string[]> {
     const jobLinks: string[] = [];
 
-    // Run pre-defined actions first (if any)
-    if (node.actionFlow && node.actionFlow.length > 0) {
-      await this.handleActions(node.actionFlow, page);
+    // Run actions (search / filters etc.)
+    if (node.actionFlow?.length) {
+      await this.handleActions(node.actionFlow, page, true);
     }
 
     const selectorName = node?.selector?.name;
     if (!selectorName) return jobLinks;
 
-    // Extract pagination configuration (optional)
     const pagination = node?.paginationFields;
     const nextPageSelector = pagination?.nextPageSelectorName;
     const totalPages = pagination?.numberOfPages || 1;
@@ -595,54 +673,53 @@ export class PrototypeController {
     for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
       console.log(`🔹 Scraping page ${pageIndex + 1}`);
 
-      try {
-        // Wait for job cards to load
-        await page.waitForSelector(selectorName, { timeout: 15000 });
+      await page.waitForSelector(selectorName, { timeout: 15000 });
 
-        const jobCards = await page.$$(selectorName);
-        console.log(`Found ${jobCards.length} job cards`);
+      const jobCards = await page.$$(selectorName);
+      console.log(`Found ${jobCards.length} job cards`);
 
-        // Extract up to 5 job links (optional)
-        for (let card of jobCards.slice(0, 20)) {
-          const href = await card.getAttribute("href");
-          if (href) jobLinks.push(href);
-        }
+      for (let card of jobCards.slice(0, 20)) {
+        const href = await card.getAttribute("href");
+        if (href) jobLinks.push(href);
+      }
 
-        // Stop if pagination not configured or last page
-        if (!pagination || !nextPageSelector || pageIndex === totalPages - 1) {
-          console.log("✅ No more pagination or last page reached.");
-          break;
-        }
-
-        // Try finding next button
-        const nextBtn = await page.$(nextPageSelector);
-        if (!nextBtn) {
-          console.log("🚫 Next button not found, ending pagination.");
-          break;
-        }
-
-        // Check if next button is disabled
-        const isDisabled = await nextBtn.isDisabled?.() || await page.evaluate(
-          (btn: any) => btn.disabled || btn.getAttribute("disabled") !== null,
-          nextBtn
-        );
-
-        if (isDisabled) {
-          console.log("🚫 Next button is disabled. Ending pagination.");
-          break;
-        }
-
-        console.log("➡️ Clicking next page...");
-        await nextBtn.click();
-
-        // Wait for page content to refresh
-        await page.waitForLoadState("domcontentloaded", { timeout: 10000 });
-        await page.waitForTimeout(2000);
-
-      } catch (err: any) {
-        console.error(`⚠️ Error while scraping page ${pageIndex + 1}: ${err.message}`);
+      if (!pagination || !nextPageSelector || pageIndex === totalPages - 1) {
+        console.log("✅ No more pagination or last page reached.");
         break;
       }
+
+      let nextBtn = page.locator(nextPageSelector);
+
+      // 👇 Scroll if pagination not visible
+      if (await nextBtn.count() === 0) {
+        console.log("🔽 Pagination not visible, scrolling...");
+        for (let i = 0; i < 5; i++) {
+          await page.mouse.wheel(0, 800);
+          await page.waitForTimeout(700);
+          if (await nextBtn.count() > 0) break;
+        }
+      }
+
+      if (await nextBtn.count() === 0) {
+        console.log("🚫 Next button not found after scrolling.");
+        break;
+      }
+
+      const isDisabled = await nextBtn.first().evaluate((btn: any) =>
+        btn.disabled || btn.getAttribute("disabled") !== null
+      );
+
+      if (isDisabled) {
+        console.log("🚫 Next button disabled.");
+        break;
+      }
+
+      console.log("➡️ Clicking next page...");
+      await nextBtn.first().scrollIntoViewIfNeeded();
+      await nextBtn.first().click();
+
+      await page.waitForLoadState("domcontentloaded");
+      await page.waitForTimeout(2000);
     }
 
     console.log("✅ Final job links:", jobLinks);
@@ -727,7 +804,6 @@ export class PrototypeController {
         }
 
         extractedData.push(record);
-        console.log('extracted Data', extractedData);
         await jobPage.close();
 
       } catch (err) {
@@ -1009,17 +1085,10 @@ export class PrototypeController {
             value instanceof Date ||
             (typeof value === 'string' &&
               /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z?$/.test(value));
-
-          console.log('key', key);
-          console.log('value', value);
-          console.log('isDate', isDate);
           if (isDate) {
             const currentDate = new Date(value);
             const startDate = new Date(currentDate);
             const endDate = new Date(currentDate);
-            console.log('current Date', currentDate);
-            console.log('startDate', startDate);
-            console.log('endDate', endDate);
 
             // Allow ±1 day tolerance
             startDate.setDate(currentDate.getDate() - 1);
@@ -1329,5 +1398,4 @@ export class PrototypeController {
       order: ['createdAt DESC'],
     });
   }
-
 }
