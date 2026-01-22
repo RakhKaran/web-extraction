@@ -1,5 +1,5 @@
 import { repository } from "@loopback/repository";
-import { CompanyListRepository, CompanyRepository, DagsRepository, DesignationRepository, SchedulerRepository } from "../../repositories";
+import { CompanyListRepository, CompanyRepository, DagsRepository, DesignationRepository, JobListRepository, SchedulerRepository } from "../../repositories";
 import { AirflowDagService } from "./dag-creation.service";
 import { inject } from "@loopback/core";
 import { Initialize } from "./initialize.service";
@@ -8,6 +8,7 @@ import { Locate } from "./locate.service";
 import { Deliver } from "./deliver.service";
 import { Transformation } from "./transformation.service";
 import { HttpErrors } from "@loopback/rest";
+import axios from "axios";
 
 export class Main {
     constructor(
@@ -19,6 +20,8 @@ export class Main {
         public designationRepository: DesignationRepository,
         @repository(CompanyListRepository)
         public companyListRepository: CompanyListRepository,
+        @repository(JobListRepository)
+        public jobListRepository: JobListRepository,
         @inject('services.DagCreation')
         public dagsCreationService: AirflowDagService,
         @inject('services.Initialize')
@@ -280,6 +283,50 @@ export class Main {
             };
         } catch (error) {
             console.error('error while doing extraction', error);
+        }
+    }
+
+    // Post jobs to altiv
+    async postJobsToAltiv() {
+        try {
+            const jobs = await this.jobListRepository.find({
+                where: {
+                    and: [
+                        { isActive: true },
+                        { isDeleted: false },
+                        { isPostedToAltiv: false }
+                    ]
+                }
+            });
+
+            const jobsDataPayload = jobs.map((job) => ({
+                jobTitle: job.title,
+                company: job.company,
+                location: job.location,
+                applicants: job.applicants,
+                openings: job.openings,
+                jobType: "Full Time, Permanent",
+                salaryRange: job.salary,
+                experience: job.experience,
+                skillRequirements: job.keySkills,
+                description: job.description,
+                redirectUrl: job.redirectUrl,
+                postedAt: job.posted,
+                isAsync: false,
+                isDeleted: false
+            }));
+
+            const response = await axios.post('https://staging.altiv.ai/add-bulk-jobs', jobsDataPayload);
+
+            if(response.data?.success){
+                const jobIds = jobs.map((job) => job.id);
+
+                await this.jobListRepository.updateAll({isPostedToAltiv: true}, {id: {inq: jobIds}});
+                return true;
+            }
+        } catch (error) {
+            console.log('error while posting jobs to altiv :', error);
+            throw error;
         }
     }
 }

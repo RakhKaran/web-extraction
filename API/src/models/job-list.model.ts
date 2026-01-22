@@ -116,6 +116,11 @@ export class JobList extends Entity {
   })
   isDeleted: boolean;
 
+  @property({
+    type: 'boolean',
+    default: false
+  })
+  isPostedToAltiv: boolean;
   constructor(data?: Partial<JobList>) {
     super(data);
   }
