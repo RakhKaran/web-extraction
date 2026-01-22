@@ -1,5 +1,5 @@
 import { repository } from "@loopback/repository";
-import { DagsRepository, DesignationRepository, SchedulerRepository } from "../../repositories";
+import { CompanyListRepository, CompanyRepository, DagsRepository, DesignationRepository, SchedulerRepository } from "../../repositories";
 import { AirflowDagService } from "./dag-creation.service";
 import { inject } from "@loopback/core";
 import { Initialize } from "./initialize.service";
@@ -17,6 +17,8 @@ export class Main {
         public dagsRepository: DagsRepository,
         @repository(DesignationRepository)
         public designationRepository: DesignationRepository,
+        @repository(CompanyListRepository)
+        public companyListRepository: CompanyListRepository,
         @inject('services.DagCreation')
         public dagsCreationService: AirflowDagService,
         @inject('services.Initialize')
@@ -114,6 +116,34 @@ export class Main {
                         })
                     );
 
+                } else if (scheduler.schedulerFor === 1) {
+                    const companies = await this.companyListRepository.find();
+
+                    companies.map(async (company) => {
+                        const finalSearchArray = companies.map((comp) => {
+                            return {
+                                selectorName: 'Search',
+                                value: `${comp.designation} at ${comp.companyName}`
+                            }
+                        })
+
+                        const dagFileName =
+                            await this.dagsCreationService.createDagFile(
+                                scheduler,
+                                `${company.designation} at ${company.companyName}` || ''
+                            );
+
+                        if (dagFileName) {
+                            await this.dagsRepository.create({
+                                dagName: `dag-${scheduler.schedularName}-${company.companyName}-${company?.designation}`,
+                                dagFileName,
+                                schedulerId: scheduler.id,
+                                searchArray: finalSearchArray,
+                                isActive: true,
+                                isDeleted: false,
+                            });
+                        }
+                    })
                 } else {
                     const dagFileName =
                         await this.dagsCreationService.createDagFile(scheduler, '');

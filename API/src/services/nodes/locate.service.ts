@@ -118,7 +118,7 @@ export class Locate {
         for (let pageIndex = 0; pageIndex < totalPages; pageIndex++) {
             console.log(`🔹 Scraping page ${pageIndex + 1}`);
 
-            await page.waitForSelector(selectorName, { timeout: 15000 });
+            await page?.waitForSelector(selectorName, { timeout: 15000 });
 
             const jobCards = await page.$$(selectorName);
             console.log(`Found ${jobCards.length} job cards`);
