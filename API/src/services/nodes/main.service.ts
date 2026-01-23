@@ -317,8 +317,8 @@ export class Main {
                 jobTitle: job.title,
                 company: job.company,
                 location: job.location,
-                applicants: job.applicants,
-                openings: job.openings,
+                applicants: job.applicants?.toString() || 'NA',
+                openings: job.openings?.toString() || 'NA',
                 jobType: "Full Time, Permanent",
                 salaryRange: job.salary,
                 experience: job.experience,
@@ -341,8 +341,6 @@ export class Main {
                 console.log(`Posting batch ${i + 1}/${payloadBatches.length} — size: ${batchPayload.length}`);
 
                 console.log('job object', batchPayload[0]);
-
-                return;
 
                 const response = await axios.post(
                     'https://api.staging.altiv.ai/add-bulk-jobs',
