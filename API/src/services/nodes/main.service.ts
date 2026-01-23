@@ -294,7 +294,7 @@ export class Main {
                     and: [
                         { isActive: true },
                         { isDeleted: false },
-                        { isPostedToAltiv: false }
+                        // { isPostedToAltiv: false }
                     ]
                 }
             });
@@ -315,6 +315,8 @@ export class Main {
                 isAsync: false,
                 isDeleted: false
             }));
+
+            console.log('jobs data payload', jobsDataPayload.length);
 
             const response = await axios.post('https://api.staging.altiv.ai/add-bulk-jobs', jobsDataPayload);
 
