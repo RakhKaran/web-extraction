@@ -286,6 +286,15 @@ export class Main {
         }
     }
 
+    // helper function
+    chunkArray<T>(arr: T[], size: number): T[][] {
+        const chunks: T[][] = [];
+        for (let i = 0; i < arr.length; i += size) {
+            chunks.push(arr.slice(i, i + size));
+        }
+        return chunks;
+    }
+
     // Post jobs to altiv
     async postJobsToAltiv() {
         try {
@@ -298,6 +307,11 @@ export class Main {
                     ]
                 }
             });
+
+            if (!jobs.length) {
+                console.log("No jobs found to post.");
+                return true;
+            }
 
             const jobsDataPayload = jobs.map((job) => ({
                 jobTitle: job.title,
@@ -316,18 +330,41 @@ export class Main {
                 isDeleted: false
             }));
 
-            console.log('jobs data payload', jobsDataPayload.length);
+            console.log("Total jobs to post:", jobsDataPayload.length);
 
-            const response = await axios.post('https://api.staging.altiv.ai/add-bulk-jobs', jobsDataPayload);
+            const BATCH_SIZE = 100;
+            const payloadBatches = this.chunkArray(jobsDataPayload, BATCH_SIZE);
+            const jobIdBatches = this.chunkArray(jobs.map(j => j.id), BATCH_SIZE);
 
-            if(response.data?.success){
-                const jobIds = jobs.map((job) => job.id);
+            for (let i = 0; i < payloadBatches.length; i++) {
+                const batchPayload = payloadBatches[i];
+                const batchJobIds = jobIdBatches[i];
 
-                await this.jobListRepository.updateAll({isPostedToAltiv: true}, {id: {inq: jobIds}});
-                return true;
+                console.log(`Posting batch ${i + 1}/${payloadBatches.length} — size: ${batchPayload.length}`);
+
+                const response = await axios.post(
+                    'https://api.staging.altiv.ai/add-bulk-jobs',
+                    batchPayload,
+                    { timeout: 60_000 } // optional safety
+                );
+
+                if (response.data?.success) {
+                    await this.jobListRepository.updateAll(
+                        { isPostedToAltiv: true },
+                        { id: { inq: batchJobIds } }
+                    );
+                    console.log(`Batch ${i + 1} marked as posted`);
+                } else {
+                    console.error(`Batch ${i + 1} failed`, response.data);
+                    throw new Error("Altiv API batch failed");
+                }
             }
+
+            console.log("All batches posted successfully");
+            return true;
+
         } catch (error) {
-            console.log('error while posting jobs to altiv :', error);
+            console.error("Error while posting jobs to Altiv:", error?.response?.data || error);
             throw error;
         }
     }
