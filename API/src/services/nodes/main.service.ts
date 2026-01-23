@@ -330,8 +330,6 @@ export class Main {
                 isDeleted: false
             }));
 
-            console.log("Total jobs to post:", jobsDataPayload.length);
-
             const BATCH_SIZE = 100;
             const payloadBatches = this.chunkArray(jobsDataPayload, BATCH_SIZE);
             const jobIdBatches = this.chunkArray(jobs.map(j => j.id), BATCH_SIZE);
@@ -341,6 +339,10 @@ export class Main {
                 const batchJobIds = jobIdBatches[i];
 
                 console.log(`Posting batch ${i + 1}/${payloadBatches.length} — size: ${batchPayload.length}`);
+
+                console.log('job object', batchPayload[0]);
+
+                return;
 
                 const response = await axios.post(
                     'https://api.staging.altiv.ai/add-bulk-jobs',
