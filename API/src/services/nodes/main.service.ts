@@ -316,7 +316,7 @@ export class Main {
                 isDeleted: false
             }));
 
-            const response = await axios.post('https://staging.altiv.ai/add-bulk-jobs', jobsDataPayload);
+            const response = await axios.post('https://api.staging.altiv.ai/add-bulk-jobs', jobsDataPayload);
 
             if(response.data?.success){
                 const jobIds = jobs.map((job) => job.id);
