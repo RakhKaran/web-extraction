@@ -17,19 +17,19 @@ import {
   requestBody,
   response,
 } from '@loopback/rest';
-import {JobList} from '../models';
-import {JobListRepository} from '../repositories';
+import { JobList } from '../models';
+import { JobListRepository } from '../repositories';
 
 export class JobListController {
   constructor(
     @repository(JobListRepository)
-    public jobListRepository : JobListRepository,
-  ) {}
+    public jobListRepository: JobListRepository,
+  ) { }
 
   @post('/job-lists')
   @response(200, {
     description: 'JobList model instance',
-    content: {'application/json': {schema: getModelSchemaRef(JobList)}},
+    content: { 'application/json': { schema: getModelSchemaRef(JobList) } },
   })
   async create(
     @requestBody({
@@ -50,7 +50,7 @@ export class JobListController {
   @get('/job-lists/count')
   @response(200, {
     description: 'JobList model count',
-    content: {'application/json': {schema: CountSchema}},
+    content: { 'application/json': { schema: CountSchema } },
   })
   async count(
     @param.where(JobList) where?: Where<JobList>,
@@ -65,27 +65,42 @@ export class JobListController {
       'application/json': {
         schema: {
           type: 'array',
-          items: getModelSchemaRef(JobList, {includeRelations: true}),
+          items: getModelSchemaRef(JobList, { includeRelations: true }),
         },
       },
     },
   })
   async find(
     @param.filter(JobList) filter?: Filter<JobList>,
-  ): Promise<JobList[]> {
-    return this.jobListRepository.find({...filter, order: ['createdAt desc']});
+  ): Promise<{
+    jobs: JobList[],
+    totalCount: number
+  }> {
+    const jobs = await this.jobListRepository.find(
+      {
+        ...filter,
+        order: filter?.order ? filter?.order : ['createdAt desc']
+      }
+    );
+
+    const jobsCount = await this.jobListRepository.count(filter?.where || { isDeleted: false });
+
+    return {
+      jobs,
+      totalCount: jobsCount.count || 0
+    }
   }
 
   @patch('/job-lists')
   @response(200, {
     description: 'JobList PATCH success count',
-    content: {'application/json': {schema: CountSchema}},
+    content: { 'application/json': { schema: CountSchema } },
   })
   async updateAll(
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(JobList, {partial: true}),
+          schema: getModelSchemaRef(JobList, { partial: true }),
         },
       },
     })
@@ -100,13 +115,13 @@ export class JobListController {
     description: 'JobList model instance',
     content: {
       'application/json': {
-        schema: getModelSchemaRef(JobList, {includeRelations: true}),
+        schema: getModelSchemaRef(JobList, { includeRelations: true }),
       },
     },
   })
   async findById(
     @param.path.string('id') id: string,
-    @param.filter(JobList, {exclude: 'where'}) filter?: FilterExcludingWhere<JobList>
+    @param.filter(JobList, { exclude: 'where' }) filter?: FilterExcludingWhere<JobList>
   ): Promise<JobList> {
     return this.jobListRepository.findById(id, filter);
   }
@@ -120,7 +135,7 @@ export class JobListController {
     @requestBody({
       content: {
         'application/json': {
-          schema: getModelSchemaRef(JobList, {partial: true}),
+          schema: getModelSchemaRef(JobList, { partial: true }),
         },
       },
     })

@@ -21,7 +21,7 @@ import TransformationComponents from "../transformation-components/transformatio
 // Deliver options
 const deliverOptions = [
   { label: "Database", value: "database", isDisabled: false },
-  { label: "API", value: "api", isDisabled: false },
+  // { label: "API", value: "api", isDisabled: false },
 ];
 
 // Yup validation schemas

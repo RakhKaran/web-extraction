@@ -23,7 +23,7 @@ import { useRouter } from 'src/routes/hook';
 import { RouterLink } from 'src/routes/components';
 // _mock
 // import { _companyList } from 'src/_mock/_company';
-import { _jobsOption,  USER_STATUS_OPTIONS } from 'src/_mock';
+import { _jobsOption, USER_STATUS_OPTIONS } from 'src/_mock';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
 // components
@@ -51,6 +51,7 @@ import { useGetJobs } from 'src/api/job';
 import JobTableRow from '../jobs-table-row';
 import JobTableToolbar from '../jobs-table-toolbar';
 import JobsTableFiltersResult from '../jobs-table-filters-result';
+import { buildFilter } from 'src/utils/filters';
 
 
 // ----------------------------------------------------------------------
@@ -60,13 +61,13 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 const TABLE_HEAD = [
   { id: 'title', label: 'Title' },
   // { id: 'description', label: 'Description' },
-  { id: 'company', label: 'Company'},
-  { id: 'location', label: 'Location'},
-  { id: 'experience', label: 'Experience'},
-  { id: 'salary', label: 'salary'},
-  { id: 'openings', label: 'Openings'},
-  {id:'applicants', label: 'Applicants'},
-  { id: '',label:'Actions', width: 88 },
+  { id: 'company', label: 'Company' },
+  { id: 'location', label: 'Location' },
+  { id: 'experience', label: 'Experience' },
+  { id: 'salary', label: 'salary' },
+  { id: 'openings', label: 'Openings' },
+  { id: 'applicants', label: 'Applicants' },
+  { id: '', label: 'Actions', width: 88 },
 ];
 
 const defaultFilters = {
@@ -87,28 +88,50 @@ export default function JobsListView() {
 
   const confirm = useBoolean();
 
-  const {jobsList, jobsListLoading}= useGetJobs();
-
   const [tableData, setTableData] = useState([]);
+
+  // const dataFiltered = applyFilter({
+  //   inputData: tableData,
+  //   comparator: getComparator(table.order, table.orderBy),
+  //   filters,
+  // });
+
+  // const dataInPage = dataFiltered.slice(
+  //   table.page * table.rowsPerPage,
+  //   table.page * table.rowsPerPage + table.rowsPerPage
+  // );
 
   const [filters, setFilters] = useState(defaultFilters);
 
-  const dataFiltered = applyFilter({
-    inputData: tableData,
-    comparator: getComparator(table.order, table.orderBy),
-    filters,
-  });
+  const filter = buildFilter({
+    page: table.page,
+    rowsPerPage: table.rowsPerPage,
+    order: table.order,
+    orderBy: table.orderBy,
+    startDate: filters.startDate,
+    endDate: filters.endDate,
+    validSortFields: ['title', 'company', 'location'],
+    searchTextValue: filters.name,
+    // status: filters.status,
+    isActive: filters.status,
+    roles: filters.role,
+    combineName: true,
+  })
 
-  const dataInPage = dataFiltered.slice(
-    table.page * table.rowsPerPage,
-    table.page * table.rowsPerPage + table.rowsPerPage
-  );
+  const finalFilter = {
+    ...filter,
+    where: {
+      ...(filter.where || {}),
+    },
+  };
+
+  const { jobsList, totalCount, jobsListLoading } = useGetJobs(finalFilter);
 
   const denseHeight = table.dense ? 52 : 72;
 
   const canReset = !isEqual(defaultFilters, filters);
 
-  const notFound = (!dataFiltered.length && canReset) || !dataFiltered.length;
+  const notFound = (totalCount === 0 && canReset) || totalCount === 0;
 
   const handleFilters = useCallback(
     (name, value) => {
@@ -120,32 +143,34 @@ export default function JobsListView() {
     },
     [table]
   );
-const handleView = useCallback(
+
+  const handleView = useCallback(
     (id) => {
       router.push(paths.dashboard.job.details(id));
     },
     [router]
   );
-  const handleDeleteRow = useCallback(
-    (id) => {
-      const deleteRow = tableData.filter((row) => row.id !== id);
-      setTableData(deleteRow);
 
-      table.onUpdatePageDeleteRow(dataInPage.length);
-    },
-    [dataInPage.length, table, tableData]
-  );
+  // const handleDeleteRow = useCallback(
+  //   (id) => {
+  //     const deleteRow = tableData.filter((row) => row.id !== id);
+  //     setTableData(deleteRow);
 
-  const handleDeleteRows = useCallback(() => {
-    const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
-    setTableData(deleteRows);
+  //     table.onUpdatePageDeleteRow(dataInPage.length);
+  //   },
+  //   [dataInPage.length, table, tableData]
+  // );
 
-    table.onUpdatePageDeleteRows({
-      totalRows: tableData.length,
-      totalRowsInPage: dataInPage.length,
-      totalRowsFiltered: dataFiltered.length,
-    });
-  }, [dataFiltered.length, dataInPage.length, table, tableData]);
+  // const handleDeleteRows = useCallback(() => {
+  //   const deleteRows = tableData.filter((row) => !table.selected.includes(row.id));
+  //   setTableData(deleteRows);
+
+  //   table.onUpdatePageDeleteRows({
+  //     totalRows: tableData.length,
+  //     totalRowsInPage: dataInPage.length,
+  //     totalRowsFiltered: dataFiltered.length,
+  //   });
+  // }, [dataFiltered.length, dataInPage.length, table, tableData]);
 
   const handleFilterStatus = useCallback(
     (event, newValue) => {
@@ -159,10 +184,10 @@ const handleView = useCallback(
   }, []);
 
   useEffect(() => {
-    if(jobsList && !jobsListLoading){
+    if (jobsList && !jobsListLoading) {
       setTableData(jobsList);
     }
-  }, [jobsList, jobsListLoading])
+  }, [jobsList, jobsListLoading]);
 
   return (
     <>
@@ -242,7 +267,7 @@ const handleView = useCallback(
               //
               onResetFilters={handleResetFilters}
               //
-              results={dataFiltered.length}
+              results={totalCount}
               sx={{ p: 2.5, pt: 0 }}
             />
           )}
@@ -285,23 +310,18 @@ const handleView = useCallback(
                 />
 
                 <TableBody>
-                  {dataFiltered.length > 0 ? (
-                    dataFiltered
-                      .slice(
-                        table.page * table.rowsPerPage,
-                        table.page * table.rowsPerPage + table.rowsPerPage
-                      )
-                      .map((row) => (
-                        <JobTableRow
-                          key={row.id}
-                          row={row}
-                          selected={table.selected.includes(row.id)}
-                          onSelectRow={() => table.onSelectRow(row.id)}
-                            onViewRow={() => handleView(row.id)}
-                          // onDeleteRow={() => handleDeleteRow(row.id)}
-                          // onEditRow={() => handleEditRow(row.id)}
-                        />
-                      ))
+                  {totalCount > 0 ? (
+                    tableData.map((row) => (
+                      <JobTableRow
+                        key={row.id}
+                        row={row}
+                        selected={table.selected.includes(row.id)}
+                        onSelectRow={() => table.onSelectRow(row.id)}
+                        onViewRow={() => handleView(row.id)}
+                      // onDeleteRow={() => handleDeleteRow(row.id)}
+                      // onEditRow={() => handleEditRow(row.id)}
+                      />
+                    ))
                   ) : (
                     <TableRow>
                       <TableCell align="center" colSpan={8}>
@@ -317,7 +337,7 @@ const handleView = useCallback(
           </TableContainer>
 
           <TablePaginationCustom
-            count={dataFiltered.length}
+            count={totalCount}
             page={table.page}
             rowsPerPage={table.rowsPerPage}
             onPageChange={table.onChangePage}
@@ -358,7 +378,7 @@ const handleView = useCallback(
 // ----------------------------------------------------------------------
 
 function applyFilter({ inputData, comparator, filters }) {
-  const { name, status, email,role } = filters;
+  const { name, status, email, role } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
@@ -370,27 +390,27 @@ function applyFilter({ inputData, comparator, filters }) {
 
   inputData = stabilizedThis.map((el) => el[0]);
 
-    if (name) {
+  if (name) {
     inputData = inputData.filter((job) =>
       Object.values(job).some((value) => String(value).toLowerCase().includes(name.toLowerCase()))
     );
   }
 
-if (role.length > 0) {
-  inputData = inputData.filter((job) =>
-    role.some((r) =>
-      job.source.toLowerCase().includes(r.toLowerCase()) ||
-      (job.jobType && job.jobType.toLowerCase().includes(r.toLowerCase()))
-    )
-  );
-}
+  if (role.length > 0) {
+    inputData = inputData.filter((job) =>
+      role.some((r) =>
+        job.source.toLowerCase().includes(r.toLowerCase()) ||
+        (job.jobType && job.jobType.toLowerCase().includes(r.toLowerCase()))
+      )
+    );
+  }
 
 
 
 
-if (status !== 'all') {
-  inputData = inputData.filter((job) => String(job.isSynced) === status);
-}
+  if (status !== 'all') {
+    inputData = inputData.filter((job) => String(job.isSynced) === status);
+  }
 
 
   if (email.length) {

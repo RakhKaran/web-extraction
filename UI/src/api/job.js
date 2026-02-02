@@ -6,18 +6,20 @@ import { identity } from 'lodash';
 
 // ----------------------------------------------------------------------
 
-export function useGetJobs() {
-  const URL = endpoints.job.list;
+export function useGetJobs(filterParams) {
+  const queryString = filterParams ? `filter=${encodeURIComponent(JSON.stringify(filterParams))}` : undefined;
+  const URL = queryString ? `${endpoints.job.list}?${queryString}` : endpoints.job.list;
 
   const { data, isLoading, error, isValidating } = useSWR(URL, fetcher);
 
   const memoizedValue = useMemo(
     () => ({
-      jobsList: data || [],
+      jobsList: data?.jobs || [],
       jobsListLoading: isLoading,
       jobsListError: error,
       jobsListValidating: isValidating,
-      jobsListEmpty: !isLoading && (!data || data.length === 0),
+      jobsListEmpty: !isLoading && (!data?.jobs || data?.jobs?.length === 0),
+      totalCount: data?.totalCount || 0
     }),
     [data, error, isLoading, isValidating]
   );
