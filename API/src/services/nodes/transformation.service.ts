@@ -1,10 +1,15 @@
 import { Context, inject } from "@loopback/core";
 import { DefaultCrudRepository } from "@loopback/repository";
+import { DeduplicationService } from "./deduplication.service";
 
 export class Transformation {
+    private deduplicationService: DeduplicationService;
+
     constructor(
         @inject.context() private ctx: Context,
-    ) { }
+    ) {
+        this.deduplicationService = new DeduplicationService(ctx);
+    }
 
     // transformation node
     async transformation(node: any, previousOutput: any) {
@@ -158,14 +163,51 @@ export class Transformation {
                 }
             }
 
-            // Now you can insert only successRecords
+            // Now you can insert only successRecords with deduplication
             for (const data of successRecords) {
-                const exists = await deliverRepo.findOne({
-                    where: {
-                        and: Object.keys(data).map(key => ({ [key]: data[key] })),
-                    },
-                });
-                if (!exists) {
+                let isDuplicate = false;
+
+                // Check if duplicates are allowed
+                if (node.duplicatesAllowed === false) {
+                    if (node.duplicatesMatching === 'exact') {
+                        // Exact matching: check all fields
+                        const whereCondition = {
+                            and: Object.entries(data).map(([key, value]) => {
+                                // Check if value is a valid date
+                                const isDate =
+                                    value instanceof Date ||
+                                    (typeof value === 'string' &&
+                                        /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z?$/.test(value));
+                                if (isDate) {
+                                    const currentDate = new Date(value);
+                                    const startDate = new Date(currentDate);
+                                    const endDate = new Date(currentDate);
+
+                                    // Allow ±1 day tolerance
+                                    startDate.setDate(currentDate.getDate() - 1);
+                                    endDate.setDate(currentDate.getDate() + 1);
+
+                                    return { [key]: { between: [startDate, endDate] } };
+                                }
+
+                                // Non-date field → exact match
+                                return { [key]: value };
+                            }),
+                        };
+
+                        const exists = await deliverRepo.findOne({ where: whereCondition });
+                        isDuplicate = exists !== null;
+                    } else if (node.duplicatesMatching === 'custom' && node.duplicatesConstraints) {
+                        // Custom matching: use deduplication service
+                        isDuplicate = await this.deduplicationService.isDuplicate(
+                            data,
+                            deliverRepo,
+                            node.duplicatesConstraints
+                        );
+                    }
+                }
+
+                if (!isDuplicate) {
                     await deliverRepo.create(data);
                 }
             }

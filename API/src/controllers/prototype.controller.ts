@@ -9,13 +9,18 @@ import { Context, inject } from "@loopback/core";
 import { DefaultCrudRepository, repository } from "@loopback/repository";
 import { TestExtractionLogsRepository } from "../repositories";
 import { TestExtractionLogs } from "../models";
+import { DeduplicationService } from "../services/nodes/deduplication.service";
 
 export class PrototypeController {
+  private deduplicationService: DeduplicationService;
+
   constructor(
     @inject.context() private ctx: Context,
     @repository(TestExtractionLogsRepository)
     public testExtractionLogsRepository: TestExtractionLogsRepository,
-  ) { }
+  ) {
+    this.deduplicationService = new DeduplicationService(ctx);
+  }
 
   naukriBluePrint = {
     workflowName: "Web-extraction",
@@ -151,6 +156,18 @@ export class PrototypeController {
         deliverModelName: "ProductionNaukri",
         deliverRespositoryName: "ProductionNaukriRepository",
         duplicatesAllowed: false,
+        duplicatesMatching: "custom",
+        duplicatesConstraints: [
+          {
+            fields: ["redirectUrl"],
+            algorithm: "exact_match"
+          },
+          {
+            fields: ["title", "company", "location"],
+            algorithm: "fuzzy_match",
+            threshold: 0.85
+          }
+        ],
         fields: [
           { modelField: 'title', type: 'string', mappedField: 'title', isNullAccepted: false },
           { modelField: 'description', type: 'string', mappedField: 'description', isNullAccepted: false },
@@ -1075,35 +1092,51 @@ export class PrototypeController {
       }
     }
 
-    // Now you can insert only successRecords
+    // Now you can insert only successRecords with deduplication
     for (const data of successRecords) {
-      const whereCondition = {
-        and: Object.entries(data).map(([key, value]) => {
-          // ✅ Check if value is a valid date
-          const isDate =
-            value instanceof Date ||
-            (typeof value === 'string' &&
-              /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z?$/.test(value));
-          if (isDate) {
-            const currentDate = new Date(value);
-            const startDate = new Date(currentDate);
-            const endDate = new Date(currentDate);
+      let isDuplicate = false;
 
-            // Allow ±1 day tolerance
-            startDate.setDate(currentDate.getDate() - 1);
-            endDate.setDate(currentDate.getDate() + 1);
+      // Check if duplicates are allowed
+      if (node.duplicatesAllowed === false) {
+        if (node.duplicatesMatching === 'exact') {
+          // Exact matching: check all fields
+          const whereCondition = {
+            and: Object.entries(data).map(([key, value]) => {
+              // Check if value is a valid date
+              const isDate =
+                value instanceof Date ||
+                (typeof value === 'string' &&
+                  /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?Z?$/.test(value));
+              if (isDate) {
+                const currentDate = new Date(value);
+                const startDate = new Date(currentDate);
+                const endDate = new Date(currentDate);
 
-            return { [key]: { between: [startDate, endDate] } };
-          }
+                // Allow ±1 day tolerance
+                startDate.setDate(currentDate.getDate() - 1);
+                endDate.setDate(currentDate.getDate() + 1);
 
-          // Non-date field → exact match
-          return { [key]: value };
-        }),
-      };
+                return { [key]: { between: [startDate, endDate] } };
+              }
 
-      const exists = await deliverRepo.findOne({ where: whereCondition });
+              // Non-date field → exact match
+              return { [key]: value };
+            }),
+          };
 
-      if (!exists) {
+          const exists = await deliverRepo.findOne({ where: whereCondition });
+          isDuplicate = exists !== null;
+        } else if (node.duplicatesMatching === 'custom' && node.duplicatesConstraints) {
+          // Custom matching: use deduplication service
+          isDuplicate = await this.deduplicationService.isDuplicate(
+            data,
+            deliverRepo,
+            node.duplicatesConstraints
+          );
+        }
+      }
+
+      if (!isDuplicate) {
         await deliverRepo.create(data);
       }
     }

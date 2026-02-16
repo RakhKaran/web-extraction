@@ -25,6 +25,7 @@
     "test": "lb-mocha --allow-console-logs \"dist/__tests__\"",
     "posttest": "npm run lint",
     "test:dev": "lb-mocha --allow-console-logs dist/__tests__/**/*.js && npm run posttest",
+    "test:dedup": "npm run build && node dist/scripts/test-deduplication.js",
     "docker:build": "docker build -t web-extraction .",
     "docker:run": "docker run -p 3000:3000 -d web-extraction",
     "premigrate": "npm run build",
