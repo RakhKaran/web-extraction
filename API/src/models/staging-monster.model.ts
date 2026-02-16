@@ -1,7 +1,7 @@
 import { Entity, model, property } from '@loopback/repository';
 
 @model()
-export class JobList extends Entity {
+export class StagingMonster extends Entity {
   @property({
     type: 'string',
     id: true,
@@ -19,19 +19,18 @@ export class JobList extends Entity {
     type: 'string',
     required: true
   })
-  description: string;
+  companyName: string;
 
   @property({
     type: 'string',
     required: true
   })
-  company: string;
+  description: string;
 
   @property({
     type: 'string',
-    required: false
   })
-  companyLogo: string;
+  salary?: string;
 
   @property({
     type: 'string',
@@ -44,36 +43,6 @@ export class JobList extends Entity {
     required: true
   })
   experience: string;
-
-  @property({
-    type: 'string',
-    required: true
-  })
-  salary: string;
-
-  @property({
-    type: 'date',
-    required: true
-  })
-  posted: Date;
-
-  @property({
-    type: 'number',
-    required: false,
-  })
-  openings: number;
-
-  @property({
-    type: 'number',
-    required: false
-  })
-  applicants: number;
-
-  @property({
-    type: 'string',
-    required: true
-  })
-  aboutCompany: string;
 
   @property({
     type: 'array',
@@ -89,10 +58,34 @@ export class JobList extends Entity {
   redirectUrl: string;
 
   @property({
-    type: 'boolean',
-    required: true
+    type: 'string',
   })
-  isActive: boolean
+  companyLogo?: string;
+
+  @property({
+    type: 'string',
+  })
+  posted?: string;
+
+  @property({
+    type: 'string',
+  })
+  openings?: string;
+
+  @property({
+    type: 'string',
+  })
+  aboutCompany?: string;
+
+  @property({
+    type: 'string',
+  })
+  jobType?: string;
+
+  @property({
+    type: 'date',
+  })
+  scrappedAt?: Date;
 
   @property({
     type: 'date',
@@ -118,16 +111,17 @@ export class JobList extends Entity {
 
   @property({
     type: 'boolean',
-    default: false
+    default: false,
   })
-  isPostedToAltiv: boolean;
-  constructor(data?: Partial<JobList>) {
+  isSync: boolean;
+
+  constructor(data?: Partial<StagingMonster>) {
     super(data);
   }
 }
 
-export interface JobListRelations {
+export interface StagingMonsterRelations {
   // describe navigational properties here
 }
 
-export type JobListWithRelations = JobList & JobListRelations;
+export type StagingMonsterWithRelations = StagingMonster & StagingMonsterRelations;

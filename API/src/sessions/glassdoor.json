@@ -1,0 +1,459 @@
+{
+  "cookies": [
+    {
+      "name": "gdsid",
+      "value": "1771218473011:1771218473011:C8075C58E98C66D3430430C847330307",
+      "domain": "www.glassdoor.co.in",
+      "path": "/",
+      "expires": 1771240073.177781,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "gdId",
+      "value": "a7d66a5d-c65c-41a8-880f-cb959cc6df11",
+      "domain": "www.glassdoor.co.in",
+      "path": "/",
+      "expires": 1805778475.830163,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "asst",
+      "value": "1771218473.0",
+      "domain": "www.glassdoor.co.in",
+      "path": "/",
+      "expires": 1771220425.60676,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "rl_page_init_referrer",
+      "value": "RS_ENC_v3_IiRkaXJlY3Qi",
+      "domain": ".glassdoor.co.in",
+      "path": "/",
+      "expires": 1802754623,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "rl_anonymous_id",
+      "value": "RS_ENC_v3_ImE3ZDY2YTVkLWM2NWMtNDFhOC04ODBmLWNiOTU5Y2M2ZGYxMSI%3D",
+      "domain": ".glassdoor.co.in",
+      "path": "/",
+      "expires": 1802754623,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "rsSessionId",
+      "value": "1771218474219",
+      "domain": ".glassdoor.co.in",
+      "path": "/",
+      "expires": 1771220423,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "cdArr",
+      "value": "",
+      "domain": ".glassdoor.co.in",
+      "path": "/",
+      "expires": 1771220423,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "UID",
+      "value": "1259f436b5e513edf668ef81771218474",
+      "domain": ".scorecardresearch.com",
+      "path": "/",
+      "expires": 1804914623.918426,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "XID",
+      "value": "1259f436b5e513edf668ef81771218474",
+      "domain": ".scorecardresearch.com",
+      "path": "/",
+      "expires": 1804914623.918474,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None",
+      "partitionKey": "https://glassdoor.co.in",
+      "_crHasCrossSiteAncestor": true
+    },
+    {
+      "name": "cf_clearance",
+      "value": "z8viQ0x2jUVrEu5bCVaaSr45b2R7dU.jvYK9PhAOCGM-1771218475-1.2.1.1-Xp9PjttgoxLDsr_ix50O9hPs7TE_sXYJMePcAB3nCPgcvu.RfLr8BS3tMtfYrjWXqo91VJTDOzmJ4WoXEtDZLHnxjepBjJECCMH.71oVcn1nb.ScNy33l4ADpizmftu2bL7l.86paISIIoEPj2ibK5LrdWfjCPHMeIQ48v4o9YrQftDJAfVLLEP9g_qGJSpw0TVoNOrhexsURBwcV7MnJxXhglREBO0_aXvWazA_W4g",
+      "domain": ".glassdoor.co.in",
+      "path": "/",
+      "expires": 1802754475.539816,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None",
+      "partitionKey": "https://glassdoor.co.in",
+      "_crHasCrossSiteAncestor": false
+    },
+    {
+      "name": "_optionalConsent",
+      "value": "true",
+      "domain": "www.glassdoor.co.in",
+      "path": "/",
+      "expires": 1805778623.884671,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "otGeoUS",
+      "value": "false",
+      "domain": ".glassdoor.co.in",
+      "path": "/",
+      "expires": 1802754623,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "AWSALB",
+      "value": "Vme+OX2YifNZfgP2QM4Z+kTYN2OvhiXz3jjw+/eYebrydv59um/JZCEc1ZIBkh65TawECT3W+DXeBQzQf7tGDFCE4bwpAMkN4BivWi2B9F4JjPKQmDIxjFgZoC93",
+      "domain": "www.glassdoor.co.in",
+      "path": "/",
+      "expires": 1771823275.829922,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "AWSALBCORS",
+      "value": "Vme+OX2YifNZfgP2QM4Z+kTYN2OvhiXz3jjw+/eYebrydv59um/JZCEc1ZIBkh65TawECT3W+DXeBQzQf7tGDFCE4bwpAMkN4BivWi2B9F4JjPKQmDIxjFgZoC93",
+      "domain": "www.glassdoor.co.in",
+      "path": "/",
+      "expires": 1771823275.830026,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "JSESSIONID",
+      "value": "A533539A64624672BAAA75AF04C4CFF8",
+      "domain": "www.glassdoor.co.in",
+      "path": "/",
+      "expires": 1771240075.830064,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "GSESSIONID",
+      "value": "A533539A64624672BAAA75AF04C4CFF8",
+      "domain": "www.glassdoor.co.in",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "cass",
+      "value": "0",
+      "domain": "www.glassdoor.co.in",
+      "path": "/",
+      "expires": 1771225675.83013,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "__cf_bm",
+      "value": "qDYJYY_CLkN1PhBzq259aATaanbyo6OgEah6b78CqHo-1771218476-1.0.1.1-2PEb1PgX1areYApVDGZT5tMlj4i0sx73VM.Xts6ugk5j9WvCov2FfkTWgpEC52SGfwfUh2NDfk4Gsmi.h57L0uA9ZR1YATFeJjR2otatEayiskZcic0qKdntj19YEIKS",
+      "domain": ".glassdoor.com",
+      "path": "/",
+      "expires": 1771220276.531684,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_cfuvid",
+      "value": "8LLlSTCEizeR4h.dN9TDx2blp35ms0jLnejBqPhsHvg-1771218476449-0.0.1.1-604800000",
+      "domain": ".glassdoor.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "ki_r",
+      "value": "",
+      "domain": "www.glassdoor.co.in",
+      "path": "/",
+      "expires": 1805778625.039263,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "ki_s",
+      "value": "240461%3A0.0.0.0.0",
+      "domain": "www.glassdoor.co.in",
+      "path": "/",
+      "expires": 1805778477.201958,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__Host-GAPS",
+      "value": "1:7mL123zjJNH9nwsdZOB4iXm6SIUitA:1jBuex3s-PKUPwyj",
+      "domain": "accounts.google.com",
+      "path": "/",
+      "expires": 1805778590.693903,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "OTZ",
+      "value": "8481910_34_34__34_",
+      "domain": "accounts.google.com",
+      "path": "/",
+      "expires": 1773810591,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "NID",
+      "value": "529=mcQUbLAj_vduRhYRQTqC1Hvi7aUPxKoWJE0-i3X29b95PJ9QHsNGuVYKye1j7NcInTOav-8rbPQXFEusoLyQL9QRVap7jnw4HIr_SJ7O9CZaQVNWQT2Z8JFdCUTmFNrGY-QMzedqTPH_ryMbtvi6ZDa1eAK6z2zw4HG0lWwmz2AmzdSHcNKv-P3vID_fbk2E0Z6KQTwqsLxqpSaLHg",
+      "domain": ".google.com",
+      "path": "/",
+      "expires": 1787029791.687998,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "bs",
+      "value": "mqMU2tXJlw-YojOOyjjAgg:f4r3c2pIjvqqTzAhtRUng2-9iB3k0omnEoQB-0ZjIVEnoDtB3QZzG2c1X5MCtcQNrXLX_QsMLgMP84R02sQQQ7kpr58ndOMcUPHcW8fbXkc:j_P2T3-Q8uFDd-QXFVfjcSF0NsKRD5SL6LlwpreGxn0",
+      "domain": "www.glassdoor.co.in",
+      "path": "/",
+      "expires": 1771218658.683115,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "__cf_bm",
+      "value": "e7E8g3jcQNyj1KqEJCf7kVqmYwJDMl_DtQ35a4KL.mU-1771218600-1.0.1.1-ZjbvUZu0K7mpUYO0xx7vtLzmZI4mt7i.SkdTUGFDCVxobSETY0Gk5sNF8KD6XLHtraBLQkWJmPSqFQ.xmH9s1ckSTFz65dsSMFtJSqOMPuo",
+      "domain": ".indeed.com",
+      "path": "/",
+      "expires": 1771220400.228635,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_cfuvid",
+      "value": "Fxn0h8lWKzHVPSWYfgtsQHGxbiPjeIbNRaMFrTwaajM-1771218600145-0.0.1.1-604800000",
+      "domain": ".indeed.com",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "g_state",
+      "value": "{\"i_l\":0,\"i_ll\":1771218607167,\"i_b\":\"WdcVtAiM0XhE0RdvfPwr/3iwweSDB8yAvktiIZvN0o4\",\"i_e\":{\"enable_itp_optimization\":0}}",
+      "domain": "www.glassdoor.co.in",
+      "path": "/",
+      "expires": 1786770607,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "at",
+      "value": "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiI1NmVkZGQzOC03NmEwLTQ1ZDItOGZkNS0wYmJlMmFlZjUwMjUiLCJ1IjoiY3NtNTczOTZAZ21haWwuY29tIiwidWlkIjozNDI2MjY1MzAsInJmc2giOjE3NzEyMTkyMTk1MjcsInJtYl9pYXQiOjE3NzEyMTg2MTk1MjEsInJtYl9leHAiOjE4MDI3NTQ2MTk1MjEsImF0dCI6InVwd2QiLCJhdXRob3JpdGllcyI6WzQ1LDQ3XSwiY3VpZCI6IjY5NzA4MTNmZmY1NjdlYzA5ODNjYTJkOCJ9.MU31km4X-V1WaNtZcKtMZ0z8XDgyJ5_jA9bBxBFknBa00dJW2s4ouUii1Ouf01oelwqSFo4gfaviMZvqYLoEPVmoLj5akhNpS7HalZfwi8GBu3pyLDNOgMKxYh4UckInRYnGpfz7v-ASVmGEJQ8HBJKBpP1kKetL5fJqRa3Bsyiaff0wMMu_xoSXUgxEDJB-D5QkZyKV1fHV3W_3Xc8Mz87PH5bpkHxGDlMeWbnwiqQQf0Fm-vIg3TREWBkwsF_ugmaX0XOiDopnKA0iXniN7LTjLCazUoswZnbOiLNn8Gwy6oqAj-1It7iBVSK6pTKUZs78x9e0rtkNWXZko6N1SA",
+      "domain": "www.glassdoor.co.in",
+      "path": "/",
+      "expires": 1802776219.698074,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "indeedCtk",
+      "value": "1jhidmml82dilk01",
+      "domain": "www.glassdoor.co.in",
+      "path": "/",
+      "expires": 1805778623.575553,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "rl_user_id",
+      "value": "RS_ENC_v3_IjM0MjYyNjUzMCI%3D",
+      "domain": ".glassdoor.co.in",
+      "path": "/",
+      "expires": 1802754623,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "rl_trait",
+      "value": "RS_ENC_v3_eyJsb2NrZWQgc3RhdGUiOiJvcGVuIiwiY29tbXVuaXR5IGlkIjoiNjk3MDgxM2ZmZjU2N2VjMDk4M2NhMmQ4IiwiY29sb3Igc2NoZW1lIjoiTGlnaHQiLCJpcyB2YWxpZGF0ZWQiOnRydWV9",
+      "domain": ".glassdoor.co.in",
+      "path": "/",
+      "expires": 1802754623,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "rsReferrerData",
+      "value": "%7B%22currentPageRollup%22%3A%22%2Fcommunity%2Findex%22%2C%22previousPageRollup%22%3A%22%2Findex%22%2C%22currentPageAbstract%22%3A%22%2FCommunity%2Findex.htm%22%2C%22previousPageAbstract%22%3A%22%2Findex.htm%22%2C%22currentPageFull%22%3A%22https%3A%2F%2Fwww.glassdoor.co.in%2FCommunity%2Findex.htm%22%2C%22previousPageFull%22%3A%22https%3A%2F%2Fwww.glassdoor.co.in%2Findex.htm%22%7D",
+      "domain": ".glassdoor.co.in",
+      "path": "/",
+      "expires": 1771220423,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "OptanonConsent",
+      "value": "isGpcEnabled=0&datestamp=Mon+Feb+16+2026+10%3A40%3A23+GMT%2B0530+(India+Standard+Time)&version=202407.2.0&browserGpcFlag=0&isIABGlobal=false&hosts=&consentId=bd18b2c9-e4da-4e90-a98c-d621a9a891dc&interactionCount=1&isAnonUser=1&landingPath=NotLandingPage&groups=C0001%3A1%2CC0003%3A1%2CC0002%3A1%2CC0004%3A1%2CC0017%3A1&AwaitingReconsent=false",
+      "domain": ".glassdoor.co.in",
+      "path": "/",
+      "expires": 1802754623,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "ki_t",
+      "value": "1771218477192%3B1771218477192%3B1771218625038%3B1%3B3",
+      "domain": "www.glassdoor.co.in",
+      "path": "/",
+      "expires": 1805778625.038852,
+      "httpOnly": false,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__cf_bm",
+      "value": "oSETWrDrVFanje7wrvRqYRVZON1pSZSdmtnOeI74ydQ-1771218627-1.0.1.1-zLbqw5qIwlbfSfuUT5dnaH4rKhsYIZjopgWPNtQYxSEnBCzhuFMBaN6AoOTo5d17vW_At2V5gtyhP6HQqovj.1uG5J1z0TaeF9qSsxOt6C4",
+      "domain": ".glassdoor.co.in",
+      "path": "/",
+      "expires": 1771220427.391036,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "_cfuvid",
+      "value": "9wlTYYfT3h10Nu4gUFaMnhXRvoOgCprEFy6F8Buy3fs-1771218627308-0.0.1.1-604800000",
+      "domain": ".glassdoor.co.in",
+      "path": "/",
+      "expires": -1,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "rl_session",
+      "value": "RS_ENC_v3_eyJhdXRvVHJhY2siOnRydWUsInRpbWVvdXQiOjE4MDAwMDAsImV4cGlyZXNBdCI6MTc3MTIyMDQyODY1OCwiaWQiOjE3NzEyMTg0NzQyMTksInNlc3Npb25TdGFydCI6ZmFsc2V9",
+      "domain": ".glassdoor.co.in",
+      "path": "/",
+      "expires": 1802754628,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Lax"
+    }
+  ],
+  "origins": [
+    {
+      "origin": "https://www.glassdoor.co.in",
+      "localStorage": [
+        {
+          "name": "rudder_2E61Cod1xHlNX1wv1hqFK4HvMMq.90871162-d87e-4490-81d8-de2e56f64402.ack",
+          "value": "\"1771218628606\""
+        },
+        {
+          "name": "rudder_2E61Cod1xHlNX1wv1hqFK4HvMMq.90871162-d87e-4490-81d8-de2e56f64402.inProgress",
+          "value": "\"{\\\"d5ce9c14-feb1-4ebe-a758-e9062b62e099\\\":{\\\"item\\\":{\\\"url\\\":\\\"https://glassdoor-dataplane.rudderstack.com/v1/track\\\",\\\"headers\\\":{\\\"AnonymousId\\\":\\\"YTdkNjZhNWQtYzY1Yy00MWE4LTg4MGYtY2I5NTljYzZkZjEx\\\"},\\\"event\\\":{\\\"properties\\\":{\\\"core web vitals\\\":{\\\"FCP value\\\":2920,\\\"FCP rating\\\":\\\"needs-improvement\\\",\\\"FCP delta\\\":2920,\\\"FCP navigation type\\\":\\\"navigate\\\",\\\"FCP id\\\":\\\"v5-1771218623774-3084629281626\\\",\\\"TTFB value\\\":2590.2000000476837,\\\"TTFB rating\\\":\\\"poor\\\",\\\"TTFB delta\\\":2590.2000000476837,\\\"TTFB navigation type\\\":\\\"navigate\\\",\\\"TTFB id\\\":\\\"v5-1771218623774-6190496973848\\\",\\\"LCP value\\\":2920,\\\"LCP rating\\\":\\\"needs-improvement\\\",\\\"LCP delta\\\":2920,\\\"LCP navigation type\\\":\\\"navigate\\\",\\\"LCP id\\\":\\\"v5-1771218623774-3992015402404\\\",\\\"CLS value\\\":0.0028136493265677885,\\\"CLS rating\\\":\\\"good\\\",\\\"CLS delta\\\":0.0028136493265677885,\\\"CLS navigation type\\\":\\\"navigate\\\",\\\"CLS id\\\":\\\"v5-1771218623774-2297434801760\\\"},\\\"core web vitals entries\\\":[{\\\"metric name\\\":\\\"FCP\\\",\\\"entry name\\\":\\\"first-contentful-paint\\\",\\\"type\\\":\\\"paint\\\",\\\"start\\\":2920,\\\"duration\\\":0},{\\\"metric name\\\":\\\"TTFB\\\",\\\"entry name\\\":\\\"https://www.glassdoor.co.in/Community/index.htm\\\",\\\"type\\\":\\\"navigation\\\",\\\"start\\\":0,\\\"duration\\\":5316.799999952316},{\\\"metric name\\\":\\\"LCP\\\",\\\"entry name\\\":\\\"\\\",\\\"type\\\":\\\"largest-contentful-paint\\\",\\\"start\\\":2920,\\\"duration\\\":0,\\\"size\\\":52426,\\\"render time\\\":2920,\\\"load time\\\":0,\\\"url\\\":\\\"\\\"},{\\\"metric name\\\":\\\"CLS\\\",\\\"entry name\\\":\\\"\\\",\\\"type\\\":\\\"layout-shift\\\",\\\"start\\\":3727.5,\\\"duration\\\":0}]},\\\"event\\\":\\\"core web vitals recorded\\\",\\\"type\\\":\\\"track\\\",\\\"channel\\\":\\\"web\\\",\\\"context\\\":{\\\"traits\\\":{\\\"locked state\\\":\\\"open\\\",\\\"community id\\\":\\\"6970813fff567ec0983ca2d8\\\",\\\"color scheme\\\":\\\"Light\\\",\\\"is validated\\\":true},\\\"sessionId\\\":1771218474219,\\\"app\\\":{\\\"name\\\":\\\"RudderLabs JavaScript SDK\\\",\\\"namespace\\\":\\\"com.rudderlabs.javascript\\\",\\\"version\\\":\\\"3.28.1\\\",\\\"installType\\\":\\\"cdn\\\"},\\\"library\\\":{\\\"name\\\":\\\"RudderLabs JavaScript SDK\\\",\\\"version\\\":\\\"3.28.1\\\",\\\"snippetVersion\\\":\\\"3.0.60\\\"},\\\"userAgent\\\":\\\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36\\\",\\\"os\\\":{\\\"name\\\":\\\"\\\",\\\"version\\\":\\\"\\\"},\\\"locale\\\":\\\"en-US\\\",\\\"screen\\\":{\\\"width\\\":1536,\\\"height\\\":864,\\\"density\\\":1.25,\\\"innerWidth\\\":1536,\\\"innerHeight\\\":730},\\\"campaign\\\":{},\\\"page\\\":{\\\"path\\\":\\\"/Community/index.htm\\\",\\\"referrer\\\":\\\"https://www.glassdoor.co.in/\\\",\\\"referring_domain\\\":\\\"www.glassdoor.co.in\\\",\\\"search\\\":\\\"\\\",\\\"title\\\":\\\"Community | Glassdoor\\\",\\\"url\\\":\\\"https://www.glassdoor.co.in/Community/index.htm\\\",\\\"tab_url\\\":\\\"https://www.glassdoor.co.in/Community/index.htm\\\",\\\"initial_referrer\\\":\\\"$direct\\\",\\\"initial_referring_domain\\\":\\\"\\\"},\\\"timezone\\\":\\\"GMT+0530\\\"},\\\"originalTimestamp\\\":\\\"2026-02-16T05:10:28.659Z\\\",\\\"messageId\\\":\\\"4d68ac20-7296-4a35-914c-4816ce075e0e\\\",\\\"userId\\\":\\\"342626530\\\",\\\"anonymousId\\\":\\\"a7d66a5d-c65c-41a8-880f-cb959cc6df11\\\",\\\"integrations\\\":{\\\"All\\\":true},\\\"sentAt\\\":\\\"2026-02-16T05:10:28.659Z\\\"}},\\\"attemptNumber\\\":0,\\\"time\\\":1771218628659,\\\"type\\\":\\\"Single\\\",\\\"firstAttemptedAt\\\":1771218628659,\\\"lastAttemptedAt\\\":1771218628659}}\""
+        },
+        {
+          "name": "videoVolume",
+          "value": "0.5"
+        },
+        {
+          "name": "EXP_client-BHI_DEFAULT_USER_PROVIDER",
+          "value": "{\"first_seen\":\"1771218622.753\"}"
+        },
+        {
+          "name": "email",
+          "value": "csm57396@gmail.com"
+        },
+        {
+          "name": "asst",
+          "value": "1771218473.0"
+        },
+        {
+          "name": "EXP_unsent_$default_instance",
+          "value": "[{\"eventType\":\"$exposure\",\"eventProperties\":{\"flag_key\":\"oaop-login-rollout\",\"experiment_key\":\"exp-2\",\"variant\":\"treatment-oaop-login-enabled\",\"metadata\":{\"evaluationId\":\"1480522400734_1771218473314_9737\",\"experimentKey\":\"exp-2\"}}},{\"eventType\":\"$exposure\",\"eventProperties\":{\"flag_key\":\"oaop-aa-test\",\"metadata\":{\"default\":true,\"evaluationId\":\"1480522400734_1771218473398_4885\"}}},{\"eventType\":\"$exposure\",\"eventProperties\":{\"flag_key\":\"cweb-personalized-bowl-recommendations-in-right-rail-cweb-3532-v2\",\"metadata\":{\"default\":true,\"evaluationId\":\"1454533585154_1771218620732_8824\",\"testInstrumentation\":true}}}]"
+        },
+        {
+          "name": "rudder_2E61Cod1xHlNX1wv1hqFK4HvMMq.90871162-d87e-4490-81d8-de2e56f64402.batchQueue",
+          "value": "\"[]\""
+        },
+        {
+          "name": "rudder_2E61Cod1xHlNX1wv1hqFK4HvMMq.e9537a27-e7b3-416d-8ad6-37cb210735d9.batchQueue",
+          "value": "\"[]\""
+        },
+        {
+          "name": "rudder_2E61Cod1xHlNX1wv1hqFK4HvMMq.e9537a27-e7b3-416d-8ad6-37cb210735d9.queue",
+          "value": "\"[]\""
+        },
+        {
+          "name": "EXP_client-gNx_DEFAULT_USER_PROVIDER",
+          "value": "{\"first_seen\":\"1771218476.278\"}"
+        },
+        {
+          "name": "rudder_2E61Cod1xHlNX1wv1hqFK4HvMMq.e9537a27-e7b3-416d-8ad6-37cb210735d9.ack",
+          "value": "\"1771218621464\""
+        },
+        {
+          "name": "iterableToken",
+          "value": "{\"token\":\"eyJraWQiOiJqd3RDb21tb25zLnVzZXJFbmdhZ2VtZW50LndlYk5vdGlmaWNhdGlvbnNKV1RJdGVyYWJsZUtleSIsInR5cCI6IkpXVCIsImFsZyI6IkhTMjU2In0.eyJleHAiOjE3NzE4MjM0MjUsImlhdCI6MTc3MTIxODYyNSwiZW1haWwiOiJjc201NzM5NkBnbWFpbC5jb20ifQ.3BO1Xhg8-9bEzDa1GbJwtqhhCpl5xYhjjsW2cVnhWrk\",\"expirationEpoch\":1771823425000}"
+        },
+        {
+          "name": "rudder_2E61Cod1xHlNX1wv1hqFK4HvMMq.e9537a27-e7b3-416d-8ad6-37cb210735d9.inProgress",
+          "value": "\"{\\\"eb774f4b-e97f-4d8f-8871-a0fd545958a8\\\":{\\\"item\\\":{\\\"url\\\":\\\"https://glassdoor-dataplane.rudderstack.com/v1/track\\\",\\\"headers\\\":{\\\"AnonymousId\\\":\\\"YTdkNjZhNWQtYzY1Yy00MWE4LTg4MGYtY2I5NTljYzZkZjEx\\\"},\\\"event\\\":{\\\"properties\\\":{\\\"hostname\\\":\\\"www.glassdoor.co.in\\\",\\\"rollup url\\\":\\\"/index\\\",\\\"abstract url\\\":\\\"/index.htm\\\",\\\"full page url\\\":\\\"https://www.glassdoor.co.in/index.htm\\\",\\\"event origin\\\":\\\"rudderstackReady\\\",\\\"gtm container id\\\":\\\"GTM-PST2JZ\\\",\\\"gtm container version\\\":\\\"1581\\\",\\\"page url minus query\\\":\\\"www.glassdoor.co.in/index.htm\\\",\\\"locale\\\":\\\"en-IN\\\",\\\"user agent string\\\":\\\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36\\\",\\\"asid - raw\\\":\\\"a7d66a5d-c65c-41a8-880f-cb959cc6df11.1771218473.0\\\",\\\"asid - clean\\\":\\\"a7d66a5d-c65c-41a8-880f-cb959cc6df11.1771218473.0\\\",\\\"asid - gdGlobals\\\":\\\"a7d66a5d-c65c-41a8-880f-cb959cc6df11.1771218473.0\\\",\\\"dos2 a/b test id list\\\":[\\\"growth_app_install_gfa.PROD_20250613\\\",\\\"growth_global.tng_community_june_15_20230620\\\",\\\"growth_header.search_submit_PROD_20240312\\\",\\\"growth_jobs.g4j_l2a_post_apply_test_20211209\\\",\\\"growth_redirect_tld.growth_redirect_tld\\\",\\\"search_start_trending_posts.search_start_trending_posts_PROD_05062025\\\",\\\"signed_out_notifs_endpoint.signed_out_notifs_endpoint_PROD_04072025\\\",\\\"brand_ads_company_compare.native_ads_compare\\\",\\\"brand_ads_company_explorer.native_ads_explore\\\",\\\"growth_app_install_gfa.PROD_20250613\\\",\\\"growth_global.tng_community_june_15_20230620\\\",\\\"growth_header.search_submit_PROD_20240312\\\",\\\"growth_jobs.g4j_l2a_post_apply_test_20211209\\\",\\\"growth_redirect_tld.growth_redirect_tld\\\",\\\"search_start_trending_posts.search_start_trending_posts_PROD_05062025\\\",\\\"signed_out_notifs_endpoint.signed_out_notifs_endpoint_PROD_04072025\\\",\\\"headerless_garnish.PROD_headerless_garnish_test_10312024\\\"],\\\"dos2 a/b test treatment list\\\":[\\\"app_install_gfa_t1\\\",\\\"tng_community_june_15_t1\\\",\\\"search_submit_t1\\\",\\\"g4j_l2a_post_apply_t0\\\",\\\"growth_redirect_tld_treatment\\\",\\\"search_start_trending_posts_control\\\",\\\"signed_out_notifs_endpoint_control\\\",\\\"native_ads_compare_t1\\\",\\\"native_ads_explore_t1\\\",\\\"app_install_gfa_t1\\\",\\\"tng_community_june_15_t1\\\",\\\"search_submit_t1\\\",\\\"g4j_l2a_post_apply_t0\\\",\\\"growth_redirect_tld_treatment\\\",\\\"search_start_trending_posts_control\\\",\\\"signed_out_notifs_endpoint_control\\\",\\\"headerless_garnish_t1\\\"],\\\"responsive design breakpoint\\\":\\\"default\\\",\\\"locked state\\\":\\\"locked\\\",\\\"document referrer\\\":\\\"https://www.glassdoor.co.in/\\\",\\\"domain id\\\":4,\\\"untranslated url\\\":\\\"https://www.glassdoor.co.in/index.htm\\\",\\\"guid - event\\\":\\\"a7d66a5d-c65c-41a8-880f-cb959cc6df11\\\",\\\"page group\\\":\\\"Home-Nonmember\\\",\\\"page title\\\":\\\"Glassdoor | Job Search and Career Community\\\",\\\"page content type\\\":\\\"home:Nonmember\\\",\\\"history length\\\":2,\\\"ip location id\\\":\\\"2856202\\\",\\\"ip location type\\\":\\\"C\\\",\\\"onetrust groups\\\":\\\"isGpcEnabled=0&datestamp=Mon+Feb+16+2026+10%3A39%3A58+GMT%2B0530+(India+Standard+Time)&version=202407.2.0&browserGpcFlag=0&isIABGlobal=false&hosts=&consentId=bd18b2c9-e4da-4e90-a98c-d621a9a891dc&interactionCount=1&isAnonUser=1&landingPath=https%3A%2F%2Fwww.glassdoor.co.in%2Findex.htm&groups=C0001%3A1%2CC0003%3A1%2CC0002%3A1%2CC0004%3A1%2CC0017%3A1\\\",\\\"platform type id\\\":3,\\\"device type id\\\":1,\\\"view type id\\\":4,\\\"referrer data\\\":{\\\"currentPageRollup\\\":\\\"/index\\\",\\\"previousPageRollup\\\":\\\"/index\\\",\\\"currentPageAbstract\\\":\\\"/index.htm\\\",\\\"previousPageAbstract\\\":\\\"/index.htm\\\",\\\"currentPageFull\\\":\\\"https://www.glassdoor.co.in/index.htm\\\",\\\"previousPageFull\\\":\\\"https://www.glassdoor.co.in/index.htm\\\"},\\\"java enabled\\\":\\\"false\\\",\\\"bot score - event\\\":\\\"99\\\",\\\"threat score - event\\\":null,\\\"verified bot - event\\\":\\\"false\\\",\\\"http version\\\":\\\"h3\\\",\\\"debug data\\\":{\\\"info\\\":{\\\"rudderstack session cookie\\\":\\\"1771218474219\\\",\\\"effective connection type\\\":\\\"4g\\\",\\\"downlink\\\":10,\\\"round trip time\\\":50,\\\"cookies enabled\\\":true,\\\"previous click durations\\\":[\\\"\\\"],\\\"ip\\\":\\\"223.233.82.225\\\",\\\"gdGlobals length\\\":17,\\\"core identify sdk called\\\":false,\\\"gtm unique event id\\\":7009,\\\"web app name\\\":\\\"seo-pages\\\",\\\"garnish release version\\\":\\\"1.114.2\\\",\\\"document ready state\\\":\\\"interactive\\\",\\\"session replay selectors\\\":[],\\\"env\\\":\\\"prod\\\"},\\\"error\\\":{},\\\"url\\\":{\\\"untranslated test\\\":\\\"/index.htm\\\"}},\\\"browser tab visibility state\\\":\\\"visible\\\",\\\"page view uuid\\\":\\\"8d4dd6af-1f7b-48d6-9792-2c9905af1f2c\\\",\\\"screen outer width\\\":1536,\\\"screen outer height\\\":816,\\\"screen device pixel ratio\\\":1.25,\\\"screen available width\\\":1536,\\\"screen available height\\\":816,\\\"[Amplitude] Session Replay ID\\\":\\\"a7d66a5d-c65c-41a8-880f-cb959cc6df11/1771218474219\\\",\\\"zero click durations\\\":{},\\\"contentstack\\\":{},\\\"core web vitals\\\":{\\\"FCP value\\\":604,\\\"FCP rating\\\":\\\"good\\\",\\\"FCP delta\\\":604,\\\"FCP navigation type\\\":\\\"navigate\\\",\\\"FCP id\\\":\\\"v5-1771218599290-4144939341635\\\",\\\"TTFB value\\\":495.6999999284744,\\\"TTFB rating\\\":\\\"good\\\",\\\"TTFB delta\\\":495.6999999284744,\\\"TTFB navigation type\\\":\\\"navigate\\\",\\\"TTFB id\\\":\\\"v5-1771218599291-3591175619380\\\",\\\"LCP value\\\":752,\\\"LCP rating\\\":\\\"good\\\",\\\"LCP delta\\\":752,\\\"LCP navigation type\\\":\\\"navigate\\\",\\\"LCP id\\\":\\\"v5-1771218599290-1310167069311\\\",\\\"INP value\\\":48,\\\"INP rating\\\":\\\"good\\\",\\\"INP delta\\\":48,\\\"INP navigation type\\\":\\\"navigate\\\",\\\"INP id\\\":\\\"v5-1771218599290-9748639307271\\\",\\\"CLS value\\\":0.24327008405831474,\\\"CLS rating\\\":\\\"needs-improvement\\\",\\\"CLS delta\\\":0.24327008405831474,\\\"CLS navigation type\\\":\\\"navigate\\\",\\\"CLS id\\\":\\\"v5-1771218599291-9150489313628\\\"},\\\"core web vitals entries\\\":[{\\\"metric name\\\":\\\"FCP\\\",\\\"entry name\\\":\\\"first-contentful-paint\\\",\\\"type\\\":\\\"paint\\\",\\\"start\\\":604,\\\"duration\\\":0},{\\\"metric name\\\":\\\"TTFB\\\",\\\"entry name\\\":\\\"https://www.glassdoor.co.in/index.htm\\\",\\\"type\\\":\\\"navigation\\\",\\\"start\\\":0,\\\"duration\\\":2318.899999976158},{\\\"metric name\\\":\\\"LCP\\\",\\\"entry name\\\":\\\"\\\",\\\"type\\\":\\\"largest-contentful-paint\\\",\\\"start\\\":752,\\\"duration\\\":0,\\\"size\\\":77968,\\\"render time\\\":752,\\\"load time\\\":730.1999999284744,\\\"url\\\":\\\"https://www.glassdoor.co.in/images/seo-pages/homepage/sohp-right-hero-image.svg\\\"},{\\\"metric name\\\":\\\"INP\\\",\\\"entry name\\\":\\\"pointerup\\\",\\\"type\\\":\\\"event\\\",\\\"start\\\":12434.299999952316,\\\"duration\\\":48},{\\\"metric name\\\":\\\"INP\\\",\\\"entry name\\\":\\\"click\\\",\\\"type\\\":\\\"event\\\",\\\"start\\\":12434.299999952316,\\\"duration\\\":48},{\\\"metric name\\\":\\\"CLS\\\",\\\"entry name\\\":\\\"\\\",\\\"type\\\":\\\"layout-shift\\\",\\\"start\\\":9212.699999928474,\\\"duration\\\":0},{\\\"metric name\\\":\\\"CLS\\\",\\\"entry name\\\":\\\"\\\",\\\"type\\\":\\\"layout-shift\\\",\\\"start\\\":9329.199999928474,\\\"duration\\\":0}]},\\\"event\\\":\\\"core web vitals recorded\\\",\\\"type\\\":\\\"track\\\",\\\"channel\\\":\\\"web\\\",\\\"context\\\":{\\\"traits\\\":{},\\\"sessionId\\\":1771218474219,\\\"app\\\":{\\\"name\\\":\\\"RudderLabs JavaScript SDK\\\",\\\"namespace\\\":\\\"com.rudderlabs.javascript\\\",\\\"version\\\":\\\"3.28.1\\\",\\\"installType\\\":\\\"cdn\\\"},\\\"library\\\":{\\\"name\\\":\\\"RudderLabs JavaScript SDK\\\",\\\"version\\\":\\\"3.28.1\\\",\\\"snippetVersion\\\":\\\"3.0.60\\\"},\\\"userAgent\\\":\\\"Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36\\\",\\\"os\\\":{\\\"name\\\":\\\"\\\",\\\"version\\\":\\\"\\\"},\\\"locale\\\":\\\"en-US\\\",\\\"screen\\\":{\\\"width\\\":1536,\\\"height\\\":864,\\\"density\\\":1.25,\\\"innerWidth\\\":1536,\\\"innerHeight\\\":730},\\\"campaign\\\":{},\\\"page\\\":{\\\"path\\\":\\\"/index.htm\\\",\\\"referrer\\\":\\\"https://www.glassdoor.co.in/\\\",\\\"referring_domain\\\":\\\"www.glassdoor.co.in\\\",\\\"search\\\":\\\"\\\",\\\"title\\\":\\\"Glassdoor | Job Search and Career Community\\\",\\\"url\\\":\\\"https://www.glassdoor.co.in/index.htm\\\",\\\"tab_url\\\":\\\"https://www.glassdoor.co.in/index.htm\\\",\\\"initial_referrer\\\":\\\"$direct\\\",\\\"initial_referring_domain\\\":\\\"\\\"},\\\"timezone\\\":\\\"GMT+0530\\\"},\\\"originalTimestamp\\\":\\\"2026-02-16T05:10:22.325Z\\\",\\\"messageId\\\":\\\"078d135c-bd13-4e2d-8f69-11b3266044e8\\\",\\\"userId\\\":\\\"\\\",\\\"anonymousId\\\":\\\"a7d66a5d-c65c-41a8-880f-cb959cc6df11\\\",\\\"integrations\\\":{\\\"All\\\":true},\\\"sentAt\\\":\\\"2026-02-16T05:10:22.326Z\\\"}},\\\"attemptNumber\\\":0,\\\"time\\\":1771218622326,\\\"type\\\":\\\"Single\\\",\\\"firstAttemptedAt\\\":1771218622326,\\\"lastAttemptedAt\\\":1771218622326}}\""
+        },
+        {
+          "name": "rudder_2E61Cod1xHlNX1wv1hqFK4HvMMq.90871162-d87e-4490-81d8-de2e56f64402.queue",
+          "value": "\"[]\""
+        },
+        {
+          "name": "hideCaptions",
+          "value": "true"
+        }
+      ]
+    }
+  ]
+}

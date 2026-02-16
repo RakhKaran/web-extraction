@@ -1,7 +1,7 @@
 import { Entity, model, property } from '@loopback/repository';
 
 @model()
-export class JobList extends Entity {
+export class StagingTimesjob extends Entity {
   @property({
     type: 'string',
     id: true,
@@ -25,13 +25,12 @@ export class JobList extends Entity {
     type: 'string',
     required: true
   })
-  company: string;
+  companyName: string;
 
   @property({
     type: 'string',
-    required: false
   })
-  companyLogo: string;
+  companyLogo?: string;
 
   @property({
     type: 'string',
@@ -52,35 +51,31 @@ export class JobList extends Entity {
   salary: string;
 
   @property({
-    type: 'date',
-    required: true
+    type: 'string',
   })
-  posted: Date;
-
-  @property({
-    type: 'number',
-    required: false,
-  })
-  openings: number;
-
-  @property({
-    type: 'number',
-    required: false
-  })
-  applicants: number;
+  posted?: string;
 
   @property({
     type: 'string',
-    required: true
   })
-  aboutCompany: string;
+  openings?: string;
+
+  @property({
+    type: 'string',
+  })
+  applicants?: string;
+
+  @property({
+    type: 'string',
+  })
+  aboutCompany?: string;
 
   @property({
     type: 'array',
     itemType: 'string',
     required: true
   })
-  keySkills: string[];
+  skills: string[];
 
   @property({
     type: 'string',
@@ -89,10 +84,9 @@ export class JobList extends Entity {
   redirectUrl: string;
 
   @property({
-    type: 'boolean',
-    required: true
+    type: 'date',
   })
-  isActive: boolean
+  scrappedAt?: Date;
 
   @property({
     type: 'date',
@@ -118,16 +112,17 @@ export class JobList extends Entity {
 
   @property({
     type: 'boolean',
-    default: false
+    default: false,
   })
-  isPostedToAltiv: boolean;
-  constructor(data?: Partial<JobList>) {
+  isSync: boolean;
+
+  constructor(data?: Partial<StagingTimesjob>) {
     super(data);
   }
 }
 
-export interface JobListRelations {
+export interface StagingTimesjobRelations {
   // describe navigational properties here
 }
 
-export type JobListWithRelations = JobList & JobListRelations;
+export type StagingTimesjobWithRelations = StagingTimesjob & StagingTimesjobRelations;

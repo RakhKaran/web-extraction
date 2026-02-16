@@ -477,8 +477,6 @@ export class PrototypeController {
 
           const locator = page.locator(selector);
 
-          console.log('locator', locator);
-
           // ---------- STEP 1: Try WITHOUT scroll ----------
           if (await locator.count() > 0) {
             await locator.first().scrollIntoViewIfNeeded();
@@ -693,7 +691,7 @@ export class PrototypeController {
       // 👇 Scroll if pagination not visible
       if (await nextBtn.count() === 0) {
         console.log("🔽 Pagination not visible, scrolling...");
-        for (let i = 0; i < 5; i++) {
+        for (let i = 0; i < 10; i++) {
           await page.mouse.wheel(0, 800);
           await page.waitForTimeout(700);
           if (await nextBtn.count() > 0) break;
@@ -728,6 +726,7 @@ export class PrototypeController {
 
   // detail data node
   private async handleJobDetailNode(browser: any, jobLinks: string[], node: any, extractionId: string) {
+    console.log('job links', jobLinks);
     let extractedData: any[] = [];
 
     for (const [i, link] of jobLinks.entries()) {
@@ -816,12 +815,12 @@ export class PrototypeController {
         });
       }
     }
-
     return extractedData;
   }
 
   // deliver node
   private async handleDeliverNode(data: any[], node: any, extractionId: string) {
+    console.log('data', data);
     if (!data || data.length === 0) {
       console.log('⚠️ No data to deliver');
       await this.testExtractionLogsRepository.create({
