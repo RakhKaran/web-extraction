@@ -18,3 +18,5 @@ export * from './staging-linkedin.model';
 export * from './company.model';
 export * from './company-list.model';
 export * from './job-list.model';
+export * from './data-freshness-config.model';
+export * from './data-freshness-log.model';

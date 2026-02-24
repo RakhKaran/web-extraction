@@ -49,7 +49,7 @@ const ICONS = {
   designation: icon('ic_designation'),
   company: icon('ic_company'),
   companyProfile: icon('ic_profile'),
-
+  dataFreshness: icon('ic_calendar'), // Using calendar icon for freshness checks
 };
 
 // ----------------------------------------------------------------------
@@ -134,6 +134,17 @@ export function useNavData() {
 
           { title: t('Extraction Flow'), path: paths.dashboard.workflow.root, icon: ICONS.analytics },
           // { title: t('Workflow Instance'), path: paths.dashboard.workflowInstance.root, icon: ICONS.analytics }, 
+
+          // DATA FRESHNESS
+          {
+            title: t('Data Freshness'),
+            path: paths.dashboard.dataFreshness.root,
+            icon: ICONS.dataFreshness,
+            children: [
+              { title: t('list'), path: paths.dashboard.dataFreshness.list },
+              { title: t('create'), path: paths.dashboard.dataFreshness.create },
+            ],
+          }, 
 
           //   {
           //   title: t('Job List'),

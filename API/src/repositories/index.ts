@@ -18,3 +18,5 @@ export * from './staging-linkedin.repository';
 export * from './company.repository';
 export * from './company-list.repository';
 export * from './job-list.repository';
+export * from './data-freshness-config.repository';
+export * from './data-freshness-log.repository';

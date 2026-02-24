@@ -13,3 +13,4 @@ export * from './dags-scheduler.controller';
 export * from './company.controller';
 export * from './company-list.controller';
 export * from './job-list.controller';
+export * from './data-freshness.controller';

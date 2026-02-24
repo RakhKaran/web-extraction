@@ -100,6 +100,10 @@ const WorkflowInstanceCreatePage = lazy(() => import('src/pages/dashboard/workfl
 const WorkflowInstanceEditPage = lazy(() => import('src/pages/dashboard/workflowInstance/edit'));
 const WorkflowInstanceListPage = lazy(() => import('src/pages/dashboard/workflowInstance/list'));
 const WorkflowInstanceViewPage = lazy(() => import('src/pages/dashboard/workflowInstance/view'));
+// DATA FRESHNESS
+const DataFreshnessPage = lazy(() => import('src/pages/dashboard/data-freshness'));
+const DataFreshnessCreatePage = lazy(() => import('src/pages/dashboard/data-freshness-create'));
+const DataFreshnessLogsPage = lazy(() => import('src/pages/dashboard/data-freshness-logs'));
 // const WorkflowInstanceExtractedDocumentsPage = lazy(() => import('src/pages/dashboard/workflowInstance/extractedDocuments'));
 // const WorkflowInstanceReactFlowPage = lazy(() => import('src/pages/dashboard/workflowInstance/react-flow'));
 
@@ -234,6 +238,16 @@ export const dashboardRoutes = [
           { path: ':id/edit', element: <WorkflowInstanceEditPage /> },
           // { path: ':id/view', element: <ProcessInstanceViewPage /> },
           // { path: ':id/extracted-documents', element: <ProcessInstanceExtractedDocumentsPage /> },
+        ],
+      },
+      {
+        path: 'data-freshness',
+        children: [
+          { element: <DataFreshnessPage />, index: true },
+          { path: 'list', element: <DataFreshnessPage /> },
+          { path: 'create', element: <DataFreshnessCreatePage /> },
+          { path: 'edit/:id', element: <DataFreshnessCreatePage /> },
+          { path: 'logs/:id', element: <DataFreshnessLogsPage /> },
         ],
       },
       {

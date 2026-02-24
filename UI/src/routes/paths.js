@@ -243,6 +243,13 @@ export const paths = {
       reactFlow: (id) => `${ROOTS.DASHBOARD}/workflowInstance/${id}/blueprint`,
       extractedDocs: (id) => `${ROOTS.DASHBOARD}/workflowInstance/${id}/extracted-documents`,
     },
+    dataFreshness: {
+      root: `${ROOTS.DASHBOARD}/data-freshness`,
+      list: `${ROOTS.DASHBOARD}/data-freshness/list`,
+      create: `${ROOTS.DASHBOARD}/data-freshness/create`,
+      edit: (id) => `${ROOTS.DASHBOARD}/data-freshness/edit/${id}`,
+      logs: (id) => `${ROOTS.DASHBOARD}/data-freshness/logs/${id}`,
+    },
     //   tour: {
     //     root: `${ROOTS.DASHBOARD}/tour`,
     //     new: `${ROOTS.DASHBOARD}/tour/new`,

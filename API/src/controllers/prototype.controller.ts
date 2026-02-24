@@ -576,83 +576,255 @@ export class PrototypeController {
 
   // initialize
   private async handleInitializeNode(node: any, extractionId: string) {
+    const PROXIES = Array.isArray(node?.data?.proxies) && node.data.proxies.length > 0
+      ? node.data.proxies
+      : [];
+
+    let proxyIndex = 0;
+    const badProxies = new Set<number>();
+    const MAX_RETRIES = PROXIES.length > 0 ? PROXIES.length + 1 : 1;
+
+    const getNextProxy = () => {
+      if (!PROXIES.length) return null;
+      for (let i = 0; i < PROXIES.length; i++) {
+        const idx = proxyIndex % PROXIES.length;
+        proxyIndex++;
+        if (!badProxies.has(idx)) {
+          return { proxy: PROXIES[idx], index: idx };
+        }
+      }
+      return null;
+    };
+
+    const looksBlocked = async (page: any, response: any) => {
+      if (!response) return false;
+      const status = response.status();
+      if (status === 403 || status === 429 || status >= 500) return true;
+
+      const url = page.url().toLowerCase();
+      if (url.includes("captcha") || url.includes("challenge")) return true;
+
+      try {
+        const title = await page.title();
+        if (title.toLowerCase().includes("cloudflare") || title.toLowerCase().includes("access denied")) {
+          return true;
+        }
+      } catch { }
+
+      return false;
+    };
+
+    // Try with different proxies
+    for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+      let browser: any;
+      let browserContext: any;
+      let page: any;
+      let usedProxy: string | null = null;
+
+      const proxyObj = getNextProxy();
+
+      try {
+        const session = node?.data?.session;
+        
+        // Prepare proxy configuration
+        let proxyConfig: any = undefined;
+        if (proxyObj) {
+          let proxyServer = proxyObj.proxy.server;
+          
+          // Don't add http:// if it already has a protocol
+          if (!proxyServer.startsWith('http://') && !proxyServer.startsWith('https://') && !proxyServer.startsWith('socks')) {
+            proxyServer = `http://${proxyServer}`;
+          }
+          
+          proxyConfig = {
+            server: proxyServer,
+            username: proxyObj.proxy.username,
+            password: proxyObj.proxy.password,
+          };
+          
+          usedProxy = proxyServer;
+          console.log(`🌐 Using proxy: ${usedProxy}`);
+          console.log(`   Username: ${proxyObj.proxy.username ? '***' : 'none'}`);
+          await this.testExtractionLogsRepository.create({
+            extractionId: extractionId,
+            logsDescription: `🌐 Using proxy: ${usedProxy} (user: ${proxyObj.proxy.username || 'none'})`,
+            logType: 0,
+            isActive: true,
+          });
+        }
+
+        browser = await chromium.launch({
+          headless: false,
+          args: [
+            "--disable-blink-features=AutomationControlled",
+            "--start-maximized",
+            "--ignore-certificate-errors"
+          ],
+          proxy: proxyConfig
+        });
+        const contextOptions: any = {
+          viewport: null,
+          userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+          ignoreHTTPSErrors: true
+        };
+
+        if (session?.enabled) {
+          const storageStatePath = path.resolve(`../API/src/sessions/${session.storageStatePath}.json`);
+
+          if (session.load && fs.existsSync(storageStatePath)) {
+            console.log(`🔑 Using saved session from ${storageStatePath}`);
+            await this.testExtractionLogsRepository.create({
+              extractionId: extractionId,
+              logsDescription: `🔑 Using saved session from ${storageStatePath}`,
+              logType: 0,
+              isActive: true,
+            });
+            contextOptions.storageState = storageStatePath;
+          } else {
+            console.log("⚠️ No saved session, starting fresh.");
+            await this.testExtractionLogsRepository.create({
+              extractionId: extractionId,
+              logsDescription: "⚠️ No saved session, starting fresh.",
+              logType: 0,
+              isActive: true,
+            });
+          }
+        }
+
+        browserContext = await browser.newContext(contextOptions);
+        page = await browserContext.newPage();
+
+        const resp = await page.goto(node.data?.url, {
+          waitUntil: "domcontentloaded",
+          timeout: 30000
+        }).catch(async (error: any) => {
+          console.error(`❌ Navigation failed: ${error.message}`);
+          await this.testExtractionLogsRepository.create({
+            extractionId: extractionId,
+            logsDescription: `❌ Navigation failed with proxy ${usedProxy}: ${error.message}`,
+            logType: 1,
+            isActive: true,
+          });
+          throw error;
+        });
+
+        // Check if proxy is blocked
+        if (proxyObj && (await looksBlocked(page, resp))) {
+          badProxies.add(proxyObj.index);
+          console.log(`❌ Proxy blocked: ${usedProxy}`);
+          await this.testExtractionLogsRepository.create({
+            extractionId: extractionId,
+            logsDescription: `❌ Proxy blocked: ${usedProxy}, trying next...`,
+            logType: 1,
+            isActive: true,
+          });
+          await browserContext.close();
+          await browser.close();
+          continue;
+        }
+
+        // Handle session save
+        if (session?.enabled && session.save && !fs.existsSync(path.resolve(`../API/src/sessions/${session.storageStatePath}.json`))) {
+          console.log("💡 Please log in manually in the opened browser.");
+          await this.testExtractionLogsRepository.create({
+            extractionId: extractionId,
+            logsDescription: "💡 Please log in manually in the opened browser.",
+            logType: 0,
+            isActive: true,
+          });
+          console.log("👉 After login, press ENTER in terminal to continue...");
+          await this.testExtractionLogsRepository.create({
+            extractionId: extractionId,
+            logsDescription: "👉 After login, press ENTER in terminal to continue...",
+            logType: 0,
+            isActive: true,
+          });
+
+          await new Promise<void>((resolve) => {
+            process.stdin.once("data", () => resolve());
+          });
+
+          await browserContext.storageState({ path: path.resolve(`../API/src/sessions/${session.storageStatePath}.json`) });
+          console.log(`✅ Session saved to ${session.storageStatePath}.json`);
+          await this.testExtractionLogsRepository.create({
+            extractionId: extractionId,
+            logsDescription: `✅ Session saved to ${session.storageStatePath}.json`,
+            logType: 0,
+            isActive: true,
+          });
+        }
+
+        console.log(`✅ Successfully initialized with ${usedProxy || "LOCAL_IP"}`);
+        await this.testExtractionLogsRepository.create({
+          extractionId: extractionId,
+          logsDescription: `✅ Successfully initialized with ${usedProxy || "LOCAL_IP"}`,
+          logType: 0,
+          isActive: true,
+        });
+
+        return { browser, browserContext, page, usedProxy: usedProxy || "LOCAL_IP" };
+
+      } catch (err: any) {
+        console.error(`❌ Attempt ${attempt + 1} failed:`, err.message);
+        await this.testExtractionLogsRepository.create({
+          extractionId: extractionId,
+          logsDescription: `❌ Attempt ${attempt + 1} failed: ${err.message}`,
+          logType: 1,
+          isActive: true,
+        });
+
+        try {
+          if (browserContext) await browserContext.close();
+          if (browser) await browser.close();
+        } catch { }
+
+        if (proxyObj) badProxies.add(proxyObj.index);
+
+        if (attempt + 1 < MAX_RETRIES) {
+          console.log(`🔄 Retrying with different proxy...`);
+          await this.testExtractionLogsRepository.create({
+            extractionId: extractionId,
+            logsDescription: `🔄 Retrying with different proxy...`,
+            logType: 0,
+            isActive: true,
+          });
+          continue;
+        }
+      }
+    }
+
+    // If all proxies failed, try with local IP
+    console.log("⚠️ All proxies failed, falling back to LOCAL_IP");
+    await this.testExtractionLogsRepository.create({
+      extractionId: extractionId,
+      logsDescription: "⚠️ All proxies failed, falling back to LOCAL_IP",
+      logType: 1,
+      isActive: true,
+    });
+
     const browser = await chromium.launch({
       headless: false,
       args: ["--disable-blink-features=AutomationControlled", "--start-maximized"]
     });
 
-    let browserContext: import("playwright").BrowserContext;
-    let page;
-
     const session = node?.data?.session;
+    const contextOptions: any = {
+      viewport: null,
+      userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36"
+    };
 
     if (session?.enabled) {
       const storageStatePath = path.resolve(`../API/src/sessions/${session.storageStatePath}.json`);
-
       if (session.load && fs.existsSync(storageStatePath)) {
-        console.log(`🔑 Using saved session from ${storageStatePath}`);
-        await this.testExtractionLogsRepository.create({
-          extractionId: extractionId,
-          logsDescription: `🔑 Using saved session from ${storageStatePath}`,
-          logType: 0, // Info
-          isActive: true,
-        });
-        browserContext = await browser.newContext({ storageState: storageStatePath });
-      } else {
-        console.log("⚠️ No saved session, starting fresh.");
-        await this.testExtractionLogsRepository.create({
-          extractionId: extractionId,
-          logsDescription: "⚠️ No saved session, starting fresh.",
-          logType: 0, // Info
-          isActive: true,
-        });
-        browserContext = await browser.newContext({
-          viewport: null,
-          userAgent:
-            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36"
-        });
+        contextOptions.storageState = storageStatePath;
       }
-
-      page = await browserContext.newPage();
-      await page.goto(node.data?.url, { waitUntil: "domcontentloaded" });
-
-      // 👉 If no session yet, wait for user to log in
-      if (session.save && (!fs.existsSync(storageStatePath))) {
-        console.log("💡 Please log in manually in the opened browser.");
-        await this.testExtractionLogsRepository.create({
-          extractionId: extractionId,
-          logsDescription: "💡 Please log in manually in the opened browser.",
-          logType: 0, // Info
-          isActive: true,
-        });
-        console.log("👉 After login, press ENTER in terminal to continue...");
-        await this.testExtractionLogsRepository.create({
-          extractionId: extractionId,
-          logsDescription: "👉 After login, press ENTER in terminal to continue...",
-          logType: 0, // Info
-          isActive: true,
-        });
-
-        await new Promise<void>((resolve) => {
-          process.stdin.once("data", () => resolve());
-        });
-
-        await browserContext.storageState({ path: storageStatePath });
-        console.log(`✅ Session saved to ${storageStatePath}`);
-        await this.testExtractionLogsRepository.create({
-          extractionId: extractionId,
-          logsDescription: `✅ Session saved to ${storageStatePath}`,
-          logType: 0, // Info
-          isActive: true,
-        });
-      }
-    } else {
-      browserContext = await browser.newContext();
-      page = await browserContext.newPage();
-      await page.goto(node.data?.url, { waitUntil: "domcontentloaded" });
     }
 
-    return { browser, browserContext, page };
+    const browserContext = await browser.newContext(contextOptions);
+    const page = await browserContext.newPage();
+    await page.goto(node.data?.url, { waitUntil: "domcontentloaded" });
+
+    return { browser, browserContext, page, usedProxy: "LOCAL_IP" };
   }
 
   // search
