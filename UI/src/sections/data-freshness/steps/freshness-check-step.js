@@ -2,20 +2,17 @@ import { Grid, Typography, MenuItem, Stack, Button, IconButton, FormControlLabel
 import { useFormContext, useFieldArray } from 'react-hook-form';
 import { RHFSelect, RHFTextField } from 'src/components/hook-form';
 import Iconify from 'src/components/iconify';
+import { useGetWorkflows } from 'src/api/workflow';
 
 export default function FreshnessCheckStep() {
   const { control, watch, setValue } = useFormContext();
   const checkType = watch('freshnessCheck.type');
   const sessionEnabled = watch('freshnessCheck.session.enabled');
+  const { workflows } = useGetWorkflows();
 
-  const { fields: selectorFields, append: appendSelector, remove: removeSelector } = useFieldArray({
+  const { fields: mappingFields, append: appendMapping, remove: removeMapping } = useFieldArray({
     control,
-    name: 'freshnessCheck.requiredSelectors',
-  });
-
-  const { fields: rescrapeFields, append: appendRescrape, remove: removeRescrape } = useFieldArray({
-    control,
-    name: 'freshnessCheck.fieldsToRescrape',
+    name: 'freshnessCheck.sourceWorkflowMappings',
   });
 
   const handleSessionChange = (checked) => {
@@ -29,94 +26,88 @@ export default function FreshnessCheckStep() {
           How to Check Freshness
         </Typography>
         <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-          Configure how to determine if a record is still active
+          Configure when data should expire and how re-scraping should resolve the correct blueprint.
         </Typography>
       </Grid>
 
-      <Grid item xs={12}>
+      <Grid item xs={12} md={6}>
         <RHFSelect name="freshnessCheck.type" label="Check Type" required fullWidth>
-          <MenuItem value="simple">Simple (Just check if page exists - HTTP 200)</MenuItem>
-          <MenuItem value="content">Content (Check if specific elements exist)</MenuItem>
-          <MenuItem value="full-rescrape">Full Re-scrape (Re-scrape and compare data)</MenuItem>
+          <MenuItem value="simple">Simple (URL availability check)</MenuItem>
+          <MenuItem value="full-rescrape">Full Re-scrape (follow mapped blueprint)</MenuItem>
         </RHFSelect>
       </Grid>
 
-      {checkType === 'content' && (
-        <Grid item xs={12}>
-          <Typography variant="subtitle1" gutterBottom>
-            Required Selectors
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            These elements must exist for the record to be considered active
-          </Typography>
-
-          <Stack spacing={2}>
-            {selectorFields.map((field, index) => (
-              <Stack key={field.id} direction="row" spacing={2} alignItems="center">
-                <RHFTextField
-                  name={`freshnessCheck.requiredSelectors.${index}`}
-                  label={`Selector ${index + 1}`}
-                  placeholder="e.g., h1.job-title"
-                  fullWidth
-                />
-                <IconButton size="small" color="error" onClick={() => removeSelector(index)}>
-                  <Iconify icon="eva:trash-2-outline" />
-                </IconButton>
-              </Stack>
-            ))}
-
-            <Button
-              variant="outlined"
-              startIcon={<Iconify icon="eva:plus-fill" />}
-              onClick={() => appendSelector('')}
-              sx={{ alignSelf: 'flex-start' }}
-            >
-              Add Selector
-            </Button>
-          </Stack>
-        </Grid>
-      )}
+      <Grid item xs={12} md={6}>
+        <RHFTextField
+          name="freshnessCheck.durationDays"
+          label="Expire After Days"
+          type="number"
+          placeholder="e.g., 30"
+          helperText="If a record is older than this duration, it will be marked expired."
+          fullWidth
+        />
+      </Grid>
 
       {checkType === 'full-rescrape' && (
-        <Grid item xs={12}>
-          <Typography variant="subtitle1" gutterBottom>
-            Fields to Re-scrape
-          </Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-            Specify which fields to re-scrape and their selectors
-          </Typography>
+        <>
+          <Grid item xs={12}>
+            <Typography variant="subtitle1" gutterBottom>
+              Source Resolution
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              Re-scrape must know which workflow/blueprint to use. Pick the record field that stores the source
+              and map each source value to a workflow.
+            </Typography>
+          </Grid>
 
-          <Stack spacing={2}>
-            {rescrapeFields.map((field, index) => (
-              <Stack key={field.id} direction="row" spacing={2} alignItems="center">
-                <RHFTextField
-                  name={`freshnessCheck.fieldsToRescrape.${index}.field`}
-                  label="Field Name"
-                  placeholder="e.g., title"
-                  sx={{ flex: 1 }}
-                />
-                <RHFTextField
-                  name={`freshnessCheck.fieldsToRescrape.${index}.selector`}
-                  label="Selector"
-                  placeholder="e.g., h1.job-title"
-                  sx={{ flex: 1 }}
-                />
-                <IconButton size="small" color="error" onClick={() => removeRescrape(index)}>
-                  <Iconify icon="eva:trash-2-outline" />
-                </IconButton>
-              </Stack>
-            ))}
+          <Grid item xs={12} md={6}>
+            <RHFTextField
+              name="freshnessCheck.sourceIdentifierField"
+              label="Source Field In Record"
+              placeholder="e.g., sourcePlatform"
+              helperText="This field should identify the source for each record."
+              fullWidth
+            />
+          </Grid>
 
-            <Button
-              variant="outlined"
-              startIcon={<Iconify icon="eva:plus-fill" />}
-              onClick={() => appendRescrape({ field: '', selector: '' })}
-              sx={{ alignSelf: 'flex-start' }}
-            >
-              Add Field
-            </Button>
-          </Stack>
-        </Grid>
+          <Grid item xs={12}>
+            <Stack spacing={2}>
+              {mappingFields.map((field, index) => (
+                <Stack key={field.id} direction={{ xs: 'column', md: 'row' }} spacing={2} alignItems="center">
+                  <RHFTextField
+                    name={`freshnessCheck.sourceWorkflowMappings.${index}.sourceValue`}
+                    label="Source Value"
+                    placeholder="e.g., naukri"
+                    sx={{ flex: 1 }}
+                  />
+                  <RHFSelect
+                    name={`freshnessCheck.sourceWorkflowMappings.${index}.workflowId`}
+                    label="Workflow"
+                    sx={{ flex: 1 }}
+                  >
+                    {workflows.map((workflow) => (
+                      <MenuItem key={workflow.id} value={workflow.id}>
+                        {workflow.name}
+                      </MenuItem>
+                    ))}
+                  </RHFSelect>
+                  <IconButton size="small" color="error" onClick={() => removeMapping(index)}>
+                    <Iconify icon="eva:trash-2-outline" />
+                  </IconButton>
+                </Stack>
+              ))}
+
+              <Button
+                variant="outlined"
+                startIcon={<Iconify icon="eva:plus-fill" />}
+                onClick={() => appendMapping({ sourceValue: '', workflowId: '' })}
+                sx={{ alignSelf: 'flex-start' }}
+              >
+                Add Source Mapping
+              </Button>
+            </Stack>
+          </Grid>
+        </>
       )}
 
       {checkType !== 'simple' && (

@@ -52,6 +52,7 @@ export class DataFreshnessService {
       const records = await repo.find({
         where,
         limit: maxJobs,
+        order: ['createdAt DESC'],
       });
 
       console.log(`Found ${records.length} records to check`);
@@ -105,6 +106,19 @@ export class DataFreshnessService {
                 url: 'N/A',
                 status: 'error',
                 message: 'URL field is empty',
+              });
+              continue;
+            }
+
+            if (this.hasRecordExceededDuration(record, config.freshnessCheck)) {
+              totalChecked++;
+              expired++;
+              await this.updateRecord(record, repo, config.updateStrategy.onNotFound);
+              details.push({
+                recordId: record.id,
+                url,
+                status: 'expired',
+                message: `Expired by duration rule (${config.freshnessCheck.durationDays} days)`,
               });
               continue;
             }
@@ -178,6 +192,106 @@ export class DataFreshnessService {
     }
   }
 
+  private normalizeUrlForComparison(url: string): URL | null {
+    try {
+      const parsed = new URL(url);
+      parsed.hash = '';
+      return parsed;
+    } catch {
+      return null;
+    }
+  }
+
+  private extractFinalUrl(response: any, originalUrl: string): string {
+    return response?.request?.res?.responseUrl || originalUrl;
+  }
+
+  private isFallbackRedirect(
+    originalUrl: string,
+    finalUrl: string,
+    freshnessCheck: DataFreshnessConfig['freshnessCheck'],
+  ): boolean {
+    const original = this.normalizeUrlForComparison(originalUrl);
+    const final = this.normalizeUrlForComparison(finalUrl);
+
+    if (!original || !final) {
+      return false;
+    }
+
+    const allowCrossHostRedirects = freshnessCheck.allowCrossHostRedirects === true;
+    if (!allowCrossHostRedirects && original.hostname !== final.hostname) {
+      return true;
+    }
+
+    const originalPath = original.pathname.replace(/\/+$/, '') || '/';
+    const finalPath = final.pathname.replace(/\/+$/, '') || '/';
+
+    const configuredPatterns = freshnessCheck.fallbackUrlPatterns || [];
+    const defaultPatterns = [
+      '/',
+      '/home',
+      '/index',
+      '/index.htm',
+      '/jobs',
+      '/jobs/',
+      '/job-search',
+      '/search',
+      '/search-results',
+      '/login',
+      '/signin',
+    ];
+
+    const fallbackPatterns = [...new Set([...defaultPatterns, ...configuredPatterns])]
+      .map(pattern => pattern.toLowerCase());
+
+    if (fallbackPatterns.some(pattern => finalPath.toLowerCase() === pattern || final.href.toLowerCase().includes(pattern))) {
+      return true;
+    }
+
+    // If a detail URL redirects to a much broader page, it is usually a fallback.
+    const originalSegments = originalPath.split('/').filter(Boolean);
+    const finalSegments = finalPath.split('/').filter(Boolean);
+    if (
+      originalSegments.length >= 2 &&
+      finalSegments.length > 0 &&
+      finalSegments.length < originalSegments.length &&
+      !finalPath.toLowerCase().startsWith(originalPath.toLowerCase())
+    ) {
+      return true;
+    }
+
+    return false;
+  }
+
+  private getRecordFreshnessReferenceDate(record: any): Date | null {
+    const rawDate = record?.scrappedAt || record?.createdAt || record?.updatedAt || null;
+    if (!rawDate) {
+      return null;
+    }
+
+    const parsedDate = rawDate instanceof Date ? rawDate : new Date(rawDate);
+    return Number.isNaN(parsedDate.getTime()) ? null : parsedDate;
+  }
+
+  private hasRecordExceededDuration(
+    record: any,
+    freshnessCheck: DataFreshnessConfig['freshnessCheck'],
+  ): boolean {
+    const durationDays = Number(freshnessCheck.durationDays || 0);
+    if (!durationDays || durationDays <= 0) {
+      return false;
+    }
+
+    const referenceDate = this.getRecordFreshnessReferenceDate(record);
+    if (!referenceDate) {
+      return false;
+    }
+
+    const ageMs = Date.now() - referenceDate.getTime();
+    const maxAgeMs = durationDays * 24 * 60 * 60 * 1000;
+    return ageMs >= maxAgeMs;
+  }
+
   /**
    * Check if a URL is still fresh/active
    */
@@ -187,7 +301,8 @@ export class DataFreshnessService {
     browserContext: BrowserContext | null,
   ): Promise<boolean> {
     if (freshnessCheck.type === 'simple') {
-      // Simple HTTP check using axios with proper headers
+      // Simple HTTP status check with optional content-pattern validation.
+      // Unknown/blocked outcomes throw, so callers mark them as error (not expired).
       const headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
         'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -200,22 +315,36 @@ export class DataFreshnessService {
         'Sec-Fetch-Site': 'none',
         'Cache-Control': 'max-age=0',
       };
+      const method = freshnessCheck.httpMethod || 'GET';
+      const shouldCheckExpiredPatterns = freshnessCheck.checkExpiredPatterns === true;
 
       try {
-        const response = await axios.get(url, {
+        const response = await axios.request({
+          method,
+          url,
           headers,
           timeout: 15000,
           maxRedirects: 5,
-          validateStatus: (status) => status < 500,
+          responseType: 'text',
+          validateStatus: () => true,
         });
 
-        console.log(`URL: ${url} - Status: ${response.status}`);
+        const status = response.status;
+        const finalUrl = this.extractFinalUrl(response, url);
+        console.log(`URL: ${url} - Final URL: ${finalUrl} - Method: ${method} - Status: ${status}`);
 
-        // Check for common "job not found" indicators
-        if (response.status >= 200 && response.status < 400) {
-          const html = response.data.toLowerCase();
-          
-          // Common patterns that indicate job is expired/removed
+        // Definite active
+        if (status >= 200 && status < 400) {
+          if (finalUrl !== url && this.isFallbackRedirect(url, finalUrl, freshnessCheck)) {
+            console.log(`URL ${url} redirected to fallback URL ${finalUrl}`);
+            return false;
+          }
+
+          if (!shouldCheckExpiredPatterns || method === 'HEAD') {
+            return true;
+          }
+
+          const html = String(response.data || '').toLowerCase();
           const expiredPatterns = [
             'job not found',
             'job no longer available',
@@ -223,35 +352,38 @@ export class DataFreshnessService {
             'position has been filled',
             'job posting has been removed',
             'page not found',
-            '404',
             'job is no longer active',
             'this position is no longer available',
           ];
 
           const hasExpiredPattern = expiredPatterns.some(pattern => html.includes(pattern));
-          
+
           if (hasExpiredPattern) {
-            console.log(`URL ${url} returned 200 but contains expired job pattern`);
+            console.log(`URL ${url} returned active status but contains expired pattern`);
             return false;
           }
 
           return true;
         }
 
-        console.log(`URL ${url} returned status ${response.status} - marking as expired`);
-        return false;
+        // Definite expired
+        if (status === 404 || status === 410) {
+          console.log(`URL ${url} returned ${status} - marking as expired`);
+          return false;
+        }
+
+        // Blocked/unknown: do not expire records
+        if ([401, 403, 429, 500, 502, 503, 504].includes(status)) {
+          throw new Error(`Unable to determine freshness due to status ${status}`);
+        }
+
+        // Conservative default for unknown statuses
+        throw new Error(`Unable to determine freshness due to status ${status}`);
       } catch (error: any) {
         console.error(`Error checking URL ${url}:`, error.message);
-        
-        // If it's a network error or timeout, we can't determine freshness
-        // Mark as expired to be safe
-        if (error.code === 'ECONNABORTED' || error.code === 'ETIMEDOUT') {
-          console.log(`URL ${url} timed out - marking as expired`);
-        } else if (error.response) {
-          console.log(`URL ${url} returned error status ${error.response.status} - marking as expired`);
-        }
-        
-        return false;
+
+        // Network/timeouts should not mark jobs expired.
+        throw error;
       }
     }
 
@@ -264,31 +396,9 @@ export class DataFreshnessService {
     try {
       await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 30000 });
 
-      if (freshnessCheck.type === 'content') {
-        // Check if required selectors exist
-        const requiredSelectors = freshnessCheck.requiredSelectors || [];
-
-        for (const selector of requiredSelectors) {
-          const element = await page.$(selector);
-          if (!element) {
-            return false; // Selector not found = page is not active
-          }
-        }
-
-        return true; // All selectors found = page is active
-      }
-
       if (freshnessCheck.type === 'full-rescrape') {
-        // Re-scrape fields and check if they exist
-        const fieldsToRescrape = freshnessCheck.fieldsToRescrape || [];
-
-        for (const field of fieldsToRescrape) {
-          const element = await page.$(field.selector);
-          if (!element) {
-            return false; // Field not found = page is not active
-          }
-        }
-
+        // The actual blueprint-driven re-scrape/update flow still needs
+        // source metadata on the record to choose the correct workflow.
         return true;
       }
 
@@ -327,6 +437,12 @@ export class DataFreshnessService {
             updateData[key] = new Date();
           } else if (value === '{{increment}}') {
             updateData[key] = (record[key] || 0) + 1;
+          } else if (value === 'true') {
+            updateData[key] = true;
+          } else if (value === 'false') {
+            updateData[key] = false;
+          } else if (value === 'null') {
+            updateData[key] = null;
           } else {
             updateData[key] = value;
           }

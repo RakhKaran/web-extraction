@@ -11,7 +11,7 @@ export default function useTable(props) {
 
   const [rowsPerPage, setRowsPerPage] = useState(props?.defaultRowsPerPage || 25);
 
-  const [order, setOrder] = useState(props?.defaultOrder || 'asc');
+  const [order, setOrder] = useState(props?.defaultOrder || 'desc');
 
   const [selected, setSelected] = useState(props?.defaultSelected || []);
 

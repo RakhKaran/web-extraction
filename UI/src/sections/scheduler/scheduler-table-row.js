@@ -47,7 +47,7 @@ export default function SchedulerTableRow({ row, selected, onSelectRow, onViewRo
         {intervalTypeValues.find((item) => item.value === intervalType)?.label || 'NA'}
       </TableCell>
       <TableCell>{interval || 'NA'}</TableCell>
-      <TableCell>
+      {/*<TableCell>
         {parsedDate && isValid(parsedDate) ? (
           <ListItemText
             primary={format(parsedDate, 'dd/MMM/yyyy')}
@@ -78,7 +78,7 @@ export default function SchedulerTableRow({ row, selected, onSelectRow, onViewRo
         ) : (
           'NA'
         )}
-      </TableCell>
+      </TableCell>*/}
 
       <TableCell>
         <Label

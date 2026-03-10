@@ -211,7 +211,7 @@ const applyFilter = ({ inputData, filters, sortBy }) => {
   }
 
   if (sortBy === 'oldest') {
-    inputData = orderBy(inputData, ['createdAt'], ['asc']);
+    inputData = orderBy(inputData, ['createdAt'], ['desc']);
   }
 
   if (sortBy === 'popular') {

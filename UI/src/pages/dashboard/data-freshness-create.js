@@ -52,7 +52,9 @@ export default function DataFreshnessCreatePage() {
       filters: {},
       freshnessCheck: {
         type: 'simple',
-        requiredSelectors: [],
+        durationDays: '',
+        sourceIdentifierField: '',
+        sourceWorkflowMappings: [],
         fieldsToRescrape: [],
         session: {
           enabled: false,
@@ -64,6 +66,7 @@ export default function DataFreshnessCreatePage() {
           action: 'update-fields',
           fields: {
             isActive: false,
+            isDeleted: true,
             deletedAt: '{{currentDate}}',
             freshnessStatus: 'expired',
           },

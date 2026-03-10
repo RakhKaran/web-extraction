@@ -8,7 +8,6 @@ import {
   IconButton,
   Tooltip,
   Box,
-  LinearProgress,
 } from '@mui/material';
 import { format } from 'date-fns';
 import Iconify from 'src/components/iconify';
@@ -41,7 +40,6 @@ export default function DataFreshnessCard({
   const getCheckTypeLabel = (type) => {
     const labels = {
       simple: 'Simple (HTTP)',
-      content: 'Content Check',
       'full-rescrape': 'Full Re-scrape',
     };
     return labels[type] || type;
@@ -131,6 +129,15 @@ export default function DataFreshnessCard({
                 Check Type
               </Typography>
               <Typography variant="body2">{getCheckTypeLabel(check.freshnessCheck?.type)}</Typography>
+            </Box>
+
+            <Box>
+              <Typography variant="caption" color="text.secondary">
+                Expire After
+              </Typography>
+              <Typography variant="body2">
+                {check.freshnessCheck?.durationDays ? `${check.freshnessCheck.durationDays} days` : 'Not Set'}
+              </Typography>
             </Box>
 
             <Box>

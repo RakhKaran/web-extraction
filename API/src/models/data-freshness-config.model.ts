@@ -54,8 +54,17 @@ export class DataFreshnessConfig extends Entity {
     required: true,
   })
   freshnessCheck: {
-    type: 'simple' | 'content' | 'full-rescrape';
-    requiredSelectors?: string[];
+    type: 'simple' | 'full-rescrape';
+    httpMethod?: 'GET' | 'HEAD';
+    checkExpiredPatterns?: boolean;
+    fallbackUrlPatterns?: string[];
+    allowCrossHostRedirects?: boolean;
+    durationDays?: number;
+    sourceIdentifierField?: string;
+    sourceWorkflowMappings?: Array<{
+      sourceValue: string;
+      workflowId: string;
+    }>;
     fieldsToRescrape?: Array<{field: string; selector: string}>;
     session?: {
       enabled: boolean;

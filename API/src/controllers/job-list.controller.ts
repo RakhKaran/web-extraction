@@ -76,6 +76,7 @@ export class JobListController {
     jobs: JobList[],
     totalCount: number
   }> {
+    console.log('filter.order', filter?.order);
     const jobs = await this.jobListRepository.find(
       {
         ...filter,

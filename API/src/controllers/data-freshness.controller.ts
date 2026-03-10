@@ -90,7 +90,12 @@ export class DataFreshnessController {
   async find(
     @param.filter(DataFreshnessConfig) filter?: Filter<DataFreshnessConfig>,
   ): Promise<DataFreshnessConfig[]> {
-    return this.dataFreshnessConfigRepository.find(filter);
+    const finalFilter: Filter<DataFreshnessConfig> = {
+      ...filter,
+      order: ['createdAt DESC'],
+    };
+
+    return this.dataFreshnessConfigRepository.find(finalFilter);
   }
 
   @get('/data-freshness/{id}')

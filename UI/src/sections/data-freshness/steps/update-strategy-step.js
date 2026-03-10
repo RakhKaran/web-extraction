@@ -69,6 +69,13 @@ export default function UpdateStrategyStep() {
               />
             </Stack>
             <RHFTextField
+              name="updateStrategy.onNotFound.fields.isDeleted"
+              label="isDeleted"
+              defaultValue="true"
+              size="small"
+              fullWidth
+            />
+            <RHFTextField
               name="updateStrategy.onNotFound.fields.freshnessStatus"
               label="freshnessStatus"
               defaultValue="expired"
