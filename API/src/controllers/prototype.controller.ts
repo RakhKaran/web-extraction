@@ -22,290 +22,6 @@ export class PrototypeController {
     this.deduplicationService = new DeduplicationService(ctx);
   }
 
-  naukriBluePrint = {
-    workflowName: "Web-extraction",
-    workflowDescription: "Scraping job details from Naukri",
-    nodes: [
-      {
-        id: 1,
-        nodeName: "Initialize",
-        type: "start",
-        data: {
-          url: "https://www.naukri.com",
-          headers: { "User-Agent": "Mozilla/5.0" },
-          session: {
-            enabled: true,
-            storageStatePath: "../API/src/sessions/naukri.json",
-            load: true,
-            save: true
-          }
-        },
-      },
-      {
-        id: 2,
-        nodeName: "Search",
-        type: "search",
-        data: { searchText: "node developer" },
-        selector: {
-          name: "Enter skills / designations / companies",
-          selectorType: "placeholder",
-        },
-        actionFlow: [
-          {
-            selector: '.container.dashboard',
-            type: 'html',
-            action: 'click',
-            data: null
-          },
-          {
-            selector: '.nI-gNb-sb__main',
-            type: 'html',
-            action: 'click',
-            data: null
-          }
-        ],
-      },
-      {
-        id: 3,
-        nodeName: "Locate",
-        type: "locate",
-        mode: "list",
-        selector: {
-          name: ".srp-jobtuple-wrapper .title",
-          selectorType: "css",
-        },
-        fields: [],
-        link: { selector: ".title", attribute: "href" },
-      },
-      {
-        id: 4,
-        nodeName: "Locate",
-        type: "locate",
-        mode: "detail",
-        fields: {
-          title: "h1.styles_jd-header-title__rZwM1",
-          company: ".styles_jd-header-comp-name__MvqAI a",
-          location: ".styles_jhc__location__W_pVs a",
-          experience: ".styles_jhc__exp__k_giM span",
-          salary: ".styles_jhc__salary__jdfEC span",
-          description: ".styles_job-desc-container__txpYf",
-          posted: "span:has(label:has-text('Posted:')) span",
-          openings: "span:has(label:has-text('Openings:')) span",
-          applicants: "span:has(label:has-text('Applicants:')) span",
-          aboutCompany: {
-            selector: ".styles_detail__U2rw4.styles_dang-inner-html___BCwh",
-            type: "html",
-          },
-          keySkills: {
-            selector: ".styles_key-skill__GIPn_ a, .styles_key-skill__GIPn_ span",
-            type: "list",
-            item: {
-              name: {
-                type: "text"
-              },
-              link: {
-                type: "attr",
-                attr: "href",
-                optional: true  // because <span> won’t have href
-              }
-            }
-          },
-        },
-        waitToLoadSelectors: [
-          "h1.styles_jd-header-title__rZwM1",
-          "div.styles_key-skill__GIPn_ a",
-          ".styles_key-skill__GIPn_ span"
-        ],
-      },
-      {
-        id: 4,
-        nodeName: "Deliver",
-        type: "deliver",
-        mode: "database",
-        modelName: "StagingNaukri",
-        respositoryName: "StagingNaukriRepository",
-        fields: [
-          { modelField: 'title', type: 'string', mappedField: 'title' },
-          { modelField: 'description', type: 'string', mappedField: 'description' },
-          { modelField: 'company', type: 'string', mappedField: 'company' },
-          { modelField: 'companyLogo', type: 'string', mappedField: '' },
-          { modelField: 'location', type: 'string', mappedField: 'location' },
-          { modelField: 'experience', type: 'string', mappedField: 'experience' },
-          { modelField: 'salary', type: 'string', mappedField: 'salary' },
-          { modelField: 'posted', type: 'string', mappedField: 'posted' },
-          { modelField: 'openings', type: 'string', mappedField: 'openings' },
-          { modelField: 'applicants', type: 'string', mappedField: 'applicants' },
-          { modelField: 'aboutCompany', type: 'string', mappedField: 'aboutCompany' },
-          { modelField: 'keySkills', type: 'array', mappedField: 'keySkills' },
-          { modelField: 'redirectUrl', type: 'string', mappedField: 'link' },
-        ],
-        additionalFields: [
-          { modelField: 'scrappedAt', type: 'date', value: '' },
-          { modelField: 'isDeleted', type: 'boolean', value: 'false' },
-          { modelField: 'isSync', type: 'boolean', value: false },
-        ]
-      },
-      {
-        id: 5,
-        nodeName: "Transformation",
-        type: "transformation",
-        stagingMode: "database",
-        stagingModelName: "StagingNaukri",
-        stagingRespositoryName: "StagingNaukriRepository",
-        deliverMode: "database",
-        deliverModelName: "ProductionNaukri",
-        deliverRespositoryName: "ProductionNaukriRepository",
-        duplicatesAllowed: false,
-        duplicatesMatching: "custom",
-        duplicatesConstraints: [
-          {
-            fields: ["redirectUrl"],
-            algorithm: "exact_match"
-          },
-          {
-            fields: ["title", "company", "location"],
-            algorithm: "fuzzy_match",
-            threshold: 0.85
-          }
-        ],
-        fields: [
-          { modelField: 'title', type: 'string', mappedField: 'title', isNullAccepted: false },
-          { modelField: 'description', type: 'string', mappedField: 'description', isNullAccepted: false },
-          { modelField: 'company', type: 'string', mappedField: 'company', isNullAccepted: false },
-          { modelField: 'companyLogo', type: 'string', mappedField: 'companyLogo', isNullAccepted: true },
-          { modelField: 'location', type: 'string', mappedField: 'location', isNullAccepted: false },
-          { modelField: 'experience', type: 'string', mappedField: 'experience', isNullAccepted: false },
-          { modelField: 'salary', type: 'string', mappedField: 'salary', isNullAccepted: false },
-          {
-            modelField: 'posted',
-            type: 'date',
-            mappedField: 'posted',
-            isNullAccepted: false,
-            rules: [
-              { "Just now": "today" },
-              { "yesterday": "yesterday" },
-              { "{number} day ago": "days" },
-              { "{number} days ago": "days" },
-              { "{number}+ days ago": "days" },
-              { "{number} week ago": "weeks" },
-              { "{number} weeks ago": "weeks" },
-              { "{number}+ weeks ago": "weeks" },
-              { "{number} month ago": "months" },
-              { "{number} months ago": "months" },
-              { "{number} year ago": "years" },
-              { "{number} years ago": "years" },
-              { "posted on {date}": "date" },
-              { "{date}": "date" }
-            ]
-          },
-          { modelField: 'openings', type: 'number', mappedField: 'openings', isNullAccepted: false },
-          { modelField: 'applicants', type: 'number', mappedField: 'applicants', isNullAccepted: false },
-          { modelField: 'aboutCompany', type: 'string', mappedField: 'aboutCompany', isNullAccepted: false },
-          { modelField: 'keySkills', type: 'array', mappedField: 'keySkills', isNullAccepted: false },
-          { modelField: 'redirectUrl', type: 'string', mappedField: 'redirectUrl', isNullAccepted: false },
-          { modelField: 'isDeleted', type: 'boolean', mappedField: 'deletedAt', isNullAccepted: true },
-        ],
-        additionalFields: [
-          { modelField: 'isActive', type: 'boolean', value: true },
-        ],
-        dataAcceptanceRule: [
-          { field: 'isSync', type: 'boolean', value: false },
-          { field: 'isDeleted', type: 'boolean', value: false }
-        ],
-      }
-    ],
-  };
-
-  glassdoorBluePrint = {
-    workflowName: "Web-extraction",
-    workflowDescription: "Scraping job details from Naukri",
-    nodes: [
-      {
-        id: 1,
-        nodeName: "Initialize",
-        type: "start",
-        data: {
-          url: "https://www.glassdoor.co.in/Job/index.htm",
-          headers: { "User-Agent": "Mozilla/5.0" },
-          session: {
-            enabled: true,
-            storageStatePath: "../API/src/sessions/glassdoor.json",
-            load: true,
-            save: true
-          }
-        },
-      },
-      {
-        id: 2,
-        nodeName: "Search",
-        type: "search",
-        data: { searchText: "backend developer" },
-        selector: {
-          name: "Find your perfect job",
-          selectorType: "placeholder",
-        },
-      },
-      {
-        id: 3,
-        nodeName: "Search",
-        type: "search",
-        data: { searchText: "Nashik" },
-        selector: {
-          name: 'City, state, zipcode or "remote"',
-          selectorType: "placeholder",
-        },
-      },
-      {
-        id: 4,
-        nodeName: "JobList",
-        type: "locate",
-        mode: "list", // just collect links
-        selector: {
-          name: ".JobCard_jobCardContainer__arQlW .JobCard_jobTitle__GLyJ1",
-          selectorType: "css",
-        },
-        fields: {
-          link: { selector: ".JobCard_jobTitle__GLyJ1", attribute: "href" },
-        },
-      },
-      {
-        id: 5,
-        nodeName: "JobDetail",
-        type: "locate",
-        mode: "detail",
-        fields: {
-          title: "h1.heading_Heading__aomVx.heading_Level1__w42c9",
-          company: "h4.heading_Heading__aomVx.heading_Subhead__jiUbT",
-          location: "div[data-test='location']",
-          // experience: "div.JobDetails_jobDescription__uW_fK p:has-text(':')",
-          salary: "div.JobDetails_jobDescription__uW_fK p:has-text('Pay:')",
-          description: "div.JobDetails_jobDescription__uW_fK.JobDetails_showHidden__C_FOA",
-          posted: "span:has(label:has-text('Posted:')) span",
-          openings: "span:has(label:has-text('Openings:')) span",
-          applicants: "span:has(label:has-text('Applicants:')) span",
-          aboutCompany: {
-            selector: ".styles_detail__U2rw4.styles_dang-inner-html___BCwh",
-            type: "html",
-          },
-          keySkills: {
-            selector: "ul.QualificationModal_modalBody__SNggC li",
-            type: "list",
-            item: {
-              name: {
-                selector: ".PendingQualification_label__vCsCk",
-                type: "text"
-              },
-            }
-          }
-        },
-        waitToLoadSelectors: [
-          "h1.heading_Heading__aomVx.heading_Level1__w42c9",
-          "h4.heading_Heading__aomVx.heading_Subhead__jiUbT",
-        ]
-      },
-    ],
-  };
-
   // apply conditions
   private applyConditions(value: any, type: string, conditions: any[]): boolean {
     if (!conditions || conditions.length === 0) return true; // no validation, pass
@@ -625,23 +341,23 @@ export class PrototypeController {
 
       try {
         const session = node?.data?.session;
-        
+
         // Prepare proxy configuration
         let proxyConfig: any = undefined;
         if (proxyObj) {
           let proxyServer = proxyObj.proxy.server;
-          
+
           // Don't add http:// if it already has a protocol
           if (!proxyServer.startsWith('http://') && !proxyServer.startsWith('https://') && !proxyServer.startsWith('socks')) {
             proxyServer = `http://${proxyServer}`;
           }
-          
+
           proxyConfig = {
             server: proxyServer,
             username: proxyObj.proxy.username,
             password: proxyObj.proxy.password,
           };
-          
+
           usedProxy = proxyServer;
           console.log(`🌐 Using proxy: ${usedProxy}`);
           console.log(`   Username: ${proxyObj.proxy.username ? '***' : 'none'}`);
@@ -654,7 +370,7 @@ export class PrototypeController {
         }
 
         browser = await chromium.launch({
-          headless: false,
+          headless: true,
           args: [
             "--disable-blink-features=AutomationControlled",
             "--start-maximized",
@@ -844,6 +560,7 @@ export class PrototypeController {
   // listing node
   private async handleJobListNode(page: any, node: any): Promise<string[]> {
     const jobLinks: string[] = [];
+    const uniqueLinks = new Set<string>();
 
     // Run actions (search / filters etc.)
     if (node.actionFlow?.length) {
@@ -861,13 +578,25 @@ export class PrototypeController {
       console.log(`🔹 Scraping page ${pageIndex + 1}`);
 
       await page.waitForSelector(selectorName, { timeout: 15000 });
+      const currentPageUrl = page.url();
 
       const jobCards = await page.$$(selectorName);
       console.log(`Found ${jobCards.length} job cards`);
 
       for (let card of jobCards.slice(0, 20)) {
         const href = await card.getAttribute("href");
-        if (href) jobLinks.push(href);
+
+        if (href) {
+          try {
+            const absoluteUrl = new URL(href, currentPageUrl).href;
+            if (!uniqueLinks.has(absoluteUrl)) {
+              uniqueLinks.add(absoluteUrl);
+              jobLinks.push(absoluteUrl);
+            }
+          } catch (error) {
+            console.warn(`Failed to resolve job URL: ${href} against ${currentPageUrl}`, error);
+          }
+        }
       }
 
       if (!pagination || !nextPageSelector || pageIndex === totalPages - 1) {
@@ -930,12 +659,20 @@ export class PrototypeController {
         const jobPage = await browser.newPage();
         await jobPage.goto(link, { waitUntil: "domcontentloaded" });
 
-        // wait for essential content
-        await Promise.all(
-          (node?.waitToLoadSelectors ?? []).map((selector: any) =>
-            jobPage.waitForSelector(selector, { timeout: 10000 })
-          )
-        );
+        // Wait for expected selectors, but do not fail the whole job if one is missing.
+        for (const selector of node?.waitToLoadSelectors ?? []) {
+          try {
+            await jobPage.waitForSelector(selector, { timeout: 10000 });
+          } catch (waitError) {
+            console.warn(`Selector not found on detail page: ${selector}`);
+            await this.testExtractionLogsRepository.create({
+              extractionId: extractionId,
+              logsDescription: `Selector not found on detail page: ${selector}`,
+              logType: 1,
+              isActive: true,
+            });
+          }
+        }
 
         if (node.actionFlow && node.actionFlow.length > 0) {
           await this.handleActions(node.actionFlow, jobPage);
@@ -1009,7 +746,6 @@ export class PrototypeController {
 
   // deliver node
   private async handleDeliverNode(data: any[], node: any, extractionId: string) {
-    console.log('data', data);
     if (!data || data.length === 0) {
       console.log('⚠️ No data to deliver');
       await this.testExtractionLogsRepository.create({
@@ -1107,6 +843,15 @@ export class PrototypeController {
 
     return deliveredRecords;
   }
+  private async logTransformationError(extractionId: string, message: string) {
+    await this.testExtractionLogsRepository.create({
+      extractionId,
+      logsDescription: `❌ Transformation Error: ${message}`,
+      logType: 1,
+      isActive: true,
+    });
+    console.error(`[Transformation Error] ${message}`);
+  }
 
   // transformation node
   private async handleTransformationNode(node: any, extractionId: string) {
@@ -1180,9 +925,10 @@ export class PrototypeController {
     const successRecords: any[] = [];
     const errorRecords: any[] = [];
 
-    for (const record of stagingData) {
+    for (const [recordIndex, record] of stagingData.entries()) {
       const normalized: any = {};
       let hasError = false;
+      const recordErrors: string[] = [];
 
       for (const field of node.fields) {
         let value = record[field.mappedField];
@@ -1190,6 +936,9 @@ export class PrototypeController {
         // Null check
         if (!field.isNullAccepted && (value === null || value === undefined || value === "")) {
           hasError = true;
+          recordErrors.push(
+            `Field "${field.modelField}" mapped from "${field.mappedField}" is empty. Raw value: ${JSON.stringify(value)}`,
+          );
           continue;
         }
 
@@ -1206,11 +955,17 @@ export class PrototypeController {
                 value = Number(match[0]); // take first numeric part
               } else {
                 hasError = true; // invalid number (e.g. "N/A")
+                recordErrors.push(
+                  `Field "${field.modelField}" mapped from "${field.mappedField}" expected number but got string ${JSON.stringify(value)}`,
+                );
               }
             } else if (typeof value === "number") {
               value = value;
             } else {
               hasError = true;
+              recordErrors.push(
+                `Field "${field.modelField}" mapped from "${field.mappedField}" expected number but got ${typeof value}: ${JSON.stringify(value)}`,
+              );
             }
             break;
 
@@ -1225,6 +980,9 @@ export class PrototypeController {
             } else {
               hasError = true;   // mark record as errored
               value = null;      // or keep original value if you want to store raw
+              recordErrors.push(
+                `Field "${field.modelField}" mapped from "${field.mappedField}" failed date parsing. Raw value: ${JSON.stringify(record[field.mappedField])}`,
+              );
             }
             break;
           }
@@ -1259,6 +1017,12 @@ export class PrototypeController {
       // Push into success or error bucket
       if (hasError) {
         errorRecords.push({ original: record, normalized });
+        await this.testExtractionLogsRepository.create({
+          extractionId,
+          logsDescription: `Transformation record error at index ${recordIndex}. Reasons: ${recordErrors.join(" | ")}. Original: ${JSON.stringify(record)}. Normalized: ${JSON.stringify(normalized)}`,
+          logType: 1,
+          isActive: true,
+        });
       } else {
         successRecords.push(normalized);
       }

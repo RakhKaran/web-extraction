@@ -19,7 +19,7 @@ import Markdown from 'src/components/markdown';
 
 export default function JobsDetailsContent({ job }) {
   console.log('job', job);
-const { title, posted, createdAt,description,updatedAt, experience, salary,keySkills } =
+  const { title, posted, createdAt, description, updatedAt, experience, salary, keySkills } =
     job;
 
   const renderContent = (
@@ -28,7 +28,7 @@ const { title, posted, createdAt,description,updatedAt, experience, salary,keySk
 
       <Markdown children={description} />
 
-      <Stack spacing={2}>
+      <Stack sx={{ overflow: 'scroll' }} spacing={2}>
         <Typography variant="h6">Skills</Typography>
         <Stack direction="row" alignItems="center" spacing={1}>
           {keySkills.map((skill) => (

@@ -181,12 +181,14 @@ export class Locate {
                 const page = await browser.newPage();
                 await page.goto(link, { waitUntil: "domcontentloaded" });
 
-                // wait for essential content
-                await Promise.all(
-                    (node?.waitToLoadSelectors ?? []).map((selector: any) =>
-                        page.waitForSelector(selector, { timeout: 10000 })
-                    )
-                );
+                // Wait for expected selectors, but keep scraping even if some are missing.
+                for (const selector of node?.waitToLoadSelectors ?? []) {
+                    try {
+                        await page.waitForSelector(selector, { timeout: 10000 });
+                    } catch (waitError) {
+                        console.warn(`Selector not found on detail page: ${selector}`);
+                    }
+                }
 
                 let record: any = { link };
 

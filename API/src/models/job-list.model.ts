@@ -35,25 +35,29 @@ export class JobList extends Entity {
 
   @property({
     type: 'string',
-    required: true
+    required: false,
+    default: 'NA'
   })
   location: string;
 
   @property({
     type: 'string',
-    required: true
+    required: false,
+    default: 'Not Disclosed'
   })
-  experience: string;
+  experience?: string;
 
   @property({
     type: 'string',
-    required: true
+    required: false,
+    default: 'Not Disclosed'
   })
-  salary: string;
+  salary?: string;
 
   @property({
     type: 'date',
-    required: true
+    required: false,
+    defaultFn: 'now'
   })
   posted: Date;
 
@@ -71,16 +75,16 @@ export class JobList extends Entity {
 
   @property({
     type: 'string',
-    required: true
+    required: false
   })
-  aboutCompany: string;
+  aboutCompany?: string;
 
   @property({
     type: 'array',
     itemType: 'string',
-    required: true
+    required: false
   })
-  keySkills: string[];
+  keySkills?: string[];
 
   @property({
     type: 'string',

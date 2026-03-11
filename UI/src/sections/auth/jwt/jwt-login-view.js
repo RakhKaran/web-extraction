@@ -32,7 +32,7 @@ export default function JwtLoginView() {
 
   const router = useRouter();
 
-  const {enqueueSnackbar}=useSnackbar();
+  const { enqueueSnackbar } = useSnackbar();
 
   const [errorMsg, setErrorMsg] = useState('');
 
@@ -51,7 +51,7 @@ export default function JwtLoginView() {
 
   const methods = useForm({
     resolver: yupResolver(LoginSchema),
-    
+
   });
 
   const {
@@ -66,23 +66,21 @@ export default function JwtLoginView() {
 
       router.push(returnTo || PATH_AFTER_LOGIN);
     } catch (error) {
-  console.error(error);
+      console.error(error);
 
-  const message =
-    typeof error === 'string'
-      ? error
-      : error?.error?.message || error?.message || 'Login failed';
+      const message =
+        typeof error === 'string'
+          ? error
+          : error?.error?.message || error?.message || 'Login failed';
 
-  if (message.toLowerCase().includes('email')) {
-    setErrorMsg('Email address not found');
-  } else if (message.toLowerCase().includes('password')) {
-    setErrorMsg('Incorrect password');
-  } else {
-    setErrorMsg(message);
-  }
-
-  reset();
-}
+      if (message.toLowerCase().includes('email')) {
+        setErrorMsg('Email address not found');
+      } else if (message.toLowerCase().includes('password')) {
+        setErrorMsg('Incorrect password');
+      } else {
+        setErrorMsg(message);
+      }
+    }
   });
 
   const renderHead = (
@@ -135,7 +133,7 @@ export default function JwtLoginView() {
 
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
-      
+
       {/* {renderHead}
 
       <Alert severity="info" sx={{ mb: 3 }}>

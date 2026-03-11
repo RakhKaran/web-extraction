@@ -61,7 +61,22 @@ export class StagingIndeed extends Entity {
   experience?: string;
 
   @property({
-    type: 'string',
+    type: 'number',
+    required: false,
+    default: 1
+  })
+  openings?: number;
+
+  @property({
+    type: 'number',
+    required: false,
+    default: 0
+  })
+  applicants?: number;
+
+  @property({
+    type: 'date',
+    defaultFn: 'now',
   })
   posted?: string;
 
