@@ -66,14 +66,15 @@ export default function DataFreshnessCreatePage() {
           action: 'update-fields',
           fields: {
             isActive: false,
-            isDeleted: true,
-            deletedAt: '{{currentDate}}',
             freshnessStatus: 'expired',
+            lastCheckedAt: '{{currentDate}}',
           },
         },
         onFound: {
           action: 'update-timestamp',
           fields: {
+            isActive: true,
+            isDeleted: false,
             lastCheckedAt: '{{currentDate}}',
             freshnessStatus: 'live',
             freshnessCheckCount: '{{increment}}',

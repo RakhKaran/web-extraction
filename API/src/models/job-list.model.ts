@@ -1,6 +1,6 @@
 import { Entity, model, property } from '@loopback/repository';
 
-@model()
+@model({settings: {strict: false}})
 export class JobList extends Entity {
   @property({
     type: 'string',
@@ -11,34 +11,37 @@ export class JobList extends Entity {
 
   @property({
     type: 'string',
-    required: true
+    required: false,
+    default: 'NA',
   })
-  title: string;
+  title?: string;
 
   @property({
     type: 'string',
-    required: true
+    required: false,
+    default: 'NA',
   })
-  description: string;
+  description?: string;
 
   @property({
     type: 'string',
-    required: true
+    required: false,
+    default: 'NA',
   })
-  company: string;
+  company?: string;
 
   @property({
     type: 'string',
     required: false
   })
-  companyLogo: string;
+  companyLogo?: string;
 
   @property({
     type: 'string',
     required: false,
     default: 'NA'
   })
-  location: string;
+  location?: string;
 
   @property({
     type: 'string',
@@ -59,19 +62,19 @@ export class JobList extends Entity {
     required: false,
     defaultFn: 'now'
   })
-  posted: Date;
+  posted?: Date;
 
   @property({
     type: 'number',
     required: false,
   })
-  openings: number;
+  openings?: number;
 
   @property({
     type: 'number',
     required: false
   })
-  applicants: number;
+  applicants?: number;
 
   @property({
     type: 'string',
@@ -88,15 +91,36 @@ export class JobList extends Entity {
 
   @property({
     type: 'string',
-    required: true
+    required: false,
+    default: '',
   })
-  redirectUrl: string;
+  redirectUrl?: string;
 
   @property({
     type: 'boolean',
-    required: true
+    required: false,
+    default: true,
   })
-  isActive: boolean
+  isActive?: boolean
+
+  @property({
+    type: 'string',
+    required: false,
+    default: 'Unknown',
+  })
+  source?: string;
+
+  @property({
+    type: 'string',
+    required: false,
+  })
+  blueprintId?: string;
+
+  @property({
+    type: 'string',
+    required: false,
+  })
+  workflowId?: string;
 
   @property({
     type: 'date',
@@ -125,6 +149,8 @@ export class JobList extends Entity {
     default: false
   })
   isPostedToAltiv: boolean;
+
+  [prop: string]: any;
   constructor(data?: Partial<JobList>) {
     super(data);
   }

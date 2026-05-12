@@ -786,11 +786,24 @@ export class PrototypeController {
             if (type === 'string') value = 'NA';
             else if (type === 'date') value = new Date();
             else if (type === 'boolean') value = false;
+            else if (type === 'number') value = 0;
+            else if (type === 'array') value = [];
             else value = undefined;
           } else {
             if (type === 'date') value = new Date(value);
             if (type === 'boolean')
               value = value === true || value === 'true' || value === 1;
+            if (type === 'number') {
+              if (typeof value === 'string') {
+                const match = value.match(/-?\d+(\.\d+)?/);
+                value = match ? Number(match[0]) : 0;
+              } else if (typeof value !== 'number') {
+                value = 0;
+              }
+            }
+            if (type === 'array' && !Array.isArray(value)) {
+              value = value ? [String(value)] : [];
+            }
           }
 
           if (conditions.length > 0) {
@@ -935,11 +948,11 @@ export class PrototypeController {
 
         // Null check
         if (!field.isNullAccepted && (value === null || value === undefined || value === "")) {
-          hasError = true;
-          recordErrors.push(
-            `Field "${field.modelField}" mapped from "${field.mappedField}" is empty. Raw value: ${JSON.stringify(value)}`,
-          );
-          continue;
+          if (field.type === 'string') value = 'NA';
+          else if (field.type === 'number') value = 0;
+          else if (field.type === 'boolean') value = false;
+          else if (field.type === 'array') value = [];
+          else if (field.type === 'date') value = new Date();
         }
 
         switch (field.type) {
@@ -954,18 +967,12 @@ export class PrototypeController {
               if (match) {
                 value = Number(match[0]); // take first numeric part
               } else {
-                hasError = true; // invalid number (e.g. "N/A")
-                recordErrors.push(
-                  `Field "${field.modelField}" mapped from "${field.mappedField}" expected number but got string ${JSON.stringify(value)}`,
-                );
+                value = 0;
               }
             } else if (typeof value === "number") {
               value = value;
             } else {
-              hasError = true;
-              recordErrors.push(
-                `Field "${field.modelField}" mapped from "${field.mappedField}" expected number but got ${typeof value}: ${JSON.stringify(value)}`,
-              );
+              value = 0;
             }
             break;
 
@@ -978,11 +985,7 @@ export class PrototypeController {
             if (parsedDate && !isNaN(parsedDate.getTime())) {
               value = parsedDate;
             } else {
-              hasError = true;   // mark record as errored
-              value = null;      // or keep original value if you want to store raw
-              recordErrors.push(
-                `Field "${field.modelField}" mapped from "${field.mappedField}" failed date parsing. Raw value: ${JSON.stringify(record[field.mappedField])}`,
-              );
+              value = new Date();
             }
             break;
           }

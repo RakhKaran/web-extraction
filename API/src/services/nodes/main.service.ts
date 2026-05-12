@@ -349,7 +349,16 @@ export class Main {
                         {nodeId: node.id, nodeName: node.name},
                     );
 
-                    const result: any = await serviceDef.service(nodeConfig, lastOutputData);
+                    const serviceInput = {
+                        ...lastOutputData,
+                        __meta: {
+                            workflowId: workflow.id,
+                            blueprintId: workflow.workflowBlueprintId,
+                            source: scheduler?.schedularName || 'Unknown',
+                        }
+                    };
+
+                    const result: any = await serviceDef.service(nodeConfig, serviceInput);
 
                     outputData.push({
                         nodeId: node.id,
@@ -357,7 +366,10 @@ export class Main {
                         output: result,
                     });
 
-                    lastOutputData = result;
+                    lastOutputData = {
+                        ...(result || {}),
+                        __meta: serviceInput.__meta,
+                    };
 
                     await this.writeExecutionLog(
                         execution.id!,

@@ -4,13 +4,26 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 // components
-import { Tooltip } from '@mui/material';
+import { Chip, Tooltip } from '@mui/material';
 import Iconify from 'src/components/iconify';
+import { format } from 'date-fns';
 
 // ----------------------------------------------------------------------
 
 export default function JobTableRow({ row, selected, onViewRow, onSelectRow, onDeleteRow }) {
-  const { title, company, experience, location, salary, openings, applicants } = row;
+  const {
+    title,
+    company,
+    sourceName,
+    blueprintName,
+    expiredStatus,
+    effectiveDate,
+    experience,
+    location,
+    salary,
+    openings,
+    applicants,
+  } = row;
 
   return (
     <>
@@ -19,11 +32,18 @@ export default function JobTableRow({ row, selected, onViewRow, onSelectRow, onD
           {title || 'N/A'}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{company || 'N/A'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{location || 'N/A'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{experience || 'N/A'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{salary || 'N/A'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{openings || 'N/A'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{applicants || 'N/A'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{sourceName || 'Unknown'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>{blueprintName || 'Unknown'}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          <Chip
+            size="small"
+            label={expiredStatus || 'Unknown'}
+            color={expiredStatus === 'Expired' ? 'error' : 'success'}
+          />
+        </TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+          {effectiveDate ? format(new Date(effectiveDate), 'dd MMM yyyy') : 'N/A'}
+        </TableCell>
         {/* Actions */}
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
           <Tooltip title="View Job">

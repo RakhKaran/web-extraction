@@ -18,12 +18,16 @@ import {
   response,
 } from '@loopback/rest';
 import { JobList } from '../models';
-import { JobListRepository } from '../repositories';
+import { JobListRepository, WorkflowBlueprintRepository, WorkflowRepository } from '../repositories';
 
 export class JobListController {
   constructor(
     @repository(JobListRepository)
     public jobListRepository: JobListRepository,
+    @repository(WorkflowBlueprintRepository)
+    public workflowBlueprintRepository: WorkflowBlueprintRepository,
+    @repository(WorkflowRepository)
+    public workflowRepository: WorkflowRepository,
   ) { }
 
   @post('/job-lists')
@@ -73,21 +77,78 @@ export class JobListController {
   async find(
     @param.filter(JobList) filter?: Filter<JobList>,
   ): Promise<{
-    jobs: JobList[],
+    jobs: Array<JobList & {expiredStatus: string; effectiveDate: Date | undefined; blueprintName: string; sourceName: string}>,
     totalCount: number
   }> {
-    console.log('filter.order', filter?.order);
     const jobs = await this.jobListRepository.find(
       {
         ...filter,
-        order: filter?.order ? filter?.order : ['createdAt desc']
+        order: filter?.order ? filter?.order : ['updatedAt desc', 'createdAt desc']
       }
     );
+
+    const blueprintIds = Array.from(
+      new Set(
+        jobs
+          .map((job: any) => job.blueprintId || job.workflowBlueprintId)
+          .filter(Boolean)
+      )
+    );
+
+    const workflowIds = Array.from(
+      new Set(jobs.map((job: any) => job.workflowId).filter(Boolean))
+    );
+
+    const blueprints = blueprintIds.length
+      ? await this.workflowBlueprintRepository.find({
+          where: {id: {inq: blueprintIds}},
+        })
+      : [];
+    const workflows = workflowIds.length
+      ? await this.workflowRepository.find({
+          where: {id: {inq: workflowIds}},
+        })
+      : [];
+
+    const blueprintToWorkflowId = new Map(
+      blueprints.map((bp: any) => [bp.id, bp.workflowId])
+    );
+    const workflowNameMap = new Map(
+      workflows.map((wf: any) => [wf.id, wf.name])
+    );
+
+    if (blueprints.length) {
+      const extraWorkflowIds = Array.from(
+        new Set(
+          blueprints
+            .map((bp: any) => bp.workflowId)
+            .filter((id: string) => id && !workflowNameMap.has(id))
+        )
+      );
+      if (extraWorkflowIds.length) {
+        const extraWorkflows = await this.workflowRepository.find({
+          where: {id: {inq: extraWorkflowIds}},
+        });
+        extraWorkflows.forEach((wf: any) => workflowNameMap.set(wf.id, wf.name));
+      }
+    }
+
+    const enrichedJobs = jobs.map((job: any) => {
+      const blueprintId = job.blueprintId || job.workflowBlueprintId;
+      const workflowId = job.workflowId || (blueprintId ? blueprintToWorkflowId.get(blueprintId) : undefined);
+      return {
+        ...job,
+        expiredStatus: job.isActive ? 'Active' : 'Expired',
+        effectiveDate: job.updatedAt || job.createdAt,
+        sourceName: job.source || 'Unknown',
+        blueprintName: workflowId ? workflowNameMap.get(workflowId) || 'Unknown' : 'Unknown',
+      };
+    });
 
     const jobsCount = await this.jobListRepository.count(filter?.where || { isDeleted: false });
 
     return {
-      jobs,
+      jobs: enrichedJobs,
       totalCount: jobsCount.count || 0
     }
   }

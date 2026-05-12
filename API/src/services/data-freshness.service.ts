@@ -264,7 +264,12 @@ export class DataFreshnessService {
   }
 
   private getRecordFreshnessReferenceDate(record: any): Date | null {
-    const rawDate = record?.scrappedAt || record?.createdAt || record?.updatedAt || null;
+    const rawDate =
+      record?.scrappedAt ||
+      record?.posted ||
+      record?.createdAt ||
+      record?.updatedAt ||
+      null;
     if (!rawDate) {
       return null;
     }

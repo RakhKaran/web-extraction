@@ -60,14 +60,12 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'All' }, ...USER_STATUS_OPTIONS];
 
 const TABLE_HEAD = [
   { id: 'title', label: 'Title' },
-  // { id: 'description', label: 'Description' },
   { id: 'company', label: 'Company' },
-  { id: 'location', label: 'Location' },
-  { id: 'experience', label: 'Experience' },
-  { id: 'salary', label: 'salary' },
-  { id: 'openings', label: 'Openings' },
-  { id: 'applicants', label: 'Applicants' },
-  { id: '', label: 'Actions', width: 88 },
+  { id: 'sourceName', label: 'Source' },
+  { id: 'blueprintName', label: 'Blueprint' },
+  { id: 'expiredStatus', label: 'Status' },
+  { id: 'effectiveDate', label: 'Updated/Created' },
+  { id: 'actions', label: 'Actions', width: 88 },
 ];
 
 const defaultFilters = {
@@ -324,7 +322,7 @@ export default function JobsListView() {
                     ))
                   ) : (
                     <TableRow>
-                      <TableCell align="center" colSpan={8}>
+                      <TableCell align="center" colSpan={12}>
                         No data found
                       </TableCell>
                     </TableRow>

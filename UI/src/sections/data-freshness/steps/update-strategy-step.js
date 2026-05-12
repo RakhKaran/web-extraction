@@ -50,31 +50,24 @@ export default function UpdateStrategyStep() {
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             Default fields to update:
           </Typography>
-          <Stack spacing={2}>
-            <Stack direction="row" spacing={2}>
-              <RHFTextField
-                name="updateStrategy.onNotFound.fields.isActive"
-                label="isActive"
+            <Stack spacing={2}>
+              <Stack direction="row" spacing={2}>
+                <RHFTextField
+                  name="updateStrategy.onNotFound.fields.isActive"
+                  label="isActive"
                 defaultValue="false"
                 size="small"
                 sx={{ flex: 1 }}
               />
-              <RHFTextField
-                name="updateStrategy.onNotFound.fields.deletedAt"
-                label="deletedAt"
-                defaultValue="{{currentDate}}"
-                size="small"
-                sx={{ flex: 1 }}
-                helperText="Use {{currentDate}} for current date"
-              />
-            </Stack>
-            <RHFTextField
-              name="updateStrategy.onNotFound.fields.isDeleted"
-              label="isDeleted"
-              defaultValue="true"
-              size="small"
-              fullWidth
-            />
+                <RHFTextField
+                  name="updateStrategy.onNotFound.fields.lastCheckedAt"
+                  label="lastCheckedAt"
+                  defaultValue="{{currentDate}}"
+                  size="small"
+                  sx={{ flex: 1 }}
+                  helperText="Use {{currentDate}} for current date"
+                />
+              </Stack>
             <RHFTextField
               name="updateStrategy.onNotFound.fields.freshnessStatus"
               label="freshnessStatus"
@@ -110,7 +103,23 @@ export default function UpdateStrategyStep() {
           <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
             Default fields to update:
           </Typography>
-          <Stack spacing={2}>
+            <Stack spacing={2}>
+            <Stack direction="row" spacing={2}>
+              <RHFTextField
+                name="updateStrategy.onFound.fields.isActive"
+                label="isActive"
+                defaultValue="true"
+                size="small"
+                sx={{ flex: 1 }}
+              />
+              <RHFTextField
+                name="updateStrategy.onFound.fields.isDeleted"
+                label="isDeleted"
+                defaultValue="false"
+                size="small"
+                sx={{ flex: 1 }}
+              />
+            </Stack>
             <Stack direction="row" spacing={2}>
               <RHFTextField
                 name="updateStrategy.onFound.fields.lastCheckedAt"

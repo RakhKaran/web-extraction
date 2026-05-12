@@ -39,11 +39,24 @@ export class Deliver {
                             if (type === 'string') value = 'NA';
                             else if (type === 'date') value = new Date();
                             else if (type === 'boolean') value = false;
+                            else if (type === 'number') value = 0;
+                            else if (type === 'array') value = [];
                             else value = undefined;
                         } else {
                             if (type === 'date') value = new Date(value);
                             if (type === 'boolean')
                                 value = value === true || value === 'true' || value === 1;
+                            if (type === 'number') {
+                                if (typeof value === 'string') {
+                                    const match = value.match(/-?\d+(\.\d+)?/);
+                                    value = match ? Number(match[0]) : 0;
+                                } else if (typeof value !== 'number') {
+                                    value = 0;
+                                }
+                            }
+                            if (type === 'array' && !Array.isArray(value)) {
+                                value = value ? [String(value)] : [];
+                            }
                         }
 
                         payload[modelField] = value;
@@ -65,6 +78,19 @@ export class Deliver {
                         }
 
                         payload[addField.modelField] = value;
+                    }
+
+                    if (!payload.source && previousOutput?.__meta?.source) {
+                        payload.source = previousOutput.__meta.source;
+                    }
+                    if (!payload.blueprintId && previousOutput?.__meta?.blueprintId) {
+                        payload.blueprintId = previousOutput.__meta.blueprintId;
+                    }
+                    if (!payload.workflowId && previousOutput?.__meta?.workflowId) {
+                        payload.workflowId = previousOutput.__meta.workflowId;
+                    }
+                    if (payload.isActive === undefined || payload.isActive === null) {
+                        payload.isActive = true;
                     }
 
                     // Save using repository

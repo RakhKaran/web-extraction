@@ -16,3 +16,4 @@ export * from './job-list.controller';
 export * from './data-freshness.controller';
 export * from './scheduler-execution.controller';
 export * from './company-master.controller';
+export * from './analytics.controller';

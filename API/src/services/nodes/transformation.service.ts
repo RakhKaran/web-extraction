@@ -80,9 +80,11 @@ export class Transformation {
 
                     // Null check
                     if (!field.isNullAccepted && (value === null || value === undefined || value === "")) {
-                        console.log('1', field.mappedField);
-                        hasError = true;
-                        continue;
+                        if (field.type === 'string') value = 'NA';
+                        else if (field.type === 'number') value = 0;
+                        else if (field.type === 'boolean') value = false;
+                        else if (field.type === 'array') value = [];
+                        else if (field.type === 'date') value = new Date();
                     }
 
                     switch (field.type) {
@@ -97,16 +99,12 @@ export class Transformation {
                                 if (match) {
                                     value = Number(match[0]); // take first numeric part
                                 } else {
-                                    console.log('2', field.mappedField);
-
-                                    hasError = true; // invalid number (e.g. "N/A")
+                                    value = 0;
                                 }
                             } else if (typeof value === "number") {
                                 value = value;
                             } else {
-                                console.log('3', field.mappedField);
-
-                                hasError = true;
+                                value = 0;
                             }
                             break;
 
@@ -119,11 +117,7 @@ export class Transformation {
                             if (parsedDate && !isNaN(parsedDate.getTime())) {
                                 value = parsedDate;
                             } else {
-                                console.log('value', value)
-                                console.log('parsedDate', parsedDate);
-                                console.log('4', field.mapped)
-                                hasError = true;   // mark record as errored
-                                value = null;      // or keep original value if you want to store raw
+                                value = new Date();
                             }
                             break;
                         }
@@ -153,6 +147,19 @@ export class Transformation {
 
                                 // Case 3: All other types
                                 : extra.value; // keep as-is (string, number, etc.)
+                }
+
+                if (!normalized.source && previousOutput?.__meta?.source) {
+                    normalized.source = previousOutput.__meta.source;
+                }
+                if (!normalized.blueprintId && previousOutput?.__meta?.blueprintId) {
+                    normalized.blueprintId = previousOutput.__meta.blueprintId;
+                }
+                if (!normalized.workflowId && previousOutput?.__meta?.workflowId) {
+                    normalized.workflowId = previousOutput.__meta.workflowId;
+                }
+                if (normalized.isActive === undefined || normalized.isActive === null) {
+                    normalized.isActive = true;
                 }
 
                 // Push into success or error bucket
