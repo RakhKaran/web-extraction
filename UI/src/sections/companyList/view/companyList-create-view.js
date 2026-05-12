@@ -17,17 +17,17 @@ export default function CompanyListCreateView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Create a new Company"
+        heading="Create LinkedIn Configuration"
         links={[
           {
             name: 'Dashboard',
             href: paths.dashboard.root,
           },
           {
-            name: 'Scheduler',
+            name: 'LinkedIn Configurations',
             href: paths.dashboard.companyList.root,
           },
-          { name: 'New Company' },
+          { name: 'New Configuration' },
         ]}
         sx={{
           mb: { xs: 3, md: 5 },

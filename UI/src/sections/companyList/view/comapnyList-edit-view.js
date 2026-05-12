@@ -32,14 +32,14 @@ export default function CompanyListEditView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Edit"
+        heading="Edit LinkedIn Configuration"
         links={[
           {
             name: 'Dashboard',
             href: paths.dashboard.root,
           },
           {
-            name: 'Company',
+            name: 'LinkedIn Configurations',
             href: paths.dashboard.companyList.root,
           },
           {

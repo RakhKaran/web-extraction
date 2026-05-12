@@ -16,14 +16,18 @@ export class CompanyList extends Entity {
   companyName: string;
 
   @property({
-    type: 'string',
+    type: 'array',
+    itemType: 'string',
+    required: true,
   })
-  description?: string;
+  designations: string[];
 
-   @property({
-    type: 'string',
+  @property({
+    type: 'boolean',
+    required: true,
+    default: true,
   })
-  designation?: string;
+  isActive: boolean;
 
    @property({
     type: 'date',

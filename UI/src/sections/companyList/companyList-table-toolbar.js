@@ -41,7 +41,7 @@ export default function CompanyListTableToolbar({ filters, onFilters }) {
             fullWidth
             value={filters.name}
             onChange={handleFilterName}
-            placeholder="Search by Scheduler..."
+            placeholder="Search by company/designation..."
             InputProps={{
               startAdornment: (
                 <InputAdornment position="start">

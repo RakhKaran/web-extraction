@@ -47,7 +47,7 @@ const ICONS = {
   processInstance: icon('ic_process_instance'),
   scheduler: icon('ic_scheduler'),
   designation: icon('ic_designation'),
-  company: icon('ic_company'),
+  linkedin: icon('ic_linkedin'),
   companyProfile: icon('ic_profile'),
   dataFreshness: icon('ic_calendar'), // Using calendar icon for freshness checks
   companyMaster: icon('ic_company')
@@ -377,9 +377,9 @@ export function useNavData() {
             ],
           },
           {
-            title: t('Company List'),
+            title: t('LinkedIn Configurations'),
             path: paths.dashboard.companyList.root,
-            icon: ICONS.company,
+            icon: ICONS.linkedin,
             children: [
               { title: t('list'), path: paths.dashboard.companyList.list },
               //  { title: t('details'), path: paths.dashboard.scheduler.details },

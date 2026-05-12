@@ -7,24 +7,73 @@ import {
   Where,
 } from '@loopback/repository';
 import {
-  post,
-  param,
+  del,
   get,
   getModelSchemaRef,
+  HttpErrors,
+  param,
   patch,
+  post,
   put,
-  del,
   requestBody,
   response,
 } from '@loopback/rest';
 import {CompanyList} from '../models';
-import {CompanyListRepository} from '../repositories';
+import {
+  CompanyListRepository,
+  CompanyMasterRepository,
+  DesignationRepository,
+} from '../repositories';
 
 export class CompanyListController {
   constructor(
     @repository(CompanyListRepository)
-    public companyListRepository : CompanyListRepository,
+    public companyListRepository: CompanyListRepository,
+    @repository(CompanyMasterRepository)
+    public companyMasterRepository: CompanyMasterRepository,
+    @repository(DesignationRepository)
+    public designationRepository: DesignationRepository,
   ) {}
+
+  private async validateLinkedInConfiguration(companyList: Partial<CompanyList>) {
+    const companyName = companyList.companyName?.trim();
+    const designations = Array.isArray(companyList.designations)
+      ? companyList.designations.map((item) => String(item).trim()).filter(Boolean)
+      : [];
+
+    if (!companyName) {
+      throw new HttpErrors.BadRequest('companyName is required');
+    }
+    if (!designations.length) {
+      throw new HttpErrors.BadRequest('At least one designation is required');
+    }
+
+    const companyExists = await this.companyMasterRepository.findOne({
+      where: {
+        and: [{companyName}, {isActive: true}, {isDeleted: false}],
+      },
+    });
+
+    if (!companyExists) {
+      throw new HttpErrors.BadRequest(
+        `Company "${companyName}" does not exist in active company masters`,
+      );
+    }
+
+    for (const designation of designations) {
+      const designationExists = await this.designationRepository.findOne({
+        where: {
+          and: [{designation}, {isActive: true}, {isDeleted: false}],
+        },
+      });
+
+      if (!designationExists) {
+        throw new HttpErrors.BadRequest(
+          `Designation "${designation}" does not exist in active designations`,
+        );
+      }
+    }
+  }
 
   @post('/company-lists')
   @response(200, {
@@ -44,7 +93,13 @@ export class CompanyListController {
     })
     companyList: Omit<CompanyList, 'id'>,
   ): Promise<CompanyList> {
-    return this.companyListRepository.create(companyList);
+    await this.validateLinkedInConfiguration(companyList);
+    const normalized = {
+      ...companyList,
+      companyName: companyList.companyName.trim(),
+      designations: [...new Set(companyList.designations.map((item) => item.trim()))],
+    };
+    return this.companyListRepository.create(normalized);
   }
 
   @get('/company-lists/count')
@@ -52,9 +107,7 @@ export class CompanyListController {
     description: 'CompanyList model count',
     content: {'application/json': {schema: CountSchema}},
   })
-  async count(
-    @param.where(CompanyList) where?: Where<CompanyList>,
-  ): Promise<Count> {
+  async count(@param.where(CompanyList) where?: Where<CompanyList>): Promise<Count> {
     return this.companyListRepository.count(where);
   }
 
@@ -106,7 +159,8 @@ export class CompanyListController {
   })
   async findById(
     @param.path.string('id') id: string,
-    @param.filter(CompanyList, {exclude: 'where'}) filter?: FilterExcludingWhere<CompanyList>
+    @param.filter(CompanyList, {exclude: 'where'})
+    filter?: FilterExcludingWhere<CompanyList>,
   ): Promise<CompanyList> {
     return this.companyListRepository.findById(id, filter);
   }
@@ -126,7 +180,13 @@ export class CompanyListController {
     })
     companyList: CompanyList,
   ): Promise<void> {
-    await this.companyListRepository.updateById(id, companyList);
+    await this.validateLinkedInConfiguration(companyList);
+    const normalized = {
+      ...companyList,
+      companyName: companyList.companyName.trim(),
+      designations: [...new Set((companyList.designations || []).map((item) => item.trim()))],
+    };
+    await this.companyListRepository.updateById(id, normalized);
   }
 
   @put('/company-lists/{id}')
@@ -137,7 +197,13 @@ export class CompanyListController {
     @param.path.string('id') id: string,
     @requestBody() companyList: CompanyList,
   ): Promise<void> {
-    await this.companyListRepository.replaceById(id, companyList);
+    await this.validateLinkedInConfiguration(companyList);
+    const normalized = {
+      ...companyList,
+      companyName: companyList.companyName.trim(),
+      designations: [...new Set((companyList.designations || []).map((item) => item.trim()))],
+    };
+    await this.companyListRepository.replaceById(id, normalized);
   }
 
   @del('/company-lists/{id}')

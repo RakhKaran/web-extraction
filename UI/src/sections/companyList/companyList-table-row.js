@@ -2,9 +2,7 @@ import PropTypes from 'prop-types';
 // @mui
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
-import ListItemText from '@mui/material/ListItemText';
 import { IconButton, Tooltip } from '@mui/material';
-import { format, isValid } from 'date-fns';
 import Iconify from 'src/components/iconify';
 import Label from 'src/components/label';
 
@@ -12,17 +10,18 @@ import Label from 'src/components/label';
 
 
 export default function CompanyListTableRow({ row, selected, onSelectRow, onViewRow, onEditRow }) {
-  const { companyName, description, designation } = row;
+  const { companyName, designations, isActive } = row;
 
 
   return (
     <TableRow hover selected={selected}>
       <TableCell>{companyName || 'NA'}</TableCell>
-        <TableCell>{designation || 'NA'}</TableCell>
+      <TableCell>{Array.isArray(designations) && designations.length ? designations.join(', ') : 'NA'}</TableCell>
       <TableCell>
-        {description|| 'NA'}
+        <Label variant="soft" color={isActive ? 'success' : 'error'}>
+          {isActive ? 'Active' : 'In-active'}
+        </Label>
       </TableCell>
-  
       <TableCell>
         <Tooltip title="Edit" placement="top" arrow>
           <IconButton onClick={onEditRow}>

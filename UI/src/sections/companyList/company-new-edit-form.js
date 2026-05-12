@@ -12,47 +12,62 @@ import Grid from '@mui/material/Unstable_Grid2';
 import MenuItem from '@mui/material/MenuItem';
 // routes
 import { useGetDesignations } from 'src/api/designation';
+import { useGetCompanies as useGetCompanyMasters } from 'src/api/company-master';
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
 // components
 import { useSnackbar } from 'src/components/snackbar';
 import FormProvider from 'src/components/hook-form/form-provider';
-import { RHFSelect } from 'src/components/hook-form';
-import RHFTextField from 'src/components/hook-form/rhf-text-field';
+import { RHFAutocomplete, RHFSelect } from 'src/components/hook-form';
 import axiosInstance from 'src/utils/axios';
 
+const STATUS_OPTIONS = [
+  { value: true, label: 'Active' },
+  { value: false, label: 'In-active' },
+];
 
 
 export default function CompanyNewEditForm({ currentCompany, open, onClose }) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
 
-  const [designation, setDesignation] = useState(null);
+  const [designations, setDesignations] = useState([]);
+  const [companyMasters, setCompanyMasters] = useState([]);
 
   const { Designations, DesignationsLoading } = useGetDesignations();
+  const { companies, companiesLoading } = useGetCompanyMasters();
 
 
   useEffect(() => {
-    if (Designations && !DesignationsLoading) {
+    if (Array.isArray(Designations) && !DesignationsLoading) {
       const activeDesignations = Designations.filter(
         (item) => item.isActive === true
       );
-      setDesignation(activeDesignations);
+      setDesignations(activeDesignations);
     }
   }, [Designations, DesignationsLoading]);
 
+  useEffect(() => {
+    if (Array.isArray(companies) && !companiesLoading) {
+      const activeCompanies = companies.filter((item) => item.isActive === true);
+      setCompanyMasters(activeCompanies);
+    }
+  }, [companies, companiesLoading]);
 
   const CompanySchema = Yup.object().shape({
     companyName: Yup.string().required('Company Name is required'),
-    description: Yup.string(),
-    designation: Yup.string().required('Designation is required'),
+    designations: Yup.array()
+      .of(Yup.string())
+      .min(1, 'Select at least one designation')
+      .required('Designation is required'),
+    isActive: Yup.boolean().required('Status is required'),
   });
 
   const defaultValues = useMemo(
     () => ({
       companyName: currentCompany?.companyName || '',
-      description: currentCompany?.description || '',
-      designation: currentCompany?.designation || '',
+      designations: currentCompany?.designations || [],
+      isActive: currentCompany?.isActive ?? true,
     }),
     [currentCompany]
   );
@@ -72,8 +87,8 @@ export default function CompanyNewEditForm({ currentCompany, open, onClose }) {
     try {
       const inputData = {
         companyName: data.companyName,
-        description: data.description,
-        designation: data.designation,
+        designations: data.designations,
+        isActive: data.isActive,
       };
 
       if (!currentCompany) {
@@ -84,7 +99,9 @@ export default function CompanyNewEditForm({ currentCompany, open, onClose }) {
 
       reset();
       enqueueSnackbar(
-        currentCompany ? 'Company updated successfully!' : 'Company created successfully!'
+        currentCompany
+          ? 'LinkedIn configuration updated successfully!'
+          : 'LinkedIn configuration created successfully!'
       );
       router.push(paths.dashboard.companyList.list);
     } catch (error) {
@@ -116,34 +133,42 @@ export default function CompanyNewEditForm({ currentCompany, open, onClose }) {
                 sm: 'repeat(2, 1fr)',
               }}
             >
-              <RHFTextField name="companyName" label="Company Name" />
-
-              <RHFSelect name="designation" label="Select Designation">
-                {designation && designation.length > 0 ? (
-                  designation.map((option) => (
-                    <MenuItem key={option.id} value={option.designation}>
-                      {option.designation}
+              <RHFSelect name="companyName" label="Select Company">
+                {companyMasters.length > 0 ? (
+                  companyMasters.map((option) => (
+                    <MenuItem key={option.id} value={option.companyName}>
+                      {option.companyName}
                     </MenuItem>
                   ))
                 ) : (
                   <MenuItem disabled value="">
-                    No Designation
+                    No Company Available
                   </MenuItem>
                 )}
               </RHFSelect>
 
-              <RHFTextField
-                name="description"
-                label="Description"
-                multiline
-                rows={3}
-                sx={{ gridColumn: 'span 2' }}
+              <RHFAutocomplete
+                multiple
+                name="designations"
+                label="Select Designations"
+                options={designations.map((option) => option.designation)}
+                getOptionLabel={(option) => option}
+                filterSelectedOptions
+                disableCloseOnSelect
               />
+
+              <RHFSelect name="isActive" label="Status">
+                {STATUS_OPTIONS.map((option) => (
+                  <MenuItem key={String(option.value)} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
             </Box>
 
             <Stack alignItems="flex-end" sx={{ mt: 3 }}>
               <LoadingButton type="submit" variant="contained" loading={isSubmitting}>
-                {currentCompany ? 'Save Changes' : 'Create Company'}
+                {currentCompany ? 'Save Changes' : 'Create Configuration'}
               </LoadingButton>
             </Stack>
           </Card>

@@ -48,12 +48,16 @@ import CompanyListTableToolbar from '../companyList-table-toolbar';
 
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }];
+const STATUS_OPTIONS = [
+  { value: 'all', label: 'All' },
+  { value: 'active', label: 'Active' },
+  { value: 'inactive', label: 'In-active' },
+];
 
 const TABLE_HEAD = [
   { id: 'companyName', label: 'Company Name' },
-  { id: 'designation', label: 'Designation' },
-  { id: 'description', label: 'Description' },
+  { id: 'designations', label: 'Designations' },
+  { id: 'isActive', label: 'Status' },
   { id: '', label: 'Actions' },
 ];
 
@@ -145,10 +149,10 @@ export default function CompanyListListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="List"
+          heading="LinkedIn Configurations"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Company', href: paths.dashboard.companyList.list },
+            { name: 'LinkedIn Configurations', href: paths.dashboard.companyList.list },
             { name: 'List' },
           ]}
           action={
@@ -158,7 +162,7 @@ export default function CompanyListListView() {
               variant="contained"
               startIcon={<Iconify icon="mingcute:add-line" />}
             >
-              New Company
+              New Configuration
             </Button>
           }
           sx={{
@@ -318,7 +322,7 @@ function applyFilter({ inputData, comparator, filters }) {
 
   if (status !== 'all') {
     inputData = inputData.filter((emails) =>
-      status === 'active' ? !emails.isDeleted : emails.isDeleted
+      status === 'active' ? emails.isActive : !emails.isActive
     );
   }
 

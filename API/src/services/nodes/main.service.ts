@@ -144,33 +144,47 @@ export class Main {
                     );
 
                 } else if (scheduler.schedulerFor === 1) {
-                    const companies = await this.companyListRepository.find();
+                    const companyConfigs: any[] = await this.companyListRepository.find({
+                        where: {
+                            and: [
+                                { isDeleted: false },
+                                { isActive: true },
+                            ]
+                        }
+                    });
 
-                    companies.map(async (company) => {
-                        const finalSearchArray = companies.map((comp) => {
-                            return {
-                                selectorName: 'Search',
-                                value: `${comp.designation} at ${comp.companyName}`
-                            }
-                        })
+                    for (const companyConfig of companyConfigs) {
+                        const companyName = companyConfig.companyName;
+                        const designations = Array.isArray(companyConfig.designations)
+                            ? companyConfig.designations
+                            : (companyConfig.designation ? [companyConfig.designation] : []);
 
-                        const dagFileName =
-                            await this.dagsCreationService.createDagFile(
+                        for (const designation of designations) {
+                            const searchValue = `${designation} at ${companyName}`;
+                            const finalSearchArray = [
+                                {
+                                    selectorName: 'Search',
+                                    value: searchValue,
+                                }
+                            ];
+
+                            const dagFileName = await this.dagsCreationService.createDagFile(
                                 scheduler,
-                                `${company.designation} at ${company.companyName}` || ''
+                                searchValue
                             );
 
-                        if (dagFileName) {
-                            await this.dagsRepository.create({
-                                dagName: `dag-${scheduler.schedularName}-${company.companyName}-${company?.designation}`,
-                                dagFileName,
-                                schedulerId: scheduler.id,
-                                searchArray: finalSearchArray,
-                                isActive: true,
-                                isDeleted: false,
-                            });
+                            if (dagFileName) {
+                                await this.dagsRepository.create({
+                                    dagName: `dag-${scheduler.schedularName}-${companyName}-${designation}`,
+                                    dagFileName,
+                                    schedulerId: scheduler.id,
+                                    searchArray: finalSearchArray,
+                                    isActive: true,
+                                    isDeleted: false,
+                                });
+                            }
                         }
-                    })
+                    }
                 } else {
                     const dagFileName =
                         await this.dagsCreationService.createDagFile(scheduler, '');
