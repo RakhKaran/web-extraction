@@ -20,7 +20,9 @@ import { Avatar, Link } from '@mui/material';
 // ----------------------------------------------------------------------
 
 export default function CompanyTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { fullName, profileUrl, company,designation, location,redirectUrl} = row;
+  const { fullName, profileUrl, company, designation, location, redirectUrl } = row;
+
+  const avatarSrc = typeof profileUrl === 'string' && profileUrl.trim() && profileUrl.startsWith('https') ? profileUrl : undefined;
 
   const confirm = useBoolean();
   const popover = usePopover();
@@ -35,7 +37,8 @@ export default function CompanyTableRow({ row, selected, onEditRow, onSelectRow,
 
         <TableCell sx={{ display: 'flex', alignItems: 'center' }}>
           <Avatar
-            src={profileUrl}
+            alt={fullName}
+            src={avatarSrc}
             variant="rounded"
             sx={{ width: 64, height: 64, mr: 2 }}
           />

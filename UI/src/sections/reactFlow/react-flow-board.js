@@ -27,7 +27,6 @@ import { useGetWorkflowBluePrint } from 'src/api/blue-print';
 import LogsProcessDialogue from './components/logs-dialogue';
 import LoadingButton from '@mui/lab/LoadingButton';
 
-
 const nodeTypes = {
   custom: ReactFlowCustomNodeStructure,
   customAddNode: ReactFlowCustomAddNodeStructure,
