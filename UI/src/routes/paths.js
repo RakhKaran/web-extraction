@@ -189,7 +189,7 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/scheduler/${MOCK_ID}/edit`,
       },
     },
-     companyList: {
+    companyList: {
       root: `${ROOTS.DASHBOARD}/companyList`,
       new: `${ROOTS.DASHBOARD}/companyList/new`,
       list: `${ROOTS.DASHBOARD}/companyList/list`,
@@ -223,6 +223,17 @@ export const paths = {
       demo: {
         details: `${ROOTS.DASHBOARD}/designation/${MOCK_ID}`,
         edit: `${ROOTS.DASHBOARD}/designation/${MOCK_ID}/edit`,
+      },
+    },
+    companyMaster: {
+      root: `${ROOTS.DASHBOARD}/company-master`,
+      new: `${ROOTS.DASHBOARD}/company-master/new`,
+      list: `${ROOTS.DASHBOARD}/company-master/list`,
+      details: (id) => `${ROOTS.DASHBOARD}/company-master/${id}`,
+      edit: (id) => `${ROOTS.DASHBOARD}/company-master/${id}/edit`,
+      demo: {
+        details: `${ROOTS.DASHBOARD}/company-master/${MOCK_ID}`,
+        edit: `${ROOTS.DASHBOARD}/company-master/${MOCK_ID}/edit`,
       },
     },
     // workflows

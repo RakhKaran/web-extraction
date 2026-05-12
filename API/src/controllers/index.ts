@@ -15,3 +15,4 @@ export * from './company-list.controller';
 export * from './job-list.controller';
 export * from './data-freshness.controller';
 export * from './scheduler-execution.controller';
+export * from './company-master.controller';

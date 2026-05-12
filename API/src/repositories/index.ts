@@ -22,3 +22,4 @@ export * from './data-freshness-config.repository';
 export * from './data-freshness-log.repository';
 export * from './scheduler-execution.repository';
 export * from './scheduler-execution-log.repository';
+export * from './company-master.repository';

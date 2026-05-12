@@ -65,6 +65,10 @@ const DesignationNewPage = lazy(() => import('src/pages/dashboard/designation/ne
 const DesignationListPage = lazy(() => import('src/pages/dashboard/designation/list'));
 const DesignationEditPage = lazy(() => import('src/pages/dashboard/designation/edit'));
 const DesignationViewPage = lazy(() => import('src/pages/dashboard/designation/view'));
+// COMPANY MASTER
+const CompanyMasterNewPage = lazy(() => import('src/pages/dashboard/company-master/new'));
+const CompanyMasterListPage = lazy(() => import('src/pages/dashboard/company-master/list'));
+const CompanyMasterEditPage = lazy(() => import('src/pages/dashboard/company-master/edit'));
 // BLOG
 const BlogPostsPage = lazy(() => import('src/pages/dashboard/post/list'));
 const BlogPostPage = lazy(() => import('src/pages/dashboard/post/details'));
@@ -177,7 +181,7 @@ export const dashboardRoutes = [
           // { path: 'new', element: <InvoiceCreatePage /> },
         ],
       },
-       {
+      {
         path: 'companyList',
         children: [
           { element: <CompaniesListPage />, index: true },
@@ -188,7 +192,7 @@ export const dashboardRoutes = [
         ],
       },
 
-        {
+      {
         path: 'jobList',
         children: [
           { element: <JobsListPage />, index: true },
@@ -218,6 +222,15 @@ export const dashboardRoutes = [
           { path: ':id', element: <DesignationViewPage /> },
           { path: ':id/edit', element: <DesignationEditPage /> },
           { path: 'new', element: <DesignationNewPage /> },
+        ],
+      },
+      {
+        path: 'company-master',
+        children: [
+          { element: <CompanyMasterListPage />, index: true },
+          { path: 'list', element: <CompanyMasterListPage /> },
+          { path: ':id/edit', element: <CompanyMasterEditPage /> },
+          { path: 'new', element: <CompanyMasterNewPage /> },
         ],
       },
       {

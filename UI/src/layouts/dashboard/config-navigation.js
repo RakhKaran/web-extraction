@@ -50,6 +50,7 @@ const ICONS = {
   company: icon('ic_company'),
   companyProfile: icon('ic_profile'),
   dataFreshness: icon('ic_calendar'), // Using calendar icon for freshness checks
+  companyMaster: icon('ic_company')
 };
 
 // ----------------------------------------------------------------------
@@ -144,7 +145,7 @@ export function useNavData() {
               { title: t('list'), path: paths.dashboard.dataFreshness.list },
               { title: t('create'), path: paths.dashboard.dataFreshness.create },
             ],
-          }, 
+          },
 
           //   {
           //   title: t('Job List'),
@@ -364,6 +365,15 @@ export function useNavData() {
               //  { title: t('details'), path: paths.dashboard.scheduler.details },
               { title: t('create'), path: paths.dashboard.designation.new },
               //  { title: t('edit'), path: paths.dashboard.scheduler.edit },
+            ],
+          },
+          {
+            title: t('company master'),
+            path: paths.dashboard.companyMaster.root,
+            icon: ICONS.companyMaster,
+            children: [
+              { title: t('list'), path: paths.dashboard.companyMaster.list },
+              { title: t('create'), path: paths.dashboard.companyMaster.new },
             ],
           },
           {

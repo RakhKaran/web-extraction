@@ -22,3 +22,4 @@ export * from './data-freshness-config.model';
 export * from './data-freshness-log.model';
 export * from './scheduler-execution.model';
 export * from './scheduler-execution-log.model';
+export * from './company-master.model';
