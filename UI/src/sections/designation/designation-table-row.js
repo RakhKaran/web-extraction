@@ -13,21 +13,35 @@ import Label from 'src/components/label';
 // ----------------------------------------------------------------------
 
 export default function DesignationTableRow({ row, selected, onSelectRow, onViewRow, onEditRow }) {
-  const { designation, description, isActive } = row;
+  const { designation, description, isActive, category } = row;
+
+  const handleCategoryName = (category) => {
+    const categoryMap = {
+      'product-management': 'Product Management',
+      'marketing': 'Marketing',
+      'data-science': 'Data Science',
+      'software-development': 'Software Development'
+    };
+
+    return categoryMap[category] || 'Unknown';
+  }
 
   return (
     <TableRow hover selected={selected}>
       <TableCell>{designation || 'NA'}</TableCell>
 
       <TableCell>{description || 'NA'}</TableCell>
+
+      <TableCell>{handleCategoryName(category) || 'NA'}</TableCell>
+
       <TableCell>
-      <Label
-            variant="soft"
-            color={Number(isActive) === 1 ? 'success' : 'error'}
-          >
-            {Number(isActive) === 1 ? 'Active' : 'In-active'}
-          </Label>
-          </TableCell>
+        <Label
+          variant="soft"
+          color={Number(isActive) === 1 ? 'success' : 'error'}
+        >
+          {Number(isActive) === 1 ? 'Active' : 'In-active'}
+        </Label>
+      </TableCell>
       <TableCell>
         {/* <Tooltip title="View Events">
             <IconButton onClick={onViewRow}>

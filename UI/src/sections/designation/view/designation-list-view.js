@@ -46,36 +46,36 @@ import DesignationTableRow from '../designation-table-row';
 import DesignationTableToolbar from '../Designation-table-toolbar';
 import DesignationTableFiltersResult from '../designation-table-filters-result';
 
-
-
-
 // ----------------------------------------------------------------------
 
-const STATUS_OPTIONS = [{ value: 'all', label: 'All' }];
+const STATUS_OPTIONS = [
+  { value: 'all', label: 'All' },
+  { value: 'active', label: 'Active' },
+  { value: 'inactive', label: 'Inactive'}  
+];
 
 const TABLE_HEAD = [
   { id: 'designation', label: 'Designation' },
   { id: 'description', label: 'Description' },
+  { id: 'category', label: 'category' },
   { id: 'isActive', label: 'Status' },
-  { id: '', label: 'Actions' },
+  { id: 'actions', label: 'Actions' },
 ];
 
 const defaultFilters = {
   name: '',
   status: 'all',
+  category: 'all',
 };
 
 // ----------------------------------------------------------------------
 
 export default function DesignationListView() {
   const table = useTable();
-
   const settings = useSettingsContext();
   const router = useRouter();
   const confirm = useBoolean();
-
-  const {Designations}= useGetDesignations()
-
+  const { Designations } = useGetDesignations()
 
   const handleViewRow = useCallback(
     (id) => {
@@ -84,7 +84,7 @@ export default function DesignationListView() {
     [router]
   );
 
-   const handleEditRow = useCallback(
+  const handleEditRow = useCallback(
     (id) => {
       router.push(paths.dashboard.designation.edit(id));
     },
@@ -92,7 +92,6 @@ export default function DesignationListView() {
   );
 
   const [filters, setFilters] = useState(defaultFilters);
-
   const dataFiltered = applyFilter({
     inputData: Designations,
     comparator: getComparator(table.order, table.orderBy),
@@ -297,7 +296,7 @@ export default function DesignationListView() {
 // ----------------------------------------------------------------------
 
 function applyFilter({ inputData, comparator, filters }) {
-  const { name, status } = filters;
+  const { name, status, category } = filters;
 
   const stabilizedThis = inputData.map((el, index) => [el, index]);
 
@@ -310,16 +309,22 @@ function applyFilter({ inputData, comparator, filters }) {
   inputData = stabilizedThis.map((el) => el[0]);
 
   if (name) {
-    inputData = inputData.filter((emails) =>
-      Object.values(emails).some((value) =>
+    inputData = inputData.filter((designations) =>
+      Object.values(designations).some((value) =>
         String(value).toLowerCase().includes(name.toLowerCase())
       )
     );
   }
 
   if (status !== 'all') {
-    inputData = inputData.filter((emails) =>
-      status === 'active' ? !emails.isDeleted : emails.isDeleted
+    inputData = inputData.filter((designations) =>
+      status === 'active' ? designations.isActive : !designations.isActive
+    );
+  }
+
+  if(category !== 'all') {
+    inputData = inputData.filter((designations) =>
+      category === designations.category
     );
   }
 

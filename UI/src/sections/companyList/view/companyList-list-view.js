@@ -46,16 +46,13 @@ import CompanyListTableRow from '../companyList-table-row';
 import CompanyListTableFiltersResult from '../companyList-table-filters-result';
 import CompanyListTableToolbar from '../companyList-table-toolbar';
 
-
-
-
 // ----------------------------------------------------------------------
 
 const STATUS_OPTIONS = [{ value: 'all', label: 'All' }];
 
 const TABLE_HEAD = [
   { id: 'companyName', label: 'Company Name' },
-  {id:'designation', label: 'Designation'},
+  { id: 'designation', label: 'Designation' },
   { id: 'description', label: 'Description' },
   { id: '', label: 'Actions' },
 ];
@@ -76,7 +73,7 @@ export default function CompanyListListView() {
 
 
 
-  const {CompaniesList}= useGetCompanies()
+  const { CompaniesList } = useGetCompanies()
 
 
   const handleViewRow = useCallback(

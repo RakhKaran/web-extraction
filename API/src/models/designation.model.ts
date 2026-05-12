@@ -16,6 +16,20 @@ export class Designation extends Entity {
 
   @property({
     type: 'string',
+    required: true,
+    jsonSchema: {
+      enum: [
+        'data-science',
+        'product-management',
+        'marketing',
+        'software-development'
+      ]
+    }
+  })
+  category: string;
+
+  @property({
+    type: 'string',
   })
   description?: string;
 

@@ -14,10 +14,6 @@ import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 
 import DesignationNewEditForm from '../designation-new-edit-form';
 
-
-//
-
-
 // ----------------------------------------------------------------------
 
 export default function DesignationEditView() {
@@ -27,8 +23,7 @@ export default function DesignationEditView() {
 
   const { id } = params;
 
-
-  const{designation:currentDesignation}= useGetDesignation(id)
+  const { designation: currentDesignation } = useGetDesignation(id)
   console.log('currentDesignation', currentDesignation)
 
   return (

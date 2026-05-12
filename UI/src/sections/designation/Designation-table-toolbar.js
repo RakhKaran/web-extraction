@@ -9,15 +9,30 @@ import MenuItem from '@mui/material/MenuItem';
 // components
 import Iconify from 'src/components/iconify';
 import CustomPopover, { usePopover } from 'src/components/custom-popover';
+import { Select } from '@mui/material';
 
 // ----------------------------------------------------------------------
 
 export default function DesignationTableToolbar({ filters, onFilters }) {
   const popover = usePopover();
+  const categories = [
+    { value: 'all', label: 'All' },
+    { value: 'product-management', label: 'Product Management' },
+    { value: 'marketing', label: 'Marketing' },
+    { value: 'data-science', label: 'Data Science' },
+    { value: 'software-development', label: 'Software Development' }
+  ];
 
   const handleFilterName = useCallback(
     (event) => {
       onFilters('name', event.target.value);
+    },
+    [onFilters]
+  );
+
+  const handleFilterCategory = useCallback(
+    (event) => {
+      onFilters('category', event.target.value);
     },
     [onFilters]
   );
@@ -50,6 +65,24 @@ export default function DesignationTableToolbar({ filters, onFilters }) {
               ),
             }}
           />
+
+          <Select
+            sx={{
+              width: {
+                xs: '100%',
+                md: '300px'
+              }
+            }}
+            value={filters.category || 'all'}
+            onChange={handleFilterCategory}
+            placeholder="select category"
+          >
+            {categories.map((category) => (
+              <MenuItem key={category.value} value={category.value}>
+                {category.label}
+              </MenuItem>
+            ))}
+          </Select>
 
           {/* <IconButton onClick={popover.onOpen}>
             <Iconify icon="eva:more-vertical-fill" />

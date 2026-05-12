@@ -26,6 +26,13 @@ const Status = [
   { value: false, label: 'In-active' },
 ];
 
+const categories = [
+  { value: 'product-management', label: 'Product Management' },
+  { value: 'marketing', label: 'Marketing' },
+  { value: 'data-science', label: 'Data Science' },
+  { value: 'software-development', label: 'Software Development' }
+]
+
 export default function DesignationNewEditForm({ currentDesignation, open, onClose }) {
   const router = useRouter();
   const { enqueueSnackbar } = useSnackbar();
@@ -34,6 +41,7 @@ export default function DesignationNewEditForm({ currentDesignation, open, onClo
     designation: Yup.string().required('Designation is required'),
     description: Yup.string(),
     isActive: Yup.boolean().required('Status is required'),
+    category: Yup.string().required('Category is required'),
   });
 
   const defaultValues = useMemo(
@@ -41,6 +49,7 @@ export default function DesignationNewEditForm({ currentDesignation, open, onClo
       designation: currentDesignation?.designation || '',
       description: currentDesignation?.description || '',
       isActive: currentDesignation?.isActive ?? true, // default to true if not set
+      category: currentDesignation?.category || 'product-management',
     }),
     [currentDesignation]
   );
@@ -62,6 +71,7 @@ export default function DesignationNewEditForm({ currentDesignation, open, onClo
         designation: data.designation,
         description: data.description,
         isActive: data.isActive, // already boolean ✅
+        category: data.category
       };
 
       if (!currentDesignation) {
@@ -101,7 +111,7 @@ export default function DesignationNewEditForm({ currentDesignation, open, onClo
               display="grid"
               gridTemplateColumns={{
                 xs: 'repeat(1, 1fr)',
-                sm: 'repeat(2, 1fr)',
+                sm: 'repeat(3, 1fr)',
               }}
             >
               <RHFTextField name="designation" label="Designation" />
@@ -114,12 +124,20 @@ export default function DesignationNewEditForm({ currentDesignation, open, onClo
                 ))}
               </RHFSelect>
 
+              <RHFSelect name="category" label="Select Category">
+                {categories.map((option) => (
+                  <MenuItem key={String(option.value)} value={option.value}>
+                    {option.label}
+                  </MenuItem>
+                ))}
+              </RHFSelect>
+
               <RHFTextField
                 name="description"
                 label="Description"
                 multiline
                 rows={3}
-                sx={{ gridColumn: 'span 2' }}
+                sx={{ gridColumn: 'span 3' }}
               />
             </Box>
 
