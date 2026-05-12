@@ -59,6 +59,7 @@ const SchedulerNewPage = lazy(() => import('src/pages/dashboard/scheduler/new'))
 const SchedulerListPage = lazy(() => import('src/pages/dashboard/scheduler/list'));
 const SchedulerEditPage = lazy(() => import('src/pages/dashboard/scheduler/edit'));
 const SchedulerViewPage = lazy(() => import('src/pages/dashboard/scheduler/view'));
+const SchedulerLogsPage = lazy(() => import('src/pages/dashboard/scheduler/logs'));
 // DESIGNATION
 const DesignationNewPage = lazy(() => import('src/pages/dashboard/designation/new'));
 const DesignationListPage = lazy(() => import('src/pages/dashboard/designation/list'));
@@ -205,6 +206,7 @@ export const dashboardRoutes = [
           { path: 'list', element: <SchedulerListPage /> },
           { path: ':id', element: <SchedulerViewPage /> },
           { path: ':id/edit', element: <SchedulerEditPage /> },
+          { path: ':id/logs', element: <SchedulerLogsPage /> },
           { path: 'new', element: <SchedulerNewPage /> },
         ],
       },

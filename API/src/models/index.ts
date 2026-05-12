@@ -20,3 +20,5 @@ export * from './company-list.model';
 export * from './job-list.model';
 export * from './data-freshness-config.model';
 export * from './data-freshness-log.model';
+export * from './scheduler-execution.model';
+export * from './scheduler-execution-log.model';

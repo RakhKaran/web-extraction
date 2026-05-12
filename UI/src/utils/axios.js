@@ -61,6 +61,13 @@ export const endpoints = {
     filterList: (filter) => `/schedulers?filter=${filter}`,
     details: (id) => `/schedulers/${id}`,
   },
+  schedulerExecution: {
+    listByScheduler: (schedulerId, limit = 25, skip = 0) =>
+      `/schedulers/${schedulerId}/executions?limit=${limit}&skip=${skip}`,
+    details: (executionId) => `/scheduler-executions/${executionId}`,
+    logs: (executionId, limit = 200, skip = 0) =>
+      `/scheduler-executions/${executionId}/logs?limit=${limit}&skip=${skip}`,
+  },
   companyList:{
     list: '/company-lists',
     filterList: (filter) => `/company-lists?filter=${filter}`,

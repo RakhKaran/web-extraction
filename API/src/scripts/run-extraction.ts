@@ -16,9 +16,17 @@ async function extraction(searchField: string, schedulerId: string) {
     await app.start();
 
     const mainService = await app.get<Main>('services.Main');
+    const executionContext = {
+        airflowDagId: process.env.AIRFLOW_CTX_DAG_ID,
+        airflowTaskId: process.env.AIRFLOW_CTX_TASK_ID,
+        airflowRunId: process.env.AIRFLOW_CTX_DAG_RUN_ID,
+        airflowTryNumber: process.env.AIRFLOW_CTX_TRY_NUMBER
+            ? Number(process.env.AIRFLOW_CTX_TRY_NUMBER)
+            : undefined,
+    };
 
     try {
-        const result = await mainService.extraction(searchField, schedulerId);
+        const result = await mainService.extraction(searchField, schedulerId, executionContext);
         console.log(JSON.stringify(result));
     } catch (err: any) {
         console.error(JSON.stringify({ error: err.message }));
@@ -42,11 +50,11 @@ async function extraction(searchField: string, schedulerId: string) {
 }
 
 // Get schedulerId from CLI args
-const searchField = process.argv[3];
+const searchField = process.argv[3] ?? '';
 const schedulerId = process.argv[2];
 
-if (!searchField || !schedulerId) {
-    console.error("Usage: node run-extraction.js <searchField> <schedulerId>");
+if (!schedulerId) {
+    console.error("Usage: node run-extraction.js <schedulerId> [searchField]");
     process.exit(1);
 }
 

@@ -1,5 +1,5 @@
 import { repository } from "@loopback/repository";
-import { CompanyListRepository, CompanyRepository, DagsRepository, DesignationRepository, JobListRepository, SchedulerRepository } from "../../repositories";
+import { CompanyListRepository, DagsRepository, DesignationRepository, JobListRepository, SchedulerExecutionLogRepository, SchedulerExecutionRepository, SchedulerRepository } from "../../repositories";
 import { AirflowDagService } from "./dag-creation.service";
 import { inject } from "@loopback/core";
 import { Initialize } from "./initialize.service";
@@ -22,6 +22,10 @@ export class Main {
         public companyListRepository: CompanyListRepository,
         @repository(JobListRepository)
         public jobListRepository: JobListRepository,
+        @repository(SchedulerExecutionRepository)
+        public schedulerExecutionRepository: SchedulerExecutionRepository,
+        @repository(SchedulerExecutionLogRepository)
+        public schedulerExecutionLogRepository: SchedulerExecutionLogRepository,
         @inject('services.DagCreation')
         public dagsCreationService: AirflowDagService,
         @inject('services.Initialize')
@@ -35,6 +39,26 @@ export class Main {
         @inject('services.Transformation')
         public transformationService: Transformation,
     ) { }
+
+    private async writeExecutionLog(
+        executionId: string,
+        schedulerId: string,
+        message: string,
+        logType = 0,
+        nodeType?: string,
+        step?: string,
+        payload?: object,
+    ) {
+        await this.schedulerExecutionLogRepository.create({
+            executionId,
+            schedulerId,
+            message,
+            logType,
+            nodeType,
+            step,
+            payload,
+        });
+    }
 
     // Register available services
     servicesMapper = [
@@ -169,8 +193,42 @@ export class Main {
     }
 
     // executing ETL flow...
-    async extraction(searchField: string, schedulerId: string) {
+    async extraction(
+        searchField: string,
+        schedulerId: string,
+        executionContext?: {
+            airflowDagId?: string;
+            airflowTaskId?: string;
+            airflowRunId?: string;
+            airflowTryNumber?: number;
+        },
+    ) {
+        const startedAt = new Date();
+        let executionId: string | undefined;
         try {
+            const execution = await this.schedulerExecutionRepository.create({
+                schedulerId,
+                searchField,
+                status: 'running',
+                startedAt,
+                airflowDagId: executionContext?.airflowDagId,
+                airflowTaskId: executionContext?.airflowTaskId,
+                airflowRunId: executionContext?.airflowRunId,
+                airflowTryNumber: executionContext?.airflowTryNumber,
+                meta: executionContext ?? {},
+            });
+            executionId = execution.id;
+
+            await this.writeExecutionLog(
+                execution.id!,
+                schedulerId,
+                'Scheduler execution started',
+                0,
+                undefined,
+                'start',
+                {searchField},
+            );
+
             const scheduler: any = await this.schedulerRepository.findById(
                 schedulerId,
                 {
@@ -192,8 +250,24 @@ export class Main {
                 return;
             };
 
+            await this.schedulerExecutionRepository.updateById(execution.id!, {
+                dagName: scheduler.schedularName,
+            });
+
             if (scheduler.isDeleted || !scheduler.isActive) {
                 console.log('scheduler is already deleted or temporary In-Active');
+                await this.writeExecutionLog(
+                    execution.id!,
+                    schedulerId,
+                    'Scheduler is deleted or inactive',
+                    1,
+                );
+                await this.schedulerExecutionRepository.updateById(execution.id!, {
+                    status: 'failed',
+                    endedAt: new Date(),
+                    durationMs: Date.now() - startedAt.getTime(),
+                    errorMessage: 'Scheduler is deleted or inactive',
+                });
                 return;
             };
 
@@ -251,6 +325,16 @@ export class Main {
                         (item: any) => item.id === node.id
                     )?.component;
 
+                    await this.writeExecutionLog(
+                        execution.id!,
+                        schedulerId,
+                        `Node execution started: ${node.type}`,
+                        0,
+                        node.type,
+                        'node_start',
+                        {nodeId: node.id, nodeName: node.name},
+                    );
+
                     const result: any = await serviceDef.service(nodeConfig, lastOutputData);
 
                     outputData.push({
@@ -260,6 +344,15 @@ export class Main {
                     });
 
                     lastOutputData = result;
+
+                    await this.writeExecutionLog(
+                        execution.id!,
+                        schedulerId,
+                        `Node execution completed: ${node.type}`,
+                        2,
+                        node.type,
+                        'node_success',
+                    );
                 } catch (err: any) {
                     outputData.push({
                         nodeId: node.id,
@@ -267,6 +360,16 @@ export class Main {
                         output: null,
                         error: err.message,
                     });
+
+                    await this.writeExecutionLog(
+                        execution.id!,
+                        schedulerId,
+                        `Node execution failed: ${node.type}`,
+                        1,
+                        node.type,
+                        'node_error',
+                        {error: err.message},
+                    );
                     break;
                 }
             }
@@ -276,13 +379,50 @@ export class Main {
                 status: outputData.some((n: any) => n.error) ? "failed" : "completed",
                 results: outputData,
             });
+
+            const finalStatus = outputData.some((n: any) => n.error) ? "failed" : "success";
+            const endedAt = new Date();
+            await this.schedulerExecutionRepository.updateById(execution.id!, {
+                status: finalStatus,
+                endedAt,
+                durationMs: endedAt.getTime() - startedAt.getTime(),
+            });
+
+            await this.writeExecutionLog(
+                execution.id!,
+                schedulerId,
+                `Scheduler execution ${finalStatus}`,
+                finalStatus === 'success' ? 2 : 1,
+                undefined,
+                'end',
+            );
+
             return {
                 message: "Extraction finished",
                 count: executionResults.length,
                 result: executionResults,
+                executionId: execution.id,
             };
         } catch (error) {
             console.error('error while doing extraction', error);
+            if (executionId) {
+                const endedAt = new Date();
+                await this.schedulerExecutionRepository.updateById(executionId, {
+                    status: 'failed',
+                    endedAt,
+                    durationMs: endedAt.getTime() - startedAt.getTime(),
+                    errorMessage: error?.message ?? 'Unknown extraction error',
+                });
+                await this.writeExecutionLog(
+                    executionId,
+                    schedulerId,
+                    `Scheduler execution failed: ${error?.message ?? 'Unknown extraction error'}`,
+                    1,
+                    undefined,
+                    'end',
+                );
+            }
+            throw error;
         }
     }
 

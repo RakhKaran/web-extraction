@@ -28,7 +28,7 @@ const intervalTypeValues = [
 ];
 
 
-export default function SchedulerTableRow({ row, selected, onSelectRow, onViewRow, onEditRow }) {
+export default function SchedulerTableRow({ row, selected, onSelectRow, onViewRow, onEditRow, onViewLogs }) {
   const { schedularName, schedulerType, schedulerFor, intervalType, interval, date, time, isActive, isScheduled } = row;
 
   // Safely parse date
@@ -99,6 +99,11 @@ export default function SchedulerTableRow({ row, selected, onSelectRow, onViewRo
       </TableCell>
 
       <TableCell>
+        <Tooltip title="Logs" placement="top" arrow>
+          <IconButton onClick={onViewLogs}>
+            <Iconify icon="solar:clipboard-list-bold" />
+          </IconButton>
+        </Tooltip>
         <Tooltip title="Edit" placement="top" arrow>
           <IconButton onClick={onEditRow}>
             <Iconify icon="solar:pen-bold" />
@@ -115,4 +120,5 @@ SchedulerTableRow.propTypes = {
   selected: PropTypes.bool,
   onViewRow: PropTypes.func,
   onEditRow: PropTypes.func,
+  onViewLogs: PropTypes.func,
 };

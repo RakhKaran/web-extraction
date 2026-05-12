@@ -183,6 +183,7 @@ export const paths = {
       list: `${ROOTS.DASHBOARD}/scheduler/list`,
       details: (id) => `${ROOTS.DASHBOARD}/scheduler/${id}`,
       edit: (id) => `${ROOTS.DASHBOARD}/scheduler/${id}/edit`,
+      logs: (id) => `${ROOTS.DASHBOARD}/scheduler/${id}/logs`,
       demo: {
         details: `${ROOTS.DASHBOARD}/scheduler/${MOCK_ID}`,
         edit: `${ROOTS.DASHBOARD}/scheduler/${MOCK_ID}/edit`,

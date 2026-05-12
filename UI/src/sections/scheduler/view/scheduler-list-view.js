@@ -95,6 +95,13 @@ export default function SchedulerListView() {
     [router]
   );
 
+  const handleViewLogsRow = useCallback(
+    (id) => {
+      router.push(paths.dashboard.scheduler.logs(id));
+    },
+    [router]
+  );
+
   const [filters, setFilters] = useState(defaultFilters);
 
   const dataFiltered = applyFilter({
@@ -250,6 +257,7 @@ export default function SchedulerListView() {
                         onDeleteRow={() => handleDeleteRow(row.id)}
                         onViewRow={() => handleViewRow(row.id)}
                         onEditRow={() => handleEditRow(row.id)}
+                        onViewLogs={() => handleViewLogsRow(row.id)}
                       />
                     ))}
 
