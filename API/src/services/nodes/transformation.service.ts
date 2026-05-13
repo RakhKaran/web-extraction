@@ -30,6 +30,35 @@ export class Transformation {
                 `repositories.${node.deliverRepositoryName}`,
             );
 
+            // ---- Defaults / safety for production
+            // If workflow config doesn't explicitly allow duplicates, deduplicate by default.
+            const duplicatesAllowed = node?.duplicatesAllowed === true;
+
+            // Jobs tend to fluctuate in non-key fields (applicants, posted text, etc.).
+            // Default to a stable key-based deduplication when config is missing.
+            const isJobListDeliver =
+                node?.deliverModelName === 'JobList' ||
+                String(node?.deliverRepositoryName || '').toLowerCase().includes('job');
+
+            const configuredConstraints =
+                Array.isArray(node?.duplicatesConstraints) && node.duplicatesConstraints.length
+                    ? node.duplicatesConstraints
+                    : [];
+
+            const getEffectiveConstraints = (record: any) => {
+                if (configuredConstraints.length) return configuredConstraints;
+
+                if (isJobListDeliver) {
+                    if (record?.redirectUrl) {
+                        return [{ fields: ['redirectUrl'], algorithm: 'exact_match' }];
+                    }
+                    // Fallback when URL is missing
+                    return [{ fields: ['title', 'company', 'location'], algorithm: 'exact_match' }];
+                }
+
+                return [];
+            };
+
             const deliveredRecords: any[] = [];
             let conditions: any[] = [];
 
@@ -173,10 +202,17 @@ export class Transformation {
             // Now you can insert only successRecords with deduplication
             for (const data of successRecords) {
                 let isDuplicate = false;
+                const effectiveConstraints = getEffectiveConstraints(data);
 
                 // Check if duplicates are allowed
-                if (node.duplicatesAllowed === false) {
-                    if (node.duplicatesMatching === 'exact') {
+                if (!duplicatesAllowed) {
+                    const preferCustomConstraints =
+                        effectiveConstraints.length > 0 &&
+                        (node.duplicatesMatching === 'custom' ||
+                            !node.duplicatesMatching ||
+                            (isJobListDeliver && configuredConstraints.length === 0));
+
+                    if (!preferCustomConstraints && node.duplicatesMatching === 'exact') {
                         // Exact matching: check all fields
                         const whereCondition = {
                             and: Object.entries(data).map(([key, value]) => {
@@ -204,12 +240,12 @@ export class Transformation {
 
                         const exists = await deliverRepo.findOne({ where: whereCondition });
                         isDuplicate = exists !== null;
-                    } else if (node.duplicatesMatching === 'custom' && node.duplicatesConstraints) {
+                    } else if (preferCustomConstraints) {
                         // Custom matching: use deduplication service
                         isDuplicate = await this.deduplicationService.isDuplicate(
                             data,
                             deliverRepo,
-                            node.duplicatesConstraints
+                            effectiveConstraints
                         );
                     }
                 }

@@ -49,13 +49,17 @@ export class Main {
         step?: string,
         payload?: object,
     ) {
+        // These are system-level log lines; UI "terminal" should not show a fake node prefix like:
+        // `end - ...` or `customAddNode:node_error - ...`
+        const shouldHideNodePrefix = step === 'end' || step === 'node_error';
+
         await this.schedulerExecutionLogRepository.create({
             executionId,
             schedulerId,
             message,
             logType,
-            nodeType,
-            step,
+            nodeType: shouldHideNodePrefix ? undefined : nodeType,
+            step: shouldHideNodePrefix ? undefined : step,
             payload,
         });
     }
@@ -117,22 +121,35 @@ export class Main {
 
                     await Promise.all(
                         designations.map(async (designation) => {
-                            const finalSearchArray = designations.map((desg) => {
-                                return {
+                            const searchValue = designation?.designation || '';
+                            const finalSearchArray = [
+                                {
                                     selectorName: 'Search',
-                                    value: desg.designation
-                                }
-                            })
+                                    value: searchValue,
+                                },
+                            ];
 
                             const dagFileName =
                                 await this.dagsCreationService.createDagFile(
                                     scheduler,
-                                    designation?.designation || ''
+                                    searchValue
                                 );
 
                             if (dagFileName) {
+                                const existing = await this.dagsRepository.findOne({
+                                    where: {
+                                        and: [
+                                            { schedulerId: scheduler.id },
+                                            { dagFileName },
+                                            { isDeleted: false },
+                                        ],
+                                    },
+                                });
+
+                                if (existing) return;
+
                                 await this.dagsRepository.create({
-                                    dagName: `dag-${scheduler.schedularName}-${designation?.designation}`,
+                                    dagName: `dag-${scheduler.schedularName}-${searchValue}`,
                                     dagFileName,
                                     schedulerId: scheduler.id,
                                     searchArray: finalSearchArray,
@@ -174,6 +191,18 @@ export class Main {
                             );
 
                             if (dagFileName) {
+                                const existing = await this.dagsRepository.findOne({
+                                    where: {
+                                        and: [
+                                            { schedulerId: scheduler.id },
+                                            { dagFileName },
+                                            { isDeleted: false },
+                                        ],
+                                    },
+                                });
+
+                                if (existing) continue;
+
                                 await this.dagsRepository.create({
                                     dagName: `dag-${scheduler.schedularName}-${companyName}-${designation}`,
                                     dagFileName,
@@ -190,6 +219,18 @@ export class Main {
                         await this.dagsCreationService.createDagFile(scheduler, '');
 
                     if (dagFileName) {
+                        const existing = await this.dagsRepository.findOne({
+                            where: {
+                                and: [
+                                    { schedulerId: scheduler.id },
+                                    { dagFileName },
+                                    { isDeleted: false },
+                                ],
+                            },
+                        });
+
+                        if (existing) continue;
+
                         await this.dagsRepository.create({
                             dagName: `dag-${scheduler.schedularName}`,
                             dagFileName,

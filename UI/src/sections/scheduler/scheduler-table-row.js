@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import ListItemText from '@mui/material/ListItemText';
-import { IconButton, Tooltip } from '@mui/material';
+import { Chip, IconButton, Stack, Tooltip } from '@mui/material';
 import { format, isValid } from 'date-fns';
 import Iconify from 'src/components/iconify';
 import Label from 'src/components/label';
@@ -29,10 +29,23 @@ const intervalTypeValues = [
 
 
 export default function SchedulerTableRow({ row, selected, onSelectRow, onViewRow, onEditRow, onViewLogs }) {
-  const { schedularName, schedulerType, schedulerFor, intervalType, interval, date, time, isActive, isScheduled } = row;
+  const {
+    schedularName,
+    schedulerType,
+    schedulerFor,
+    intervalType,
+    interval,
+    date,
+    time,
+    isActive,
+    isScheduled,
+    nextRunAt,
+    createdDesignations,
+  } = row;
 
   // Safely parse date
   const parsedDate = date ? new Date(date) : null;
+  const parsedNextRun = nextRunAt ? new Date(nextRunAt) : null;
 
   return (
     <TableRow hover selected={selected}>
@@ -47,6 +60,27 @@ export default function SchedulerTableRow({ row, selected, onSelectRow, onViewRo
         {intervalTypeValues.find((item) => item.value === intervalType)?.label || 'NA'}
       </TableCell>
       <TableCell>{interval || 'NA'}</TableCell>
+
+      <TableCell>
+        {parsedNextRun && isValid(parsedNextRun) ? format(parsedNextRun, 'MMM dd, yyyy HH:mm') : 'NA'}
+      </TableCell>
+
+      {/* <TableCell>
+        {(createdDesignations || []).length ? (
+          <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+            {(createdDesignations || []).slice(0, 2).map((d) => (
+              <Chip key={d} label={d} size="small" variant="outlined" />
+            ))}
+            {(createdDesignations || []).length > 2 && (
+              <Tooltip title={(createdDesignations || []).join(', ')} placement="top" arrow>
+                <Chip label={`+${(createdDesignations || []).length - 2}`} size="small" />
+              </Tooltip>
+            )}
+          </Stack>
+        ) : (
+          'NA'
+        )}
+      </TableCell> */}
       {/*<TableCell>
         {parsedDate && isValid(parsedDate) ? (
           <ListItemText

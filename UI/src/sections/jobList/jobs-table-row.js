@@ -33,7 +33,6 @@ export default function JobTableRow({ row, selected, onViewRow, onSelectRow, onD
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{company || 'N/A'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{sourceName || 'Unknown'}</TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{blueprintName || 'Unknown'}</TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
           <Chip
             size="small"

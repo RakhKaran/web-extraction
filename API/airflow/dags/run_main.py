@@ -6,7 +6,7 @@ dag = DAG(
     dag_id="run_main_workflow",
     description="Run LB4 Main Service via Node.js",
     start_date=datetime(2023, 1, 1),
-    schedule_interval=None,  # manual for now
+    schedule_interval="0 1 * * *",  # daily at 01:00
     catchup=False,
     tags=["lb4", "workflow", "extraction"],
 )

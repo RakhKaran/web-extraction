@@ -54,9 +54,10 @@ const STATUS_OPTIONS = [{ value: 'all', label: 'All' }];
 const TABLE_HEAD = [
   { id: 'schedularName', label: 'Schedular Name' },
   { id: 'schedulerType', label: 'Scheduler Type' },
-  { id: 'intervalType', label: 'Interval Type' },
   { id: 'schedulerFor', label: 'Scheduler For' },
+  { id: 'intervalType', label: 'Interval Type' },
   { id: 'interval', label: 'Interval' },
+  { id: 'nextRunAt', label: 'Next Run' },
   // { id: 'date', label: 'date' },
   // { id: 'time', label: 'Time' },
   { id: 'status', label: 'Status' },

@@ -1,4 +1,4 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useMemo, useRef, useState} from 'react';
 import {Fragment} from 'react';
 import {useNavigate, useParams} from 'react-router-dom';
 import {
@@ -16,6 +16,7 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  Tooltip,
   Typography,
 } from '@mui/material';
 import {format} from 'date-fns';
@@ -41,13 +42,39 @@ function formatDuration(ms) {
   return `${seconds}s`;
 }
 
+function getLogColor(type) {
+  switch (type) {
+    case 0:
+      return '#00BFFF'; // info
+    case 1:
+      return '#FF3B3B'; // error
+    case 2:
+      return '#00FF00'; // success
+    case 3:
+      return '#FFD700'; // warning
+    default:
+      return '#FFFFFF';
+  }
+}
+
+function formatLogLine(log) {
+  const time = log.createdAt ? format(new Date(log.createdAt), 'HH:mm:ss') : 'NA';
+  const scope = [log.nodeType, log.step].filter(Boolean).join(':');
+  const prefix = scope ? `${scope} - ` : '';
+  return `[${time}] ${prefix}${log.message}`;
+}
+
 export default function SchedulerLogsView() {
   const {id} = useParams();
   const navigate = useNavigate();
   const [executions, setExecutions] = useState([]);
-  const [logsMap, setLogsMap] = useState({});
+  const [logsMap, setLogsMap] = useState({}); // executionId -> { logs, page, loading }
   const [expandedId, setExpandedId] = useState(null);
   const [loading, setLoading] = useState(true);
+  const terminalRef = useRef(null);
+  const logsMapRef = useRef({});
+
+  const LOG_PAGE_SIZE = 200;
 
   useEffect(() => {
     const loadExecutions = async () => {
@@ -64,6 +91,56 @@ export default function SchedulerLogsView() {
     loadExecutions();
   }, [id]);
 
+  useEffect(() => {
+    logsMapRef.current = logsMap;
+  }, [logsMap]);
+
+  const expandedLogsState = useMemo(() => {
+    if (!expandedId) return null;
+    return logsMap[expandedId] || null;
+  }, [expandedId, logsMap]);
+
+  useEffect(() => {
+    if (!terminalRef.current) return;
+    terminalRef.current.scrollTop = terminalRef.current.scrollHeight;
+  }, [expandedLogsState?.logs, expandedId]);
+
+  const loadMoreLogs = async (executionId) => {
+    setLogsMap((prev) => ({
+      ...prev,
+      [executionId]: {
+        logs: prev?.[executionId]?.logs || [],
+        page: prev?.[executionId]?.page ?? 0,
+        loading: true,
+      },
+    }));
+
+    const page = logsMapRef.current?.[executionId]?.page ?? 0;
+    const skip = page * LOG_PAGE_SIZE;
+
+    try {
+      const next = await getSchedulerExecutionLogs(executionId, LOG_PAGE_SIZE, skip);
+      setLogsMap((prev) => ({
+        ...prev,
+        [executionId]: {
+          logs: [...(next || []), ...(prev?.[executionId]?.logs || [])],
+          page: (prev?.[executionId]?.page ?? 0) + 1,
+          loading: false,
+        },
+      }));
+    } catch (error) {
+      console.error('Failed to load execution logs', error);
+      setLogsMap((prev) => ({
+        ...prev,
+        [executionId]: {
+          logs: prev?.[executionId]?.logs || [],
+          page: prev?.[executionId]?.page ?? 0,
+          loading: false,
+        },
+      }));
+    }
+  };
+
   const toggleExecutionLogs = async (executionId) => {
     const isOpen = expandedId === executionId;
     if (isOpen) {
@@ -71,14 +148,7 @@ export default function SchedulerLogsView() {
       return;
     }
 
-    if (!logsMap[executionId]) {
-      try {
-        const logs = await getSchedulerExecutionLogs(executionId, 500, 0);
-        setLogsMap((prev) => ({...prev, [executionId]: logs}));
-      } catch (error) {
-        console.error('Failed to load execution logs', error);
-      }
-    }
+    if (!logsMap[executionId]) await loadMoreLogs(executionId);
     setExpandedId(executionId);
   };
 
@@ -144,36 +214,61 @@ export default function SchedulerLogsView() {
                     <TableCell colSpan={6} sx={{py: 0}}>
                       <Collapse in={expandedId === execution.id} timeout="auto" unmountOnExit>
                         <Box sx={{p: 2, bgcolor: 'background.neutral'}}>
-                          {(logsMap[execution.id] || []).length ? (
-                            <Table size="small">
-                              <TableHead>
-                                <TableRow>
-                                  <TableCell>Time</TableCell>
-                                  <TableCell>Type</TableCell>
-                                  <TableCell>Node</TableCell>
-                                  <TableCell>Message</TableCell>
-                                </TableRow>
-                              </TableHead>
-                              <TableBody>
-                                {(logsMap[execution.id] || []).map((log) => (
-                                  <TableRow key={log.id}>
-                                    <TableCell>
-                                      {log.createdAt
-                                        ? format(new Date(log.createdAt), 'HH:mm:ss')
-                                        : 'NA'}
-                                    </TableCell>
-                                    <TableCell>{log.logType}</TableCell>
-                                    <TableCell>{log.nodeType || 'general'}</TableCell>
-                                    <TableCell>{log.message}</TableCell>
-                                  </TableRow>
-                                ))}
-                              </TableBody>
-                            </Table>
-                          ) : (
-                            <Typography variant="body2" color="text.secondary">
-                              No logs for this execution.
-                            </Typography>
-                          )}
+                          <Box
+                            ref={expandedId === execution.id ? terminalRef : undefined}
+                            sx={{
+                              bgcolor: 'black',
+                              color: '#00FF00',
+                              maxHeight: 420,
+                              overflowY: 'auto',
+                              px: 2,
+                              py: 1.5,
+                              borderRadius: 1,
+                              fontFamily: 'monospace',
+                              scrollbarWidth: 'none',
+                              '&::-webkit-scrollbar': {display: 'none'},
+                            }}
+                          >
+                            {((logsMap[execution.id]?.logs || [])).length ? (
+                              (logsMap[execution.id]?.logs || [])
+                                .slice()
+                                .reverse()
+                                .map((log) => (
+                                  <Typography
+                                    key={log.id}
+                                    sx={{
+                                      color: getLogColor(log.logType),
+                                      fontFamily: 'monospace',
+                                      fontSize: '0.875rem',
+                                      whiteSpace: 'pre-wrap',
+                                      mb: 0.75,
+                                    }}
+                                  >
+                                    {formatLogLine(log)}
+                                  </Typography>
+                                ))
+                            ) : (
+                              <Typography variant="body2" color="text.secondary">
+                                No logs for this execution.
+                              </Typography>
+                            )}
+                          </Box>
+
+                          <Stack direction="row" justifyContent="center" sx={{pt: 1.5}}>
+                            <Tooltip title="Loads older logs for this execution">
+                              <span>
+                                <Button
+                                  variant="outlined"
+                                  size="small"
+                                  onClick={() => loadMoreLogs(execution.id)}
+                                  disabled={!!logsMap?.[execution.id]?.loading}
+                                  startIcon={<Iconify icon="eva:refresh-fill" />}
+                                >
+                                  Load More
+                                </Button>
+                              </span>
+                            </Tooltip>
+                          </Stack>
                         </Box>
                       </Collapse>
                     </TableCell>

@@ -62,7 +62,6 @@ const TABLE_HEAD = [
   { id: 'title', label: 'Title' },
   { id: 'company', label: 'Company' },
   { id: 'sourceName', label: 'Source' },
-  { id: 'blueprintName', label: 'Blueprint' },
   { id: 'expiredStatus', label: 'Status' },
   { id: 'effectiveDate', label: 'Updated/Created' },
   { id: 'actions', label: 'Actions', width: 88 },
