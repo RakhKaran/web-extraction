@@ -70,7 +70,7 @@ export default function JobsDetailsView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <JobsDetailsToolbar
-        backLink={paths.dashboard.job.root}
+        backLink={paths.dashboard.job.list}
         // editLink={paths.dashboard.job.edit(`${currentJob?.id}`)}
         // liveLink="#"
         // publish={publish || ''}

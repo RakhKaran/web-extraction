@@ -25,6 +25,7 @@ import Iconify from 'src/components/iconify';
 import Scrollbar from 'src/components/scrollbar';
 import { ConfirmDialog } from 'src/components/custom-dialog';
 import { useSettingsContext } from 'src/components/settings';
+import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   useTable,
   getComparator,
@@ -130,14 +131,14 @@ export default function WorkflowListView() {
 
   const handleEditRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.processes.edit(id));
+      router.push(paths.dashboard.workflow.edit(id));
     },
     [router]
   );
 
   const handleViewRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.processes.view(id));
+      router.push(paths.dashboard.workflow.view(id));
     },
     [router]
   );
@@ -163,44 +164,26 @@ export default function WorkflowListView() {
   return (
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-        <Box
-          sx={{
-            mb: 2,
-            px: 2,
-            display: 'flex',
-            alignItems: 'center',
-            justifyContent: 'space-between',
-          }}
-        >
-          {/* Left Side: Heading */}
-          <Typography variant="h6" component="div">
-            Extraction
-          </Typography>
-
-          {/* Right Side: Icons + Create Button */}
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-            {view === 'list' ? (
+        <CustomBreadcrumbs
+          heading="Extraction"
+          links={[
+            { name: 'Dashboard', href: paths.dashboard.root },
+            { name: 'Extraction', href: paths.dashboard.workflow.list },
+            { name: 'List' },
+          ]}
+          action={
+            view === 'list' ? (
               <Button
                 variant="contained"
                 startIcon={<Iconify icon="eva:plus-fill" />}
                 onClick={createWorkflow.onTrue}
-                sx={{
-                  borderRadius: '30px',
-                  backgroundColor: '#4182EB',
-                  textTransform: 'none',
-                  fontWeight: 600,
-                  px: 3,
-                  height: 40,
-                  '&:hover': {
-                    backgroundColor: '#3069c6',
-                  },
-                }}
               >
-                Create
+                Create flow
               </Button>
-            ) : null}
-          </Box>
-        </Box>
+            ) : null
+          }
+          sx={{ mb: { xs: 3, md: 5 } }}
+        />
         {view === 'list' ? (
           <Card>
             <TableContainer sx={{ position: 'relative', overflow: 'unset' }}>

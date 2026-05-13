@@ -23,6 +23,8 @@ import {
 import { format } from 'date-fns';
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'notistack';
+import { paths } from 'src/routes/paths';
+import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   getFreshnessCheckById,
   getFreshnessCheckLogs,
@@ -90,21 +92,24 @@ export default function DataFreshnessLogsPage() {
       </Helmet>
 
       <Container maxWidth="xl">
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-          <Stack>
-            <Typography variant="h4">{config?.name}</Typography>
-            <Typography variant="body2" color="text.secondary">
-              Freshness Check Logs & Statistics
-            </Typography>
-          </Stack>
-          <Button
-            variant="outlined"
-            startIcon={<Iconify icon="eva:arrow-back-fill" />}
-            onClick={() => navigate('/dashboard/data-freshness')}
-          >
-            Back
-          </Button>
-        </Stack>
+        <CustomBreadcrumbs
+          heading={config?.name || 'Freshness Logs'}
+          links={[
+            { name: 'Dashboard', href: paths.dashboard.root },
+            { name: 'Data Freshness', href: paths.dashboard.dataFreshness.list },
+            { name: 'Logs' },
+          ]}
+          action={
+            <Button
+              variant="outlined"
+              startIcon={<Iconify icon="eva:arrow-back-fill" />}
+              onClick={() => navigate(paths.dashboard.dataFreshness.list)}
+            >
+              Back
+            </Button>
+          }
+          sx={{ mb: { xs: 3, md: 5 } }}
+        />
 
         {/* Statistics Cards */}
         {stats && (

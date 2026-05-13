@@ -25,18 +25,18 @@ export default function WorkflowView() {
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
       <CustomBreadcrumbs
-        heading="Edit"
+        heading="View"
         links={[
           {
             name: 'Dashboard',
             href: paths.dashboard.root,
           },
           {
-            name: 'Workflow',
-            href: paths.dashboard.processes.root,
+            name: 'Extraction',
+            href: paths.dashboard.workflow.list,
           },
           {
-            name: currentWorkflow?.processes,
+            name: currentWorkflow?.name || 'Workflow',
           },
         ]}
         sx={{

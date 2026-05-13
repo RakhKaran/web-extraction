@@ -212,7 +212,6 @@ export default function AccountGeneral() {
                 variant="contained"
                 loading={isSubmitting}
                 style={{
-                  backgroundColor: '#00554E',
                   width: '250px',
                   height: '40px',
                   marginTop: '20px',

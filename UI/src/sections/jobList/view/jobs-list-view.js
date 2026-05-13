@@ -20,7 +20,6 @@ import {
 // routes
 import { paths } from 'src/routes/paths';
 import { useRouter } from 'src/routes/hook';
-import { RouterLink } from 'src/routes/components';
 // _mock
 // import { _companyList } from 'src/_mock/_company';
 import { _jobsOption, USER_STATUS_OPTIONS } from 'src/_mock';
@@ -190,10 +189,10 @@ export default function JobsListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="List"
+          heading="Jobs"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
-            { name: 'Jobs', href: paths.dashboard.job.root },
+            { name: 'Jobs', href: paths.dashboard.job.list },
             { name: 'List' },
           ]}
           // action={

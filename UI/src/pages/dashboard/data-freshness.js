@@ -19,6 +19,8 @@ import {
 import { useNavigate } from 'react-router-dom';
 import Iconify from 'src/components/iconify';
 import { useSnackbar } from 'notistack';
+import { paths } from 'src/routes/paths';
+import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 import {
   getFreshnessChecks,
   deleteFreshnessCheck,
@@ -116,16 +118,24 @@ export default function DataFreshnessPage() {
       </Helmet>
 
       <Container maxWidth="xl">
-        <Stack direction="row" alignItems="center" justifyContent="space-between" mb={5}>
-          <Typography variant="h4">Data Freshness Management</Typography>
-          <Button
-            variant="contained"
-            startIcon={<Iconify icon="eva:plus-fill" />}
-            onClick={handleCreate}
-          >
-            Create Freshness Check
-          </Button>
-        </Stack>
+        <CustomBreadcrumbs
+          heading="Data Freshness"
+          links={[
+            { name: 'Dashboard', href: paths.dashboard.root },
+            { name: 'Data Freshness', href: paths.dashboard.dataFreshness.list },
+            { name: 'List' },
+          ]}
+          action={
+            <Button
+              variant="contained"
+              startIcon={<Iconify icon="eva:plus-fill" />}
+              onClick={handleCreate}
+            >
+              Create Freshness Check
+            </Button>
+          }
+          sx={{ mb: { xs: 3, md: 5 } }}
+        />
 
         {!loading && freshnessChecks.length === 0 && (
           <Card sx={{ p: 5, textAlign: 'center' }}>

@@ -1,17 +1,23 @@
 import { useState } from "react";
-import { settings } from "nprogress";
 import { Box, Container, IconButton, Typography } from "@mui/material";
 import CustomBreadcrumbs from "src/components/custom-breadcrumbs";
 import Iconify from "src/components/iconify";
+import { paths } from "src/routes/paths";
+import { useSettingsContext } from "src/components/settings";
 import ReactFlowBoard from "../react-flow-board";
 
 export default function ReactFlowView(){
+    const settings = useSettingsContext();
     const [isUnlock, setIsUnlock] = useState(false);
     return(
         <Container maxWidth={settings.themeStretch ? false : 'lg'}>
             <CustomBreadcrumbs
                 heading="Extraction Flow"
-                links={[{ name: '', href: '/' }]}
+                links={[
+                    { name: 'Dashboard', href: paths.dashboard.root },
+                    { name: 'Extraction', href: paths.dashboard.workflow.list },
+                    { name: 'Flow' },
+                ]}
                 // sx={{
                 // mb: { xs: 1, md: 1 },
                 // }}

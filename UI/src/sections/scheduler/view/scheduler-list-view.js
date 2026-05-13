@@ -84,7 +84,7 @@ export default function SchedulerListView() {
 
   const handleViewRow = useCallback(
     (id) => {
-      router.push(paths.dashboard.category.details(id));
+      router.push(paths.dashboard.scheduler.details(id));
     },
     [router]
   );
@@ -158,7 +158,7 @@ export default function SchedulerListView() {
     <>
       <Container maxWidth={settings.themeStretch ? false : 'lg'}>
         <CustomBreadcrumbs
-          heading="List"
+          heading="Schedulers"
           links={[
             { name: 'Dashboard', href: paths.dashboard.root },
             { name: 'Scheduler', href: paths.dashboard.scheduler.list },
