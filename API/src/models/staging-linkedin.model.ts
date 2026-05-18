@@ -31,6 +31,33 @@ export class StagingLinkedin extends Entity {
   location?: string;
 
   @property({
+    type: 'array',
+    itemType: 'object',
+    required: false
+  })
+  experience: object[]
+
+  @property({
+    type: 'array',
+    itemType: 'object',
+    required: false
+  })
+  education: object[]
+
+  @property({
+    type: 'array',
+    itemType: 'object',
+    required: false
+  })
+  skills: object[];
+
+  @property({
+    type: 'string',
+    required: false
+  })
+  designation?: 'string';
+
+  @property({
     type: 'string',
     required: true
   })

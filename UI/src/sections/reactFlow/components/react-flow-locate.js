@@ -37,14 +37,23 @@ function setFields(fieldsObj = {}) {
       };
     } else if (typeof value === "object" && !Array.isArray(value)) {
       // object with selector/type
+      let childrenArray = [];
+      if (value.type === "list" && value.item) {
+        if (value.item.type === "object" && value.item.fields) {
+          childrenArray = setFields(value.item.fields);
+        } else {
+          childrenArray = setFields(value.item); // fallback for older structure
+        }
+      } else if (value.type === "object" && value.fields) {
+        childrenArray = setFields(value.fields);
+      }
+
       return {
         fieldName: key,
         selector: value.selector || "",
         selectorType: value.type || "css",
         attribute: value.attr,
-        children: value.item
-          ? setFields(value.item) // recursively handle children
-          : [],
+        children: childrenArray,
       };
     }
     return null;
@@ -60,6 +69,14 @@ function storeFields(fieldsArray = []) {
         selector: field.selector,
         type: field.selectorType,
         item: field.children && field.children.length > 0
+          ? { type: "object", fields: storeFields(field.children) }
+          : {}
+      };
+    } else if (field.selectorType === "object") {
+      fields[field.fieldName] = {
+        selector: field.selector,
+        type: field.selectorType,
+        fields: field.children && field.children.length > 0
           ? storeFields(field.children)
           : {}
       };

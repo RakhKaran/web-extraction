@@ -163,6 +163,7 @@ export class PrototypeController {
       if (fieldConfig.item.selector) {
         // container + child selector style
         listEls = await el.$$(fieldConfig.item.selector);
+        console.log('list of items', listEls);
       } else {
         // direct selector style (el itself IS the item)
         console.log('selector', fieldConfig.selector);
@@ -370,7 +371,7 @@ export class PrototypeController {
         }
 
         browser = await chromium.launch({
-          headless: true,
+          headless: false,
           args: [
             "--disable-blink-features=AutomationControlled",
             "--start-maximized",
@@ -380,7 +381,7 @@ export class PrototypeController {
         });
         const contextOptions: any = {
           viewport: null,
-          userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120 Safari/537.36",
+          userAgent: "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
           ignoreHTTPSErrors: true
         };
 
@@ -581,10 +582,11 @@ export class PrototypeController {
       const currentPageUrl = page.url();
 
       const jobCards = await page.$$(selectorName);
-      console.log(`Found ${jobCards.length} job cards`);
+      console.log(`[handleJobListNode] Found ${jobCards.length} matching elements with selector: ${selectorName}`);
 
       for (let card of jobCards.slice(0, 20)) {
         const href = await card.getAttribute("href");
+        console.log(`[handleJobListNode] Found link: ${href}`);
 
         if (href) {
           try {
@@ -658,6 +660,37 @@ export class PrototypeController {
         });
         const jobPage = await browser.newPage();
         await jobPage.goto(link, { waitUntil: "domcontentloaded" });
+        await jobPage.waitForTimeout(3000);
+        console.log("Current URL:", jobPage.url(), "Title:", await jobPage.title());
+
+        console.log(`[handleJobDetailNode] Scrolling down to trigger lazy-loaded sections...`);
+        // Move mouse to the center of the viewport so wheel events target the main content
+        const viewport = jobPage.viewportSize();
+        if (viewport) {
+          await jobPage.mouse.move(viewport.width / 2, viewport.height / 2);
+        }
+        // Force focus on the body so keyboard/scroll events register properly
+        await jobPage.locator('body').click({ force: true }).catch(() => { });
+
+        // We use mouse.wheel() as implemented in the pagination logic
+        for (let scrollCount = 0; scrollCount < 12; scrollCount++) {
+          await jobPage.mouse.wheel(0, 800);
+
+          // Fallback: forcefully scroll all scrollable containers via JS
+          await jobPage.evaluate(() => {
+            // @ts-ignore
+            const scrollables = Array.from(document.querySelectorAll('*')).filter((el: any) => {
+              // @ts-ignore
+              const style = window.getComputedStyle(el);
+              return (style.overflowY === 'auto' || style.overflowY === 'scroll') && el.scrollHeight > el.clientHeight;
+            });
+            scrollables.forEach((el: any) => el.scrollBy(0, 800));
+            // @ts-ignore
+            window.scrollBy(0, 800);
+          }).catch(() => { });
+
+          await jobPage.waitForTimeout(700);
+        }
 
         // Wait for expected selectors, but do not fail the whole job if one is missing.
         for (const selector of node?.waitToLoadSelectors ?? []) {
@@ -716,6 +749,8 @@ export class PrototypeController {
               record[fieldName] = null;
             }
 
+            console.log(`[handleJobDetailNode] Extracted field [${fieldName}] =>`, JSON.stringify(record[fieldName]).substring(0, 200));
+
           } catch (innerErr) {
             console.warn(`⚠️ Failed to extract ${fieldName} from ${link}`, innerErr);
             await this.testExtractionLogsRepository.create({
@@ -767,13 +802,22 @@ export class PrototypeController {
       throw new Error(`Deliver node missing "repository" config`);
     }
 
+    console.log('data', data);
+    console.log('node info', node);
+    console.log('Repository:', node.respositoryName);
+
     // explicitly type cast
     const repo = await this.ctx.get<DefaultCrudRepository<any, any>>(
       `repositories.${node.respositoryName}`,
     );
 
+    console.log('Repository:', repo);
+    console.log('Repo constructor:', repo?.constructor?.name);
+    console.log('Repo create:', typeof repo?.create);
+
     const deliveredRecords: any[] = [];
     for (const record of data) {
+      console.log(`\n[handleDeliverNode] Processing record to deliver:`, JSON.stringify(record).substring(0, 200));
       try {
         const payload: any = {};
 
@@ -809,6 +853,7 @@ export class PrototypeController {
           if (conditions.length > 0) {
             const isValid = this.applyConditions(value, type, conditions);
             if (!isValid) {
+              console.log(`[handleDeliverNode] ❌ Record dropped! Field "${modelField}" failed condition check. Value:`, value);
               await this.testExtractionLogsRepository.create({
                 extractionId,
                 logsDescription: `Field "${modelField}" failed condition check for record: ${JSON.stringify(record)}`,
@@ -856,6 +901,7 @@ export class PrototypeController {
 
     return deliveredRecords;
   }
+
   private async logTransformationError(extractionId: string, message: string) {
     await this.testExtractionLogsRepository.create({
       extractionId,
@@ -927,6 +973,7 @@ export class PrototypeController {
 
     // fetch data
     const data = await stagingRepo.find(filter);
+    console.log(`\n[handleTransformationNode] Fetched ${data.length} records from staging table using filter:`, JSON.stringify(filter));
 
     // remove system fields
     const stagingData = data.map(item => {
@@ -991,11 +1038,65 @@ export class PrototypeController {
           }
 
           case 'array':
-            if (Array.isArray(value)) {
-              value = [...new Set(value.map((v: any) => String(v).trim()))];
-            } else {
+
+            if (!Array.isArray(value)) {
               value = [];
+              break;
             }
+
+            // remove null/undefined/empty
+            value = value.filter(
+              (v: any) =>
+                v !== null &&
+                v !== undefined &&
+                v !== ''
+            );
+
+            // STRING ARRAY
+            if (value.every((v: any) => typeof v === 'string')) {
+
+              value = [
+                ...new Set(
+                  value.map((v: string) => v.trim())
+                )
+              ];
+
+            }
+
+            // OBJECT ARRAY
+            else if (value.every((v: any) => typeof v === 'object' && !Array.isArray(v))) {
+
+              value = Array.from(
+                new Map(
+                  value.map((v: any) => [
+                    JSON.stringify(v),
+                    v
+                  ])
+                ).values()
+              );
+
+            }
+
+            // MIXED ARRAY
+            else {
+
+              value = value.map((v: any) => {
+
+                // preserve objects
+                if (typeof v === 'object' && v !== null) {
+                  return v;
+                }
+
+                // clean strings
+                if (typeof v === 'string') {
+                  return v.trim();
+                }
+
+                return v;
+              });
+
+            }
+
             break;
         }
 
@@ -1019,6 +1120,7 @@ export class PrototypeController {
 
       // Push into success or error bucket
       if (hasError) {
+        console.log(`[handleTransformationNode] ❌ Record transformation error: ${recordErrors.join(" | ")}`);
         errorRecords.push({ original: record, normalized });
         await this.testExtractionLogsRepository.create({
           extractionId,
@@ -1076,7 +1178,10 @@ export class PrototypeController {
       }
 
       if (!isDuplicate) {
+        console.log(`[handleTransformationNode] ✅ Inserting record to target DB:`, data.fullName || data.profileUrl || 'record');
         await deliverRepo.create(data);
+      } else {
+        console.log(`[handleTransformationNode] ⏭️ Skipping duplicate record.`);
       }
     }
 

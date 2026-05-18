@@ -1,4 +1,4 @@
-import {Entity, model, property} from '@loopback/repository';
+import { Entity, model, property } from '@loopback/repository';
 
 @model()
 export class Company extends Entity {
@@ -9,7 +9,7 @@ export class Company extends Entity {
   })
   id?: string;
 
-   @property({
+  @property({
     type: 'string',
     required: true,
   })
@@ -41,11 +41,32 @@ export class Company extends Entity {
   location?: string;
 
   @property({
+    type: 'array',
+    itemType: 'object',
+    required: false
+  })
+  experience: object[]
+
+  @property({
+    type: 'array',
+    itemType: 'object',
+    required: false
+  })
+  education: object[]
+
+  @property({
+    type: 'array',
+    itemType: 'object',
+    required: false
+  })
+  skills: object[];
+
+  @property({
     type: 'string',
     required: true
   })
   redirectUrl: string;
-  
+
   @property({
     type: 'date',
     defaultFn: 'now',
