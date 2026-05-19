@@ -39,6 +39,7 @@ const UserCreatePage = lazy(() => import('src/pages/dashboard/user/new'));
 const UserEditPage = lazy(() => import('src/pages/dashboard/user/edit'));
 // COMPANY
 const CompanyListPage = lazy(() => import('src/pages/dashboard/company/list'));
+const CandidateDetailsPage = lazy(() => import('src/pages/dashboard/company/details'));
 // WORKFLOW
 const ReactFlowPage = lazy(() => import('src/pages/dashboard/react-flow/board'))
 
@@ -150,6 +151,7 @@ export const dashboardRoutes = [
         children: [
           { element: <CompanyListPage />, index: true },
           { path: 'list', element: <CompanyListPage /> },
+          { path: ':id', element: <CandidateDetailsPage /> },
         ]
       },
       {

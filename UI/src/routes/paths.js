@@ -116,6 +116,7 @@ export const paths = {
     company: {
       root: `${ROOTS.DASHBOARD}/company`,
       list: `${ROOTS.DASHBOARD}/company/list`,
+      candidateDetails: (id) => `${ROOTS.DASHBOARD}/company/${id}`,
     },
     //   product: {
     //     root: `${ROOTS.DASHBOARD}/product`,

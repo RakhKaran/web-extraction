@@ -59,6 +59,12 @@ export class StagingLinkedin extends Entity {
 
   @property({
     type: 'string',
+    required: false
+  })
+  companyName?: 'string';
+
+  @property({
+    type: 'string',
     required: true
   })
   redirectUrl: string;

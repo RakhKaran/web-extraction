@@ -40,17 +40,14 @@ import {
   TableNoData,
   TableEmptyRows,
   TableHeadCustom,
-  TableSelectedAction,
   TablePaginationCustom,
 
 } from 'src/components/table';
-// import { TableRow,TableCell } from '@mui/material';
 
 //
 import CompanyTableFiltersResult from '../company-table-filters-result';
 import CompanyTableRow from '../company-table-row';
 import CompanyTableToolbar from '../company-table-toolbar';
-import { companyMock } from '../mockData';
 import { useGetCompanies } from 'src/api/company';
 
 // ----------------------------------------------------------------------
@@ -63,7 +60,7 @@ const TABLE_HEAD = [
   { id: 'company', label: 'Company Name' },
   { id: 'designetion', label: 'Designation' },
   { id: 'redirectUrl', label: 'Linked In' },
-  { id: 'location', label: 'Location' },
+  { id: 'action', label: 'Actions' },
 ];
 
 const defaultFilters = {

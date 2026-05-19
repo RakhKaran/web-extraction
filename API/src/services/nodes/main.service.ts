@@ -339,7 +339,7 @@ export class Main {
             }
 
             const workflowBlueprint = workflow.workflowBlueprint;
-            const nodesData = workflowBlueprint.nodes || [];
+            const nodesData = workflowBlueprint.nodes?.filter((node: any) => node.type !== 'customAddNode') || [];
             let bluePrint = workflowBlueprint.bluePrint || [];
             const outputData: any = [];
             let lastOutputData: any = {};

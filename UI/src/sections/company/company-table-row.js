@@ -10,6 +10,9 @@ import IconButton from '@mui/material/IconButton';
 import ListItemText from '@mui/material/ListItemText';
 // hooks
 import { useBoolean } from 'src/hooks/use-boolean';
+// routes
+import { paths } from 'src/routes/paths';
+import { useRouter } from 'src/routes/hook';
 // components
 import Label from 'src/components/label';
 import Iconify from 'src/components/iconify';
@@ -20,12 +23,17 @@ import { Avatar, Link } from '@mui/material';
 // ----------------------------------------------------------------------
 
 export default function CompanyTableRow({ row, selected, onEditRow, onSelectRow, onDeleteRow }) {
-  const { fullName, profileUrl, company, designation, location, redirectUrl } = row;
+  const { id, fullName, profileUrl, company, designation, location, redirectUrl } = row;
 
   const avatarSrc = typeof profileUrl === 'string' && profileUrl.trim() && profileUrl.startsWith('https') ? profileUrl : undefined;
 
   const confirm = useBoolean();
   const popover = usePopover();
+  const router = useRouter();
+
+  const handleViewCandidate = () => {
+    router.push(paths.dashboard.company.candidateDetails(id));
+  };
 
   return (
     <>
@@ -50,7 +58,6 @@ export default function CompanyTableRow({ row, selected, onEditRow, onSelectRow,
                 noWrap
                 color="inherit"
                 variant="subtitle2"
-                onClick={() => console.log('')}
                 sx={{ cursor: 'pointer' }}
               >
                 {fullName}
@@ -64,7 +71,7 @@ export default function CompanyTableRow({ row, selected, onEditRow, onSelectRow,
 
         {/* Address */}
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{designation}</TableCell>
-    
+
 
         {/* Phone Number */}
         <TableCell sx={{ whiteSpace: 'nowrap' }}>
@@ -79,7 +86,6 @@ export default function CompanyTableRow({ row, selected, onEditRow, onSelectRow,
           </Link>
         </TableCell>
 
-             <TableCell sx={{ whiteSpace: 'nowrap' }}>{location || 'N/A'}</TableCell>
 
         {/* Email */}
 
@@ -94,17 +100,13 @@ export default function CompanyTableRow({ row, selected, onEditRow, onSelectRow,
         </TableCell> */}
 
         {/* Actions */}
-        {/* <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>
-          <Tooltip title="Edit" placement="top" arrow>
-            <IconButton color="primary" onClick={onEditRow}>
-              <Iconify icon="solar:pen-bold" />
+        <TableCell>
+          <Tooltip title="View Events">
+            <IconButton onClick={() => router.push(paths.dashboard.company.candidateDetails(id))}>
+              <Iconify icon="carbon:view-filled" />
             </IconButton>
           </Tooltip>
-
-          <IconButton color={popover.open ? 'inherit' : 'default'} onClick={popover.onOpen}>
-            <Iconify icon="eva:more-vertical-fill" />
-          </IconButton>
-        </TableCell> */}
+        </TableCell>
       </TableRow>
 
       {/* Popover */}

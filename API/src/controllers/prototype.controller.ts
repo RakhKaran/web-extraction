@@ -584,7 +584,7 @@ export class PrototypeController {
       const jobCards = await page.$$(selectorName);
       console.log(`[handleJobListNode] Found ${jobCards.length} matching elements with selector: ${selectorName}`);
 
-      for (let card of jobCards.slice(0, 20)) {
+      for (let card of jobCards.slice(0, 30)) {
         const href = await card.getAttribute("href");
         console.log(`[handleJobListNode] Found link: ${href}`);
 
