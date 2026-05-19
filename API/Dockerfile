@@ -1,5 +1,5 @@
 # Use official Node base for backend (not Airflow)
-FROM node:18-bullseye
+FROM node:20-bookworm
 
 # Install all dependencies for Playwright, Puppeteer, and virtual display
 RUN apt-get update && apt-get install -y \
