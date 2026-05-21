@@ -3,17 +3,19 @@ import { useState, useCallback } from 'react';
 import Tab from '@mui/material/Tab';
 import Tabs from '@mui/material/Tabs';
 import Container from '@mui/material/Container';
+import Button from '@mui/material/Button';
 // routes
 import { paths } from 'src/routes/paths';
 import { useParams } from 'src/routes/hook';
+import { RouterLink } from 'src/routes/components';
 // _mock
 import { _jobs, JOB_PUBLISH_OPTIONS, JOB_DETAILS_TABS } from 'src/_mock';
-// components
 import Label from 'src/components/label';
 import { useSettingsContext } from 'src/components/settings';
+import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+import Iconify from 'src/components/iconify';
 //
 import { mockJob } from 'src/sections/job/mockData';
-import JobsDetailsToolbar from '../jobs-details-toolbar';
 import JobsDetailsContent from '../jobs-details-content';
 import { useGetJob } from 'src/api/job';
 
@@ -69,25 +71,30 @@ export default function JobsDetailsView() {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
-      <JobsDetailsToolbar
-        backLink={paths.dashboard.job.list}
-        // editLink={paths.dashboard.job.edit(`${currentJob?.id}`)}
-        // liveLink="#"
-        // publish={publish || ''}
-        // onChangePublish={handleChangePublish}
-        // publishOptions={JOB_PUBLISH_OPTIONS}
+      <CustomBreadcrumbs
+        heading="Job Details"
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Jobs', href: paths.dashboard.job.list },
+          { name: currentJob?.title || 'Details' },
+        ]}
+        sx={{
+          mb: { xs: 3, md: 5 },
+        }}
+        action={
+          <Button
+            component={RouterLink}
+            href={paths.dashboard.job.list}
+            startIcon={<Iconify icon="eva:arrow-ios-back-fill" width={16} />}
+          >
+            Back
+          </Button>
+        }
       />
+
       {renderTabs}
 
       {currentTab === 'title' && currentJob && <JobsDetailsContent job={currentJob} />}
-       {/* {mockJob.map((job) => (
-                <JobDetailsContent
-                  key={job.id}
-                  job={job}
-                />
-              ))} */}
-
-    
     </Container>
   );
 }

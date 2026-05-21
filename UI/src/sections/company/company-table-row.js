@@ -70,7 +70,7 @@ export default function CompanyTableRow({ row, selected, onEditRow, onSelectRow,
 
 
         {/* Address */}
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>{designation}</TableCell>
+        <TableCell sx={{ whiteSpace: 'nowrap', maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis'}}>{designation}</TableCell>
 
 
         {/* Phone Number */}

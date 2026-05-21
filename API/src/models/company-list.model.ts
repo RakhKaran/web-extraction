@@ -20,6 +20,13 @@ export class CompanyList extends Entity {
     itemType: 'string',
     required: true,
   })
+  designationCategories: string[];
+
+  @property({
+    type: 'array',
+    itemType: 'string',
+    required: true,
+  })
   designations: string[];
 
   @property({

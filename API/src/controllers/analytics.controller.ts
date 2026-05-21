@@ -1,5 +1,5 @@
 import {repository} from '@loopback/repository';
-import {get} from '@loopback/rest';
+import {get, param} from '@loopback/rest';
 import {
   DataFreshnessConfigRepository,
   DataFreshnessLogRepository,
@@ -26,19 +26,33 @@ export class AnalyticsController {
   ) {}
 
   @get('/analytics/overview')
-  async getOverview() {
-    const now = new Date();
-    const fromDate = new Date();
-    fromDate.setDate(now.getDate() - 6);
-    fromDate.setHours(0, 0, 0, 0);
+  async getOverview(
+    @param.query.string('startDate') startDateParam?: string,
+    @param.query.string('endDate') endDateParam?: string,
+  ) {
+    let toDate = new Date();
+    let fromDate = new Date();
+
+    if (startDateParam && endDateParam) {
+      fromDate = new Date(startDateParam);
+      toDate = new Date(endDateParam);
+    } else {
+      fromDate.setDate(toDate.getDate() - 6);
+      fromDate.setHours(0, 0, 0, 0);
+    }
+    // Set toDate to end of day to include all records on the end date
+    toDate.setHours(23, 59, 59, 999);
 
     const [jobs, schedulers, workflows, freshnessConfigs, freshnessLogs, schedulerRuns] =
       await Promise.all([
         this.jobListRepository.find({
-          where: {isDeleted: false},
+          where: {
+            isDeleted: false,
+            createdAt: {between: [fromDate, toDate]},
+          },
           fields: {id: true, createdAt: true, isActive: true, source: true},
           order: ['createdAt DESC'],
-          limit: 5000,
+          limit: 10000,
         }),
         this.schedulerRepository.find({
           where: {isDeleted: false},
@@ -77,7 +91,11 @@ export class AnalyticsController {
       .map(([label, total]) => ({label, total}));
 
     const dailyMap: Record<string, number> = {};
-    for (let i = 0; i < 7; i++) {
+    const diffTime = Math.abs(toDate.getTime() - fromDate.getTime());
+    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+    const totalDays = Math.max(1, Math.min(diffDays, 90)); // Cap at 90 days for chart readability
+
+    for (let i = 0; i < totalDays; i++) {
       const d = new Date(fromDate);
       d.setDate(fromDate.getDate() + i);
       const key = d.toISOString().slice(0, 10);

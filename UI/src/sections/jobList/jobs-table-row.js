@@ -4,7 +4,7 @@ import TableRow from '@mui/material/TableRow';
 import TableCell from '@mui/material/TableCell';
 import IconButton from '@mui/material/IconButton';
 // components
-import { Chip, Tooltip } from '@mui/material';
+import { Chip, ListItemText, Tooltip } from '@mui/material';
 import Iconify from 'src/components/iconify';
 import { format } from 'date-fns';
 
@@ -28,7 +28,7 @@ export default function JobTableRow({ row, selected, onViewRow, onSelectRow, onD
   return (
     <>
       <TableRow hover selected={selected}>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
+        <TableCell sx={{ whiteSpace: 'nowrap', maxWidth: '300px', overflow: 'hidden', textOverflow: 'ellipsis'}}>
           {title || 'N/A'}
         </TableCell>
         <TableCell sx={{ whiteSpace: 'nowrap' }}>{company || 'N/A'}</TableCell>
@@ -40,8 +40,17 @@ export default function JobTableRow({ row, selected, onViewRow, onSelectRow, onD
             color={expiredStatus === 'Expired' ? 'error' : 'success'}
           />
         </TableCell>
-        <TableCell sx={{ whiteSpace: 'nowrap' }}>
-          {effectiveDate ? format(new Date(effectiveDate), 'dd MMM yyyy') : 'N/A'}
+        <TableCell>
+          <ListItemText
+            primary={format(new Date(effectiveDate), 'dd MMM yyyy')}
+            secondary={format(new Date(effectiveDate), 'p')}
+            primaryTypographyProps={{ typography: 'body2', noWrap: true }}
+            secondaryTypographyProps={{
+              mt: 0.5,
+              component: 'span',
+              typography: 'caption',
+            }}
+          />
         </TableCell>
         {/* Actions */}
         <TableCell align="right" sx={{ px: 1, whiteSpace: 'nowrap' }}>

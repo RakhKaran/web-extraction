@@ -5,11 +5,13 @@ import Box from '@mui/material/Box';
 // routes
 import { paths } from 'src/routes/paths';
 import { useParams } from 'src/routes/hook';
+import Button from '@mui/material/Button';
+import { RouterLink } from 'src/routes/components';
 // components
 import { useSettingsContext } from 'src/components/settings';
 import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
+import Iconify from 'src/components/iconify';
 // sections
-import CandidateDetailsToolbar from '../candidate-details-toolbar';
 import CandidateDetailsContent from '../candidate-details-content';
 import { useGetCompany } from 'src/api/company';
 
@@ -44,9 +46,17 @@ export default function CandidateDetailsView() {
         sx={{
           mb: { xs: 3, md: 5 },
         }}
+        action={
+          <Button
+            component={RouterLink}
+            href={paths.dashboard.company.root}
+            startIcon={<Iconify icon="eva:arrow-ios-back-fill" width={16} />}
+          >
+            Back
+          </Button>
+        }
       />
 
-      <CandidateDetailsToolbar backLink={paths.dashboard.company.root} />
       <CandidateDetailsContent candidate={currentCandidate} />
     </Container>
   );

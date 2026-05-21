@@ -34,18 +34,15 @@ export default function CompanyNewEditForm({ currentCompany, open, onClose }) {
   const [designations, setDesignations] = useState([]);
   const [companyMasters, setCompanyMasters] = useState([]);
 
+  const designationCategories = [
+    { value: 'product-management', label: 'Product Management' },
+    { value: 'marketing', label: 'Marketing' },
+    { value: 'data-science', label: 'Data Science' },
+    { value: 'software-development', label: 'Software Development' }
+  ];
+
   const { Designations, DesignationsLoading } = useGetDesignations();
   const { companies, companiesLoading } = useGetCompanyMasters();
-
-
-  useEffect(() => {
-    if (Array.isArray(Designations) && !DesignationsLoading) {
-      const activeDesignations = Designations.filter(
-        (item) => item.isActive === true
-      );
-      setDesignations(activeDesignations);
-    }
-  }, [Designations, DesignationsLoading]);
 
   useEffect(() => {
     if (Array.isArray(companies) && !companiesLoading) {
@@ -60,6 +57,9 @@ export default function CompanyNewEditForm({ currentCompany, open, onClose }) {
       .of(Yup.string())
       .min(1, 'Select at least one designation')
       .required('Designation is required'),
+    designationCategories: Yup.array()
+      .of(Yup.string())
+      .min(1, 'Select at least one category'),
     isActive: Yup.boolean().required('Status is required'),
   });
 
@@ -67,6 +67,7 @@ export default function CompanyNewEditForm({ currentCompany, open, onClose }) {
     () => ({
       companyName: currentCompany?.companyName || '',
       designations: currentCompany?.designations || [],
+      designationCategories: currentCompany?.designationCategories || [],
       isActive: currentCompany?.isActive ?? true,
     }),
     [currentCompany]
@@ -78,16 +79,21 @@ export default function CompanyNewEditForm({ currentCompany, open, onClose }) {
   });
 
   const {
+    watch,
+    setValue,
     handleSubmit,
     reset,
     formState: { isSubmitting },
   } = methods;
+
+  const values = watch();
 
   const onSubmit = handleSubmit(async (data) => {
     try {
       const inputData = {
         companyName: data.companyName,
         designations: data.designations,
+        designationCategories: data.designationCategories,
         isActive: data.isActive,
       };
 
@@ -119,6 +125,16 @@ export default function CompanyNewEditForm({ currentCompany, open, onClose }) {
     }
   }, [currentCompany, defaultValues, reset]);
 
+  useEffect(() => {
+    if (Array.isArray(Designations) && !DesignationsLoading) {
+      const activeDesignations = Designations.filter(
+        (item) => item.isActive === true && (values.designationCategories.includes(item.category) || values.designations.includes(item.designation))
+      );
+      setValue('designations', activeDesignations.map((item) => item.designation));
+      setDesignations(activeDesignations);
+    }
+  }, [Designations, DesignationsLoading, values.designationCategories]);
+
   return (
     <FormProvider methods={methods} onSubmit={onSubmit}>
       <Grid container spacing={3}>
@@ -146,6 +162,16 @@ export default function CompanyNewEditForm({ currentCompany, open, onClose }) {
                   </MenuItem>
                 )}
               </RHFSelect>
+
+              <RHFAutocomplete
+                multiple
+                name="designationCategories"
+                label="Select Designation Category"
+                options={designationCategories.map((option) => option.value)}
+                getOptionLabel={(option) => option}
+                filterSelectedOptions
+                disableCloseOnSelect
+              />
 
               <RHFAutocomplete
                 multiple
