@@ -12,19 +12,55 @@ import { TestExtractionLogs } from "../models";
 import { DeduplicationService } from "../services/nodes/deduplication.service";
 
 export class PrototypeController {
-  private deduplicationService: DeduplicationService;
+	  private deduplicationService: DeduplicationService;
 
-  constructor(
+	  constructor(
     @inject.context() private ctx: Context,
     @repository(TestExtractionLogsRepository)
     public testExtractionLogsRepository: TestExtractionLogsRepository,
   ) {
-    this.deduplicationService = new DeduplicationService(ctx);
-  }
+	    this.deduplicationService = new DeduplicationService(ctx);
+	  }
 
-  // apply conditions
-  private applyConditions(value: any, type: string, conditions: any[]): boolean {
-    if (!conditions || conditions.length === 0) return true; // no validation, pass
+	  private sanitizeForFilename(input: any) {
+	    return String(input ?? '')
+	      .trim()
+	      .replace(/[<>:"/\\|?*\u0000-\u001F]/g, '_')
+	      .replace(/\s+/g, '_')
+	      .slice(0, 120);
+	  }
+
+	  private async captureNodeScreenshot(page: any, extractionId: string, node: any) {
+	    try {
+	      if (!page || typeof page.screenshot !== 'function') return;
+	      if (!node || node.type === 'deliver' || node.type === 'transformation') return;
+
+	      const screenshotsRoot = path.join(process.cwd(), 'screenshots', this.sanitizeForFilename(extractionId));
+	      fs.mkdirSync(screenshotsRoot, { recursive: true });
+
+	      const nodeType = this.sanitizeForFilename(node.type);
+	      const nodeMode = this.sanitizeForFilename(node.mode);
+	      const nodeId = this.sanitizeForFilename(node.id);
+	      const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+	      const filename = `${nodeId || 'node'}_${nodeType}${nodeMode ? `_${nodeMode}` : ''}_${timestamp}.png`;
+	      const screenshotPath = path.join(screenshotsRoot, filename);
+
+	      await page.screenshot({ path: screenshotPath, fullPage: true }).catch(() => { });
+
+	      await this.testExtractionLogsRepository.create({
+	        extractionId,
+	        logsDescription: `📸 Screenshot captured: ${screenshotPath}`,
+	        logType: 0,
+	        isActive: true,
+	      });
+	    } catch (err) {
+	      console.warn('[PrototypeController] Failed to capture screenshot', err);
+	    }
+	  }
+
+	  // apply conditions
+	  private applyConditions(value: any, type: string, conditions: any[]): boolean {
+	    if (!conditions || conditions.length === 0) return true; // no validation, pass
 
     for (const cond of conditions) {
       const { condition, value: condValue } = cond;
@@ -1351,14 +1387,14 @@ export class PrototypeController {
         try {
           const nodes = bluePrint.nodes.sort((a: any, b: any) => a.id - b.id);
 
-          for (const node of nodes) {
-            try {
-              switch (node.type) {
-                case "initialize":
-                  const init = await this.handleInitializeNode(node, extractionId);
-                  browser = init.browserContext;
-                  page = init.page;
-                  break;
+	          for (const node of nodes) {
+	            try {
+	              switch (node.type) {
+	                case "initialize":
+	                  const init = await this.handleInitializeNode(node, extractionId);
+	                  browser = init.browserContext;
+	                  page = init.page;
+	                  break;
 
                 case "search":
                   if (page) {
@@ -1381,9 +1417,9 @@ export class PrototypeController {
                   }
                   break;
 
-                case "transformation":
-                  await this.handleTransformationNode(node, extractionId);
-                  break;
+	                case "transformation":
+	                  await this.handleTransformationNode(node, extractionId);
+	                  break;
 
                 default:
                   console.warn(`⚠️ Unknown node type: ${node.type}`);
@@ -1393,12 +1429,15 @@ export class PrototypeController {
                     logType: 1,
                     isActive: true,
                   });
-              }
+	              }
 
-              await this.testExtractionLogsRepository.create({
-                extractionId,
-                logsDescription: `Node "${node.type}" executed successfully`,
-                logType: 0,
+	              // Take screenshots for Playwright-driven nodes only (exclude deliver/transformation).
+	              await this.captureNodeScreenshot(page, extractionId, node);
+
+	              await this.testExtractionLogsRepository.create({
+	                extractionId,
+	                logsDescription: `Node "${node.type}" executed successfully`,
+	                logType: 0,
                 isActive: true,
               });
 

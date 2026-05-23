@@ -12,7 +12,7 @@ export class Locate {
         opts?: { scrollStep?: number; scrollPasses?: number; waitAfterEachScrollMs?: number }
     ) {
         const scrollStep = opts?.scrollStep ?? 400;
-        const scrollPasses = opts?.scrollPasses ?? 5;
+        const scrollPasses = opts?.scrollPasses ?? 7;
         const waitAfterEachScrollMs = opts?.waitAfterEachScrollMs ?? 2000;
 
         try {
