@@ -371,7 +371,7 @@ export class PrototypeController {
         }
 
         browser = await chromium.launch({
-          headless: false,
+          headless: true,
           args: [
             "--disable-blink-features=AutomationControlled",
             "--start-maximized",
