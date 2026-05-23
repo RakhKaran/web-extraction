@@ -13,7 +13,7 @@ export class Locate {
     ) {
         const scrollStep = opts?.scrollStep ?? 400;
         const scrollPasses = opts?.scrollPasses ?? 7;
-        const waitAfterEachScrollMs = opts?.waitAfterEachScrollMs ?? 2000;
+	        const waitAfterEachScrollMs = opts?.waitAfterEachScrollMs ?? 3500;
 
         try {
             const viewport = page.viewportSize?.() ?? null;

@@ -30,10 +30,10 @@ export class PrototypeController {
       .slice(0, 120);
   }
 
-  private async captureNodeScreenshot(page: any, extractionId: string, node: any) {
-    try {
-      if (!page || typeof page.screenshot !== 'function') return;
-      if (!node || node.type === 'deliver' || node.type === 'transformation') return;
+	  private async captureNodeScreenshot(page: any, extractionId: string, node: any) {
+	    try {
+	      if (!page || typeof page.screenshot !== 'function') return;
+	      if (!node || node.type === 'deliver' || node.type === 'transformation') return;
 
       const screenshotsRoot = path.join(process.cwd(), 'screenshots', this.sanitizeForFilename(extractionId));
       fs.mkdirSync(screenshotsRoot, { recursive: true });
@@ -55,8 +55,37 @@ export class PrototypeController {
       });
     } catch (err) {
       console.warn('[PrototypeController] Failed to capture screenshot', err);
-    }
-  }
+	    }
+	  }
+
+	  private async saveDetailVideo(page: any, extractionId: string, destDir: string, filenameBase: string) {
+	    try {
+	      const video = page?.video?.();
+	      if (!video) return;
+
+	      const rawPath = await video.path().catch(() => null);
+	      if (!rawPath) return;
+
+	      fs.mkdirSync(destDir, { recursive: true });
+	      const safeBase = this.sanitizeForFilename(filenameBase) || 'detail';
+	      const finalPath = path.join(destDir, `${safeBase}.webm`);
+
+	      try {
+	        if (fs.existsSync(finalPath)) fs.unlinkSync(finalPath);
+	      } catch { }
+
+	      fs.renameSync(rawPath, finalPath);
+
+	      await this.testExtractionLogsRepository.create({
+	        extractionId,
+	        logsDescription: `ðŸŽ¥ Detail video saved: ${finalPath}`,
+	        logType: 0,
+	        isActive: true,
+	      });
+	    } catch (err) {
+	      console.warn('[PrototypeController] Failed to save detail video', err);
+	    }
+	  }
 
   // apply conditions
   private applyConditions(value: any, type: string, conditions: any[]): boolean {
@@ -698,12 +727,40 @@ export class PrototypeController {
   }
 
   // detail data node
-  private async handleJobDetailNode(browser: any, jobLinks: string[], node: any, extractionId: string) {
-    console.log('job links', jobLinks);
-    let extractedData: any[] = [];
+	  private async handleJobDetailNode(browser: any, jobLinks: string[], node: any, extractionId: string) {
+	    console.log('job links', jobLinks);
+	    let extractedData: any[] = [];
 
-    for (const [i, link] of jobLinks.entries()) {
-      try {
+	    // Record video only for detail node (disable via node.recordVideoOnDetail === false)
+	    const shouldRecordVideo = node?.recordVideoOnDetail !== false;
+	    const baseContext = browser;
+	    const pwBrowser = baseContext?.browser?.();
+	    const videoRoot = path.join(process.cwd(), 'videos', this.sanitizeForFilename(extractionId), 'detail');
+
+	    let detailContext: any = null;
+	    if (shouldRecordVideo && pwBrowser) {
+	      try {
+	        const storageState = await baseContext.storageState().catch(() => undefined);
+	        detailContext = await pwBrowser.newContext({
+	          viewport: { width: 1920, height: 1080 },
+	          screen: { width: 1920, height: 1080 },
+	          userAgent:
+	            "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36",
+	          deviceScaleFactor: 1,
+	          isMobile: false,
+	          hasTouch: false,
+	          ignoreHTTPSErrors: true,
+	          storageState,
+	          recordVideo: { dir: videoRoot, size: { width: 1920, height: 1080 } },
+	        });
+	      } catch (err) {
+	        console.warn('[handleJobDetailNode] Failed to create video context, continuing without video.', err);
+	        detailContext = null;
+	      }
+	    }
+
+	    for (const [i, link] of jobLinks.entries()) {
+	      try {
         console.log(`(${i + 1}/${jobLinks.length}) Navigating to: ${link}`);
         await this.testExtractionLogsRepository.create({
           extractionId: extractionId,
@@ -711,7 +768,7 @@ export class PrototypeController {
           logType: 0, // Info
           isActive: true,
         });
-        const jobPage = await browser.newPage();
+	        const jobPage = await (detailContext ?? baseContext).newPage();
         await jobPage.goto(link, { waitUntil: "domcontentloaded" });
         await jobPage.waitForTimeout(3000);
         console.log("Current URL:", jobPage.url(), "Title:", await jobPage.title());
@@ -820,10 +877,20 @@ export class PrototypeController {
           }
         }
 
-        extractedData.push(record);
-        await jobPage.close();
+	        extractedData.push(record);
+	        await jobPage.close();
 
-      } catch (err) {
+	        if (detailContext) {
+	          const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+	          await this.saveDetailVideo(
+	            jobPage,
+	            extractionId,
+	            videoRoot,
+	            `${i + 1}_${this.sanitizeForFilename(node?.id)}_${timestamp}`
+	          );
+	        }
+
+	      } catch (err) {
         console.error(`❌ Failed to scrape ${link}`, err);
         await this.testExtractionLogsRepository.create({
           extractionId: extractionId,
@@ -831,10 +898,14 @@ export class PrototypeController {
           logType: 1, // Info
           isActive: true,
         });
-      }
-    }
-    return extractedData;
-  }
+	      }
+	    }
+
+	    if (detailContext) {
+	      await detailContext.close().catch(() => { });
+	    }
+	    return extractedData;
+	  }
 
   // deliver node
   private async handleDeliverNode(data: any[], node: any, extractionId: string) {
