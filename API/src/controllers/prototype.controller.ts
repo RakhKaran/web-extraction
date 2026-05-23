@@ -673,23 +673,27 @@ export class PrototypeController {
         await jobPage.locator('body').click({ force: true }).catch(() => { });
 
         // We use mouse.wheel() as implemented in the pagination logic
-        for (let scrollCount = 0; scrollCount < 12; scrollCount++) {
-          await jobPage.mouse.wheel(0, 800);
+        // Smaller scroll steps + fewer passes, with longer waits, improves lazy-loaded content stability.
+        const scrollStep = 400;
+        const scrollPasses = 5;
+        const waitAfterEachScrollMs = 2000;
+        for (let scrollCount = 0; scrollCount < scrollPasses; scrollCount++) {
+          await jobPage.mouse.wheel(0, scrollStep);
 
           // Fallback: forcefully scroll all scrollable containers via JS
-          await jobPage.evaluate(() => {
+          await jobPage.evaluate((step: number) => {
             // @ts-ignore
             const scrollables = Array.from(document.querySelectorAll('*')).filter((el: any) => {
               // @ts-ignore
               const style = window.getComputedStyle(el);
               return (style.overflowY === 'auto' || style.overflowY === 'scroll') && el.scrollHeight > el.clientHeight;
             });
-            scrollables.forEach((el: any) => el.scrollBy(0, 800));
+            scrollables.forEach((el: any) => el.scrollBy(0, step));
             // @ts-ignore
-            window.scrollBy(0, 800);
-          }).catch(() => { });
+            window.scrollBy(0, step);
+          }, scrollStep).catch(() => { });
 
-          await jobPage.waitForTimeout(700);
+          await jobPage.waitForTimeout(waitAfterEachScrollMs);
         }
 
         // Wait for expected selectors, but do not fail the whole job if one is missing.

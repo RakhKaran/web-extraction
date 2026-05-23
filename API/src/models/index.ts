@@ -15,6 +15,8 @@ export * from './production-naukri.model';
 export * from './dags.model';
 export * from './test-extraction-logs.model';
 export * from './staging-linkedin.model';
+export * from './linkedin-urls.model';
+export * from './staging-linkedin-urls.model';
 export * from './company.model';
 export * from './company-list.model';
 export * from './job-list.model';

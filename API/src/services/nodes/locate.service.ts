@@ -7,6 +7,43 @@ export class Locate {
         private actionService: ActionsService,
     ) { }
 
+    private async scrollToTriggerLazyLoadedSections(
+        page: any,
+        opts?: { scrollStep?: number; scrollPasses?: number; waitAfterEachScrollMs?: number }
+    ) {
+        const scrollStep = opts?.scrollStep ?? 400;
+        const scrollPasses = opts?.scrollPasses ?? 5;
+        const waitAfterEachScrollMs = opts?.waitAfterEachScrollMs ?? 2000;
+
+        try {
+            const viewport = page.viewportSize?.() ?? null;
+            if (viewport) {
+                await page.mouse.move(viewport.width / 2, viewport.height / 2);
+            }
+            await page.locator('body').click({ force: true }).catch(() => { });
+
+            for (let scrollCount = 0; scrollCount < scrollPasses; scrollCount++) {
+                await page.mouse.wheel(0, scrollStep);
+
+                await page.evaluate((step: number) => {
+                    // @ts-ignore
+                    const scrollables = Array.from(document.querySelectorAll('*')).filter((el: any) => {
+                        // @ts-ignore
+                        const style = window.getComputedStyle(el);
+                        return (style.overflowY === 'auto' || style.overflowY === 'scroll') && el.scrollHeight > el.clientHeight;
+                    });
+                    scrollables.forEach((el: any) => el.scrollBy(0, step));
+                    // @ts-ignore
+                    window.scrollBy(0, step);
+                }, scrollStep).catch(() => { });
+
+                await page.waitForTimeout(waitAfterEachScrollMs);
+            }
+        } catch (err) {
+            console.warn('[Locate] Failed to scroll for lazy-loaded content', err);
+        }
+    }
+
     // Extract value (text or attribute)
     // Universal extractor
     private async extractField(el: any, fieldConfig: any) {
@@ -180,6 +217,12 @@ export class Locate {
                 console.log(`(${i + 1}/${links.length}) Navigating to: ${link}`);
                 const page = await browser.newPage();
                 await page.goto(link, { waitUntil: "domcontentloaded" });
+                await page.waitForTimeout(3000);
+
+                if (node?.scrollOnDetail !== false) {
+                    console.log("[Locate] Scrolling down to trigger lazy-loaded sections...");
+                    await this.scrollToTriggerLazyLoadedSections(page, node?.detailScrollOptions);
+                }
 
                 // Wait for expected selectors, but keep scraping even if some are missing.
                 for (const selector of node?.waitToLoadSelectors ?? []) {
@@ -191,6 +234,10 @@ export class Locate {
                 }
 
                 let record: any = { link };
+
+                if (node.actionFlow?.length) {
+                    await this.actionService.handleActions(node.actionFlow, page, false);
+                }
 
                 for (const [fieldName, rawConfig] of Object.entries(node?.fields || {})) {
                     const fieldConfig = rawConfig as any; // force type-safe cast

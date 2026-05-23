@@ -17,3 +17,5 @@ export * from './data-freshness.controller';
 export * from './scheduler-execution.controller';
 export * from './company-master.controller';
 export * from './analytics.controller';
+export * from './linkedin-urls.controller';
+export * from './staging-linkedin-urls.controller';

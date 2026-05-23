@@ -11,6 +11,7 @@ import { _jobs, JOB_PUBLISH_OPTIONS, JOB_DETAILS_TABS } from 'src/_mock';
 // components
 import Label from 'src/components/label';
 import { useSettingsContext } from 'src/components/settings';
+import CustomBreadcrumbs from 'src/components/custom-breadcrumbs';
 //
 import JobDetailsToolbar from '../job-details-toolbar';
 import JobDetailsContent from '../job-details-content';
@@ -70,6 +71,18 @@ export default function JobDetailsView() {
 
   return (
     <Container maxWidth={settings.themeStretch ? false : 'lg'}>
+      <CustomBreadcrumbs
+        heading={currentJob?.title || 'Job'}
+        links={[
+          { name: 'Dashboard', href: paths.dashboard.root },
+          { name: 'Jobs', href: paths.dashboard.job.root },
+          { name: currentJob?.title || 'Details' },
+        ]}
+        sx={{
+          mb: { xs: 3, md: 5 },
+        }}
+      />
+
       <JobDetailsToolbar
         backLink={paths.dashboard.job.root}
         editLink={paths.dashboard.job.edit(`${currentJob?.id}`)}

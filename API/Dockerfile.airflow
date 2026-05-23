@@ -31,6 +31,8 @@ RUN npm ci --only=production
 
 COPY dist ./dist
 
+RUN npm install
+
 # -----------------------------
 # 3. AIRFLOW USER: Playwright browsers
 # -----------------------------

@@ -15,6 +15,8 @@ export * from './production-naukri.repository';
 export * from './dags.repository';
 export * from './test-extraction-logs.repository';
 export * from './staging-linkedin.repository';
+export * from './linkedin-urls.repository';
+export * from './staging-linkedin-urls.repository';
 export * from './company.repository';
 export * from './company-list.repository';
 export * from './job-list.repository';

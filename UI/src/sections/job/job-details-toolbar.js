@@ -34,6 +34,7 @@ export default function JobDetailsToolbar({
         direction="row"
         sx={{
           mb: { xs: 3, md: 5 },
+          alignItems: 'center',
           ...sx,
         }}
         {...other}

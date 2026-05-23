@@ -85,11 +85,17 @@ export class DeliverController {
     let ModelClass;
 
     // Helper to convert PascalCase to kebab-case
-    const toKebabCase = (str: string) =>
-      str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
-
+    const toKebabCase = (str: string) => {
+      if (str === 'LinkedInUrls') {
+        return 'linkedin-urls'
+      } else if (str === 'StagingLinkedInUrls') {
+        return 'staging-linkedin-urls'
+      }
+      return str.replace(/([a-z0-9])([A-Z])/g, '$1-$2').toLowerCase();
+    }
     const fileName = toKebabCase(modelName); // ProductionNaukri → production-naukri
 
+    console.log('fileName', fileName);
     try {
       // Import using kebab-case filename
       ModelModule = await import(`../models/${fileName}.model`);

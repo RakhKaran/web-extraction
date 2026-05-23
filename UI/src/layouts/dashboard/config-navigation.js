@@ -97,45 +97,32 @@ export function useNavData() {
           // COMPANY
           {
             title: t('Candidates'),
-            path: paths.dashboard.company.root,
+            path: paths.dashboard.company.list,
             icon: ICONS.companyProfile,
-            children: [
-              { title: t('list'), path: paths.dashboard.company.list },
-            ],
-
+          },
+          {
+            title: t('linkedIn URLs'),
+            path: paths.dashboard.linkedInUrls.list,
+            icon: ICONS.linkedin,
           },
 
           // JOB
           {
             title: t('job'),
-            path: paths.dashboard.job.root,
+            path: paths.dashboard.job.list,
             icon: ICONS.job,
-            children: [
-              { title: t('list'), path: paths.dashboard.job.list },
-              // { title: t('details'), path: paths.dashboard.job.demo.details },
-              // { title: t('create'), path: paths.dashboard.job.new },
-              // { title: t('edit'), path: paths.dashboard.job.demo.edit },
-            ],
           },
           // WORKFLOW
-
-
           {
             title: t('scheduler'),
             path: paths.dashboard.scheduler.root,
             icon: ICONS.scheduler,
             children: [
               { title: t('list'), path: paths.dashboard.scheduler.list },
-              //  { title: t('details'), path: paths.dashboard.scheduler.details },
               { title: t('create'), path: paths.dashboard.scheduler.new },
-              //  { title: t('edit'), path: paths.dashboard.scheduler.edit },
             ],
           },
-
-
           { title: t('Extraction Flow'), path: paths.dashboard.workflow.root, icon: ICONS.analytics },
-          // { title: t('Workflow Instance'), path: paths.dashboard.workflowInstance.root, icon: ICONS.analytics }, 
-
           // DATA FRESHNESS
           {
             title: t('Data Freshness'),

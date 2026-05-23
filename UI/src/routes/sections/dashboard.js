@@ -80,6 +80,8 @@ const JobDetailsPage = lazy(() => import('src/pages/dashboard/job/details'));
 const JobListPage = lazy(() => import('src/pages/dashboard/job/list'));
 const JobCreatePage = lazy(() => import('src/pages/dashboard/job/new'));
 const JobEditPage = lazy(() => import('src/pages/dashboard/job/edit'));
+// LINKEDIN URLS
+const LinkedInUrlsPage = lazy(() => import('src/pages/dashboard/linkedin-urls'));
 // TOUR
 const TourDetailsPage = lazy(() => import('src/pages/dashboard/tour/details'));
 const TourListPage = lazy(() => import('src/pages/dashboard/tour/list'));
@@ -152,6 +154,13 @@ export const dashboardRoutes = [
           { element: <CompanyListPage />, index: true },
           { path: 'list', element: <CompanyListPage /> },
           { path: ':id', element: <CandidateDetailsPage /> },
+        ]
+      },
+      {
+        path: 'linkedin-urls',
+        children: [
+          { element: <LinkedInUrlsPage />, index: true },
+          { path: 'list', element: <LinkedInUrlsPage /> },
         ]
       },
       {

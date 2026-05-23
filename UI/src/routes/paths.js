@@ -226,6 +226,11 @@ export const paths = {
         edit: `${ROOTS.DASHBOARD}/designation/${MOCK_ID}/edit`,
       },
     },
+    linkedInUrls: {
+      root: `${ROOTS.DASHBOARD}/linkedin-urls`,
+      list: `${ROOTS.DASHBOARD}/linkedin-urls/list`,
+      details: (id) => `${ROOTS.DASHBOARD}/linkedin-urls/${id}`,
+    },
     companyMaster: {
       root: `${ROOTS.DASHBOARD}/company-master`,
       new: `${ROOTS.DASHBOARD}/company-master/new`,

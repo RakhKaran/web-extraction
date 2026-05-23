@@ -99,4 +99,14 @@ export const endpoints = {
     filterList: (filter) => `/workflow-instances?filter=${filter}`,
     details: (id) => `/workflow-instances/${id}`,
   },
+  linkedInUrls: {
+    list: '/linked-in-urls',
+    filterList: (filter) => `/linked-in-urls?filter=${filter}`,
+    details: (id) => `/linked-in-urls/${id}`,
+  },
+  stagingLinkedInUrls: {
+    list: '/staging-linked-in-urls',
+    filterList: (filter) => `/staging-linked-in-urls?filter=${filter}`,
+    details: (id) => `/staging-linked-in-urls/${id}`,
+  },
 };
